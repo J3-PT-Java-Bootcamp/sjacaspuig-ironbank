@@ -1,4 +1,4 @@
-package com.ironhack.ironbankfinalproject;
+package com.ironhack.ironbank;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

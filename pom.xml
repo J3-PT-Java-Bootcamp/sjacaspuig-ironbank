@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.ironhack</groupId>
-    <artifactId>ironbank-final-project</artifactId>
+    <artifactId>ironbank</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>ironbank-final-project</name>
-    <description>ironbank-final-project</description>
+    <name>ironbank</name>
+    <description>ironbank</description>
     <properties>
         <java.version>18</java.version>
     </properties>

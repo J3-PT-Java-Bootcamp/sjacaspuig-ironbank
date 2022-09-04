@@ -1,4 +1,4 @@
-package com.ironhack.ironbankfinalproject;
+package com.ironhack.ironbank;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
