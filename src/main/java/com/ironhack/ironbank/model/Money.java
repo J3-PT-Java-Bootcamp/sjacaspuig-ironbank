@@ -63,9 +63,6 @@ public class Money {
         return this.amount;
     }
 
-    public Currency setCurrency(Currency currency) {
-        return this.currency;
-    }
     public Currency getCurrency() {
         return this.currency;
     }
