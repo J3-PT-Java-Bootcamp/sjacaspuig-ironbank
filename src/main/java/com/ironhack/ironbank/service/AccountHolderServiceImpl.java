@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.AccountHolderDTO;
+import com.ironhack.ironbank.model.user.AccountHolder;
 import com.ironhack.ironbank.repository.AccountHolderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,10 @@ public class AccountHolderServiceImpl implements AccountHolderService {
 
     @Override
     public AccountHolderDTO create(AccountHolderDTO accountHolderDTO) {
-        return null;
+        // TODO: Implement this method
+        var accountHolder = AccountHolder.fromDTO(accountHolderDTO);
+        accountHolder = accountHolderRepository.save(accountHolder);
+        return AccountHolderDTO.fromEntity(accountHolder);
     }
 
     @Override

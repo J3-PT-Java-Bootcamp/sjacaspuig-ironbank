@@ -19,7 +19,7 @@ public class CreditAccountServiceImpl implements CreditAccountService {
     }
 
     @Override
-    public CreditAccountDTO findById(Long id) {
+    public CreditAccountDTO findByIban(String iban) {
         return null;
     }
 
@@ -29,12 +29,12 @@ public class CreditAccountServiceImpl implements CreditAccountService {
     }
 
     @Override
-    public CreditAccountDTO update(Long id, CreditAccountDTO creditAccountDTO) {
+    public CreditAccountDTO update(String iban, CreditAccountDTO creditAccountDTO) {
         return null;
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(String iban) {
 
     }
 }

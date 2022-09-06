@@ -19,7 +19,7 @@ public class CurrentStudentCheckingAccountServiceImpl implements CurrentStudentC
     }
 
     @Override
-    public CurrentStudentCheckingAccountDTO findById(Long id) {
+    public CurrentStudentCheckingAccountDTO findByIban(String iban) {
         return null;
     }
 
@@ -29,12 +29,12 @@ public class CurrentStudentCheckingAccountServiceImpl implements CurrentStudentC
     }
 
     @Override
-    public CurrentStudentCheckingAccountDTO update(Long id, CurrentStudentCheckingAccountDTO currentStudentCheckingAccountDTO) {
+    public CurrentStudentCheckingAccountDTO update(String iban, CurrentStudentCheckingAccountDTO currentStudentCheckingAccountDTO) {
         return null;
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(String iban) {
 
     }
 }

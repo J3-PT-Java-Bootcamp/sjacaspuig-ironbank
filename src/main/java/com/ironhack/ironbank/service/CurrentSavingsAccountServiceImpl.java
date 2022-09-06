@@ -19,7 +19,7 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
     }
 
     @Override
-    public CurrentSavingsAccountDTO findById(Long id) {
+    public CurrentSavingsAccountDTO findByIban(String iban) {
         return null;
     }
 
@@ -29,12 +29,12 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
     }
 
     @Override
-    public CurrentSavingsAccountDTO update(Long id, CurrentSavingsAccountDTO currentSavingsAccountDTO) {
+    public CurrentSavingsAccountDTO update(String iban, CurrentSavingsAccountDTO currentSavingsAccountDTO) {
         return null;
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(String iban) {
 
     }
 }

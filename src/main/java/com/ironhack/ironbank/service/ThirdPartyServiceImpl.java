@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.ThirdPartyDTO;
+import com.ironhack.ironbank.model.user.ThirdParty;
 import com.ironhack.ironbank.repository.ThirdPartyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,10 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     @Override
     public ThirdPartyDTO create(ThirdPartyDTO thirdPartyDTO) {
-        return null;
+        // TODO: Implement this method
+        var thirdParty = ThirdParty.fromDTO(thirdPartyDTO);
+        thirdParty = thirdPartyRepository.save(thirdParty);
+        return ThirdPartyDTO.fromEntity(thirdParty);
     }
 
     @Override

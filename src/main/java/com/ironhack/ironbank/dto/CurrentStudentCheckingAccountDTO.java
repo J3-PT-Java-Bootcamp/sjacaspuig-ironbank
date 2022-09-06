@@ -3,11 +3,9 @@ package com.ironhack.ironbank.dto;
 import com.ironhack.ironbank.model.account.CurrentStudentCheckingAccount;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public class CurrentStudentCheckingAccountDTO extends CurrentAccountDTO {

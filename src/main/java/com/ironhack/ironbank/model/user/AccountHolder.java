@@ -11,6 +11,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -63,13 +66,16 @@ public class AccountHolder extends User {
         var accountHolder = new AccountHolder();
         accountHolder.setId(accountHolderDTO.getId());
         accountHolder.setName(accountHolderDTO.getName());
-        accountHolder.setBirthDate(accountHolderDTO.getBirthDate());
+        accountHolder.setBirthDate(LocalDate.parse("1992-02-08").atStartOfDay(ZoneId.of("Europe/Paris")).toInstant()); // TODO: Change to Date
 
         var primaryAddress = Address.fromDTO(accountHolderDTO.getPrimaryAddress());
         accountHolder.setPrimaryAddress(primaryAddress);
 
-        var secondaryAddress = Address.fromDTO(accountHolderDTO.getSecondaryAddress());
-        accountHolder.setSecondaryAddress(secondaryAddress);
+        if (accountHolderDTO.getSecondaryAddress() != null) {
+            var secondaryAddress = Address.fromDTO(accountHolderDTO.getSecondaryAddress());
+            accountHolder.setSecondaryAddress(secondaryAddress);
+        }
+
         return accountHolder;
     }
 }

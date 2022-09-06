@@ -21,8 +21,7 @@ public class Address {
     @NotNull
     private String street;
 
-    @NotNull
-    private int number;
+    private String number;
 
     @Column(name = "extra_information")
     private String extraInformation;

@@ -13,7 +13,7 @@ import lombok.Setter;
 public class AddressDTO {
 
     private String street;
-    private int number;
+    private String number;
     private String extraInformation;
     private String postalCode;
     private String city;

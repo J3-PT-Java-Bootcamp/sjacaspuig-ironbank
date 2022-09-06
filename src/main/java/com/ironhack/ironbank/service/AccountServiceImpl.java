@@ -19,7 +19,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDTO findById(Long id) {
+    public AccountDTO findByIban(String iban) {
         return null;
     }
 
@@ -29,12 +29,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDTO update(Long id, AccountDTO accountDTO) {
+    public AccountDTO update(String iban, AccountDTO accountDTO) {
         return null;
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(String iban) {
 
     }
 }

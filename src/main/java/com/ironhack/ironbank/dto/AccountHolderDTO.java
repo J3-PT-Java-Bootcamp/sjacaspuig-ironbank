@@ -6,15 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class AccountHolderDTO extends UserDTO {
 
-    private Instant birthDate;
+    private String birthDate; // TODO: Change to Date
     private AddressDTO primaryAddress;
     private AddressDTO secondaryAddress;
 
@@ -22,13 +20,15 @@ public class AccountHolderDTO extends UserDTO {
         var accountHolderDTO = new AccountHolderDTO();
         accountHolderDTO.setId(accountHolder.getId());
         accountHolderDTO.setName(accountHolder.getName());
-        accountHolderDTO.setBirthDate(accountHolder.getBirthDate());
+        accountHolderDTO.setBirthDate(accountHolder.getBirthDate().toString());
 
         var primaryAddressDTO = AddressDTO.fromEntity(accountHolder.getPrimaryAddress());
         accountHolderDTO.setPrimaryAddress(primaryAddressDTO);
 
-        var secondaryAddressDTO = AddressDTO.fromEntity(accountHolder.getSecondaryAddress());
-        accountHolderDTO.setSecondaryAddress(secondaryAddressDTO);
+        if (accountHolder.getSecondaryAddress() != null) {
+            var secondaryAddressDTO = AddressDTO.fromEntity(accountHolder.getSecondaryAddress());
+            accountHolderDTO.setSecondaryAddress(secondaryAddressDTO);
+        }
 
         return accountHolderDTO;
     }

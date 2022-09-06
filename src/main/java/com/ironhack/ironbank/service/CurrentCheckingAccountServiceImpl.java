@@ -19,7 +19,7 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
     }
 
     @Override
-    public CurrentCheckingAccountDTO findById(Long id) {
+    public CurrentCheckingAccountDTO findByIban(String iban) {
         return null;
     }
 
@@ -29,12 +29,12 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
     }
 
     @Override
-    public CurrentCheckingAccountDTO update(Long id, CurrentCheckingAccountDTO currentCheckingAccountDTO) {
+    public CurrentCheckingAccountDTO update(String iban, CurrentCheckingAccountDTO currentCheckingAccountDTO) {
         return null;
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(String iban) {
 
     }
 }

@@ -2,12 +2,13 @@ package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.CurrentSavingsAccountDTO;
 
+import javax.validation.Valid;
 import java.util.List;
 public interface CurrentSavingsAccountService {
 
-    CurrentSavingsAccountDTO create(CurrentSavingsAccountDTO currentSavingsAccountDTO);
-    CurrentSavingsAccountDTO findById(Long id);
+    CurrentSavingsAccountDTO create(@Valid CurrentSavingsAccountDTO currentSavingsAccountDTO);
+    CurrentSavingsAccountDTO findByIban(@Valid String iban);
     List<CurrentSavingsAccountDTO> findAll();
-    CurrentSavingsAccountDTO update(Long id, CurrentSavingsAccountDTO currentSavingsAccountDTO);
-    void delete(Long id);
+    CurrentSavingsAccountDTO update(@Valid String iban, @Valid CurrentSavingsAccountDTO currentSavingsAccountDTO);
+    void delete(@Valid String iban);
 }

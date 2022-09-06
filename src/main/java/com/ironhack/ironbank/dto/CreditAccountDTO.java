@@ -1,6 +1,5 @@
 package com.ironhack.ironbank.dto;
 
-import com.ironhack.ironbank.model.account.Account;
 import com.ironhack.ironbank.model.account.CreditAccount;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

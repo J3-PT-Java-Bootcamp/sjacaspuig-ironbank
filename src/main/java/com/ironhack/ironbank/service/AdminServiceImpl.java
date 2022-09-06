@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.AdminDTO;
+import com.ironhack.ironbank.model.user.Admin;
 import com.ironhack.ironbank.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,11 @@ public class AdminServiceImpl implements AdminService {
     private final AdminRepository adminRepository;
 
     @Override
-    public AdminDTO createAdmin(AdminDTO adminDTO) {
-        return null;
+    public AdminDTO create(AdminDTO adminDTO) {
+        // TODO: Implement this method
+        var admin = Admin.fromDTO(adminDTO);
+        admin = adminRepository.save(admin);
+        return AdminDTO.fromEntity(admin);
     }
 
     @Override

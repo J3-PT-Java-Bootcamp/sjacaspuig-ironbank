@@ -2,12 +2,13 @@ package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.ThirdPartyDTO;
 
+import javax.validation.Valid;
 import java.util.List;
 public interface ThirdPartyService {
 
-    ThirdPartyDTO create(ThirdPartyDTO thirdPartyDTO);
-    ThirdPartyDTO findById(Long id);
+    ThirdPartyDTO create(@Valid ThirdPartyDTO thirdPartyDTO);
+    ThirdPartyDTO findById(@Valid Long id);
     List<ThirdPartyDTO> findAll();
-    ThirdPartyDTO update(Long id, ThirdPartyDTO thirdPartyDTO);
-    void delete(Long id);
+    ThirdPartyDTO update(@Valid Long id, @Valid ThirdPartyDTO thirdPartyDTO);
+    void delete(@Valid Long id);
 }
