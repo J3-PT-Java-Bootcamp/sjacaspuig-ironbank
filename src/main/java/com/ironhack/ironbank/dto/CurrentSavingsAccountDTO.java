@@ -22,19 +22,12 @@ public class CurrentSavingsAccountDTO extends CurrentAccountDTO {
     public static CurrentSavingsAccountDTO fromEntity(CurrentSavingsAccount currentSavingsAccount) {
 
         // From Account DTO model
+        var account = AccountDTO.fromEntity(currentSavingsAccount);
         var currentSavingsAccountDTO = new CurrentSavingsAccountDTO();
-        currentSavingsAccountDTO.setIban(currentSavingsAccount.getIban());
-
-        var balanceDTO = MoneyDTO.fromEntity(currentSavingsAccount.getBalance());
-        currentSavingsAccountDTO.setBalance(balanceDTO);
-
-        var primaryOwnerDTO = AccountHolderDTO.fromEntity(currentSavingsAccount.getPrimaryOwner());
-        currentSavingsAccountDTO.setPrimaryOwner(primaryOwnerDTO);
-
-        if (currentSavingsAccount.getSecondaryOwner() != null) {
-            var secondaryOwnerDTO = AccountHolderDTO.fromEntity(currentSavingsAccount.getSecondaryOwner());
-            currentSavingsAccountDTO.setSecondaryOwner(secondaryOwnerDTO);
-        }
+        currentSavingsAccountDTO.setIban(account.getIban());
+        currentSavingsAccountDTO.setBalance(account.getBalance());
+        currentSavingsAccountDTO.setPrimaryOwner(account.getPrimaryOwner());
+        currentSavingsAccountDTO.setSecondaryOwner(account.getSecondaryOwner());
 
         // From Current Account DTO model
         currentSavingsAccountDTO.setSecretKey(currentSavingsAccount.getSecretKey());

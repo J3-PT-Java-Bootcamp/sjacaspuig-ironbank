@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.model.account;
 
+import com.ironhack.ironbank.dto.CurrentCheckingAccountDTO;
 import com.ironhack.ironbank.interfaces.PenaltyFee;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.user.AccountHolder;
@@ -39,5 +40,23 @@ public class CurrentCheckingAccount extends CurrentAccount implements PenaltyFee
             var newAmount = getBalance().decreaseAmount(PENALTY_FEE);
             setBalance(new Money(newAmount));
         }
+    }
+
+    public static CurrentCheckingAccount fromDTO(CurrentCheckingAccountDTO currentCheckingAccountDTO) {
+
+        // From Account model
+        var account = Account.fromDTO(currentCheckingAccountDTO);
+        var currentCheckingAccount = new CurrentCheckingAccount();
+        currentCheckingAccount.setIban(account.getIban());
+        currentCheckingAccount.setBalance(account.getBalance());
+        currentCheckingAccount.setPrimaryOwner(account.getPrimaryOwner());
+        currentCheckingAccount.setSecondaryOwner(account.getSecondaryOwner());
+
+        // From Current Account model
+        currentCheckingAccount.setSecretKey(currentCheckingAccountDTO.getSecretKey());
+        currentCheckingAccount.setCreationDate(currentCheckingAccountDTO.getCreationDate());
+        currentCheckingAccount.setStatus(currentCheckingAccountDTO.getStatus());
+
+        return currentCheckingAccount;
     }
 }

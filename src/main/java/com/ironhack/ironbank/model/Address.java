@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.model;
 
+import com.ironhack.ironbank.dto.AddressDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -67,5 +68,21 @@ public class Address {
                 ", country='" + country + '\'' +
                 ", province='" + province + '\'' +
                 '}';
+    }
+
+    public static Address fromDTO(AddressDTO addressDTO) {
+        var address = new Address();
+        address.setStreet(addressDTO.getStreet());
+        address.setNumber(addressDTO.getNumber());
+        address.setExtraInformation(addressDTO.getExtraInformation());
+        address.setPostalCode(addressDTO.getPostalCode());
+        address.setCity(addressDTO.getCity());
+        address.setCountry(addressDTO.getCountry());
+
+        if (addressDTO.getProvince() != null) {
+            address.setProvince(addressDTO.getProvince());
+        }
+
+        return address;
     }
 }

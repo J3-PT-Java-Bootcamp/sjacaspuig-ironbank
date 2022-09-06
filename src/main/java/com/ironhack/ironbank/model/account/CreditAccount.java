@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.model.account;
 
+import com.ironhack.ironbank.dto.CreditAccountDTO;
 import com.ironhack.ironbank.interfaces.InterestRate;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.utils.UtilsService;
@@ -67,5 +68,24 @@ public class CreditAccount extends Account implements InterestRate {
             setBalance(new Money(newAmount));
         }
         setInterestRateDate();
+    }
+
+    public static CreditAccount fromDTO(CreditAccountDTO creditAccountDTO) {
+
+        // From Account model
+        var account = Account.fromDTO(creditAccountDTO);
+        var creditAccount = new CreditAccount();
+        creditAccount.setIban(account.getIban());
+        creditAccount.setBalance(account.getBalance());
+        creditAccount.setPrimaryOwner(account.getPrimaryOwner());
+        creditAccount.setSecondaryOwner(account.getSecondaryOwner());
+
+        // From Credit Account model
+        var money = Money.fromDTO(creditAccountDTO.getCreditLimit());
+        creditAccount.setCreditLimit(money);
+        creditAccount.setInterestRate(creditAccountDTO.getInterestRate());
+        creditAccount.setInterestRateDate(creditAccountDTO.getInterestRateDate());
+
+        return creditAccount;
     }
 }

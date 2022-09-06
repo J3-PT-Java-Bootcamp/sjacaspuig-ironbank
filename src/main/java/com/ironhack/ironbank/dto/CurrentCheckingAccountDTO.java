@@ -15,19 +15,12 @@ public class CurrentCheckingAccountDTO extends CurrentAccountDTO {
     public static CurrentCheckingAccountDTO fromEntity(CurrentCheckingAccount currentCheckingAccount) {
 
         // From Account DTO model
+        var account = AccountDTO.fromEntity(currentCheckingAccount);
         var currentCheckingAccountDTO = new CurrentCheckingAccountDTO();
-        currentCheckingAccountDTO.setIban(currentCheckingAccount.getIban());
-
-        var balanceDTO = MoneyDTO.fromEntity(currentCheckingAccount.getBalance());
-        currentCheckingAccountDTO.setBalance(balanceDTO);
-
-        var primaryOwnerDTO = AccountHolderDTO.fromEntity(currentCheckingAccount.getPrimaryOwner());
-        currentCheckingAccountDTO.setPrimaryOwner(primaryOwnerDTO);
-
-        if (currentCheckingAccount.getSecondaryOwner() != null) {
-            var secondaryOwnerDTO = AccountHolderDTO.fromEntity(currentCheckingAccount.getSecondaryOwner());
-            currentCheckingAccountDTO.setSecondaryOwner(secondaryOwnerDTO);
-        }
+        currentCheckingAccountDTO.setIban(account.getIban());
+        currentCheckingAccountDTO.setBalance(account.getBalance());
+        currentCheckingAccountDTO.setPrimaryOwner(account.getPrimaryOwner());
+        currentCheckingAccountDTO.setSecondaryOwner(account.getSecondaryOwner());
 
         // From Current Account DTO model
         currentCheckingAccountDTO.setSecretKey(currentCheckingAccount.getSecretKey());

@@ -15,19 +15,12 @@ public class CurrentStudentCheckingAccountDTO extends CurrentAccountDTO {
     public static CurrentStudentCheckingAccountDTO fromEntity(CurrentStudentCheckingAccount currentStudentCheckingAccount) {
 
         // From Account DTO model
+        var account = AccountDTO.fromEntity(currentStudentCheckingAccount);
         var currentStudentCheckingAccountDTO = new CurrentStudentCheckingAccountDTO();
-        currentStudentCheckingAccountDTO.setIban(currentStudentCheckingAccount.getIban());
-
-        var balanceDTO = MoneyDTO.fromEntity(currentStudentCheckingAccount.getBalance());
-        currentStudentCheckingAccountDTO.setBalance(balanceDTO);
-
-        var primaryOwnerDTO = AccountHolderDTO.fromEntity(currentStudentCheckingAccount.getPrimaryOwner());
-        currentStudentCheckingAccountDTO.setPrimaryOwner(primaryOwnerDTO);
-
-        if (currentStudentCheckingAccount.getSecondaryOwner() != null) {
-            var secondaryOwnerDTO = AccountHolderDTO.fromEntity(currentStudentCheckingAccount.getSecondaryOwner());
-            currentStudentCheckingAccountDTO.setSecondaryOwner(secondaryOwnerDTO);
-        }
+        currentStudentCheckingAccountDTO.setIban(account.getIban());
+        currentStudentCheckingAccountDTO.setBalance(account.getBalance());
+        currentStudentCheckingAccountDTO.setPrimaryOwner(account.getPrimaryOwner());
+        currentStudentCheckingAccountDTO.setSecondaryOwner(account.getSecondaryOwner());
 
         // From Current Account DTO model
         currentStudentCheckingAccountDTO.setSecretKey(currentStudentCheckingAccount.getSecretKey());

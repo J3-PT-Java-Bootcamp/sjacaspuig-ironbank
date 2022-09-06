@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.model.account;
 
+import com.ironhack.ironbank.dto.CurrentSavingsAccountDTO;
 import com.ironhack.ironbank.interfaces.InterestRate;
 import com.ironhack.ironbank.interfaces.PenaltyFee;
 import com.ironhack.ironbank.model.Money;
@@ -81,5 +82,29 @@ public class CurrentSavingsAccount extends CurrentAccount implements PenaltyFee,
             setBalance(new Money(newAmount));
         }
         setInterestRateDate();
+    }
+
+    public static CurrentSavingsAccount fromDTO(CurrentSavingsAccountDTO currentSavingsAccountDTO) {
+
+        // From Account model
+        var account = Account.fromDTO(currentSavingsAccountDTO);
+        var currentSavingsAccount = new CurrentSavingsAccount();
+        currentSavingsAccount.setIban(account.getIban());
+        currentSavingsAccount.setBalance(account.getBalance());
+        currentSavingsAccount.setPrimaryOwner(account.getPrimaryOwner());
+        currentSavingsAccount.setSecondaryOwner(account.getSecondaryOwner());
+
+        // From Current Account model
+        currentSavingsAccount.setSecretKey(currentSavingsAccountDTO.getSecretKey());
+        currentSavingsAccount.setCreationDate(currentSavingsAccountDTO.getCreationDate());
+        currentSavingsAccount.setStatus(currentSavingsAccountDTO.getStatus());
+
+        // From Current Savings Account model
+        var minimumBalance = Money.fromDTO(currentSavingsAccountDTO.getMinimumBalance());
+        currentSavingsAccount.setMinimumBalance(minimumBalance);
+        currentSavingsAccount.setInterestRate(currentSavingsAccountDTO.getInterestRate());
+        currentSavingsAccount.setInterestRateDate(currentSavingsAccountDTO.getInterestRateDate());
+
+        return currentSavingsAccount;
     }
 }

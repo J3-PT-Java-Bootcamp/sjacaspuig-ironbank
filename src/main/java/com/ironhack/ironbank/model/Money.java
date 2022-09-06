@@ -1,8 +1,11 @@
 package com.ironhack.ironbank.model;
 
+import com.ironhack.ironbank.dto.MoneyDTO;
+
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotNull;
 import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.util.Currency;
@@ -14,7 +17,10 @@ public class Money {
     private static final Currency EUR = Currency.getInstance("EUR");
     private static final RoundingMode DEFAULT_ROUNDING = RoundingMode.HALF_EVEN;
 
+    @NotNull
     private final Currency currency;
+
+    @NotNull
     private BigDecimal amount;
 
     /**
@@ -77,6 +83,10 @@ public class Money {
 
     public String toString() {
         return getCurrency().getSymbol() + " " + getAmount();
+    }
+
+    public static Money fromDTO(MoneyDTO moneyDTO) {
+        return new Money(moneyDTO.getAmount(), moneyDTO.getCurrency());
     }
 }
 

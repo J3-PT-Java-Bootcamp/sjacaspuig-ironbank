@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ironhack.ironbank.dto.AccountHolderDTO;
 import com.ironhack.ironbank.model.Address;
 import com.ironhack.ironbank.model.account.Account;
 import lombok.Getter;
@@ -57,4 +58,18 @@ public class AccountHolder extends User {
     )
     @JsonIgnore
     private Set<Account> secondaryAccounts;
+
+    public static AccountHolder fromDTO(AccountHolderDTO accountHolderDTO) {
+        var accountHolder = new AccountHolder();
+        accountHolder.setId(accountHolderDTO.getId());
+        accountHolder.setName(accountHolderDTO.getName());
+        accountHolder.setBirthDate(accountHolderDTO.getBirthDate());
+
+        var primaryAddress = Address.fromDTO(accountHolderDTO.getPrimaryAddress());
+        accountHolder.setPrimaryAddress(primaryAddress);
+
+        var secondaryAddress = Address.fromDTO(accountHolderDTO.getSecondaryAddress());
+        accountHolder.setSecondaryAddress(secondaryAddress);
+        return accountHolder;
+    }
 }

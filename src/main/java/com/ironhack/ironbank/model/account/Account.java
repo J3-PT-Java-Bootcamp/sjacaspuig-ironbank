@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.model.account;
 
+import com.ironhack.ironbank.dto.AccountDTO;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.user.AccountHolder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Table(name = "accounts")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Account {
+public class Account {
 
     @Embedded
     protected static final Money PENALTY_FEE = new Money(new BigDecimal("40"));
@@ -37,4 +38,19 @@ public abstract class Account {
     @JoinColumn(name = "secondary_owner_id")
     protected AccountHolder secondaryOwner;
 
+    public static Account fromDTO(AccountDTO accountDTO) {
+        var account = new Account();
+        account.setIban(accountDTO.getIban());
+
+        var money = Money.fromDTO(accountDTO.getBalance());
+        account.setBalance(money);
+
+        var primaryOwner = AccountHolder.fromDTO(accountDTO.getPrimaryOwner());
+        account.setPrimaryOwner(primaryOwner);
+
+        var secondaryOwner = AccountHolder.fromDTO(accountDTO.getSecondaryOwner());
+        account.setSecondaryOwner(secondaryOwner);
+
+        return account;
+    }
 }
