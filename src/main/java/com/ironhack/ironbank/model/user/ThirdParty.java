@@ -15,6 +15,6 @@ import javax.validation.constraints.NotNull;
 public class ThirdParty extends User {
 
     @NotNull
-    @Column(name = "hash_key")
-    private String hashKey;
+    @Column(name = "hashed_key")
+    private String hashedKey;
 }

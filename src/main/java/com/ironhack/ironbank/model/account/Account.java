@@ -22,7 +22,7 @@ public abstract class Account {
     protected static final Money PENALTY_FEE = new Money(new BigDecimal("40"));
 
     @Id
-    private String id;
+    private String iban;
 
     @NotNull
     @Embedded
