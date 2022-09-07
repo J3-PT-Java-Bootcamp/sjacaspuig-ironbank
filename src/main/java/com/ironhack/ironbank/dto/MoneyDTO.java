@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,5 +25,9 @@ public class MoneyDTO {
         moneyDTO.setCurrency(money.getCurrency());
         moneyDTO.setAmount(money.getAmount());
         return moneyDTO;
+    }
+
+    public static List<MoneyDTO> fromEntities(List<Money> moneys) {
+        return moneys.stream().map(MoneyDTO::fromEntity).toList();
     }
 }

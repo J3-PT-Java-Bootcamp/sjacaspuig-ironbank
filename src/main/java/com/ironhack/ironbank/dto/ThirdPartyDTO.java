@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -20,5 +22,9 @@ public class ThirdPartyDTO extends UserDTO {
             thirdPartyDTO.setName(thirdParty.getName());
             thirdPartyDTO.setHashedKey(thirdParty.getHashedKey());
             return thirdPartyDTO;
+        }
+
+        public static List<ThirdPartyDTO> fromEntities(List<ThirdParty> thirdParties) {
+            return thirdParties.stream().map(ThirdPartyDTO::fromEntity).toList();
         }
 }

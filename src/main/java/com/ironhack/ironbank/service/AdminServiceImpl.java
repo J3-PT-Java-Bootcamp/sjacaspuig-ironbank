@@ -27,12 +27,14 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminDTO findById(Long id) {
-        return null;
+        var admin = adminRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+        return AdminDTO.fromEntity(admin);
     }
 
     @Override
     public List<AdminDTO> findAll() {
-        return null;
+        var admins = adminRepository.findAll();
+        return AdminDTO.fromEntities(admins);
     }
 
     @Override

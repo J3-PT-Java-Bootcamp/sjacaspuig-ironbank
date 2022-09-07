@@ -14,18 +14,15 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
 
     @Override
-    public AccountDTO create(AccountDTO accountDTO) {
-        return null;
-    }
-
-    @Override
     public AccountDTO findByIban(String iban) {
-        return null;
+        var account = accountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        return AccountDTO.fromEntity(account);
     }
 
     @Override
     public List<AccountDTO> findAll() {
-        return null;
+        var accounts = accountRepository.findAll();
+        return AccountDTO.fromEntities(accounts);
     }
 
     @Override

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -30,5 +32,9 @@ public class AddressDTO {
         addressDTO.setCountry(address.getCountry());
         addressDTO.setProvince(address.getProvince());
         return addressDTO;
+    }
+
+    public static List<AddressDTO> fromEntities(List<Address> addresses) {
+        return addresses.stream().map(AddressDTO::fromEntity).toList();
     }
 }

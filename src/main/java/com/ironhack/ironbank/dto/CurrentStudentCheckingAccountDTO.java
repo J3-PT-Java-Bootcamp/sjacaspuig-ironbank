@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -28,5 +30,9 @@ public class CurrentStudentCheckingAccountDTO extends CurrentAccountDTO {
         currentStudentCheckingAccountDTO.setStatus(currentStudentCheckingAccount.getStatus());
 
         return currentStudentCheckingAccountDTO;
+    }
+
+    public static List<CurrentStudentCheckingAccountDTO> fromList(List<CurrentStudentCheckingAccount> currentStudentCheckingAccounts) {
+        return currentStudentCheckingAccounts.stream().map(CurrentStudentCheckingAccountDTO::fromEntity).toList();
     }
 }

@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -50,5 +51,9 @@ public class CurrentSavingsAccountDTO extends CurrentAccountDTO {
         }
 
         return currentSavingsAccountDTO;
+    }
+
+    public static List<CurrentSavingsAccountDTO> fromList(List<CurrentSavingsAccount> currentSavingsAccounts) {
+        return currentSavingsAccounts.stream().map(CurrentSavingsAccountDTO::fromEntity).toList();
     }
 }

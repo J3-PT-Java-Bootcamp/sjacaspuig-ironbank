@@ -27,12 +27,14 @@ public class AccountHolderServiceImpl implements AccountHolderService {
 
     @Override
     public AccountHolderDTO findById(Long id) {
-        return null;
+        var accountHolder = accountHolderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Account holder not found"));
+        return AccountHolderDTO.fromEntity(accountHolder);
     }
 
     @Override
     public List<AccountHolderDTO> findAll() {
-        return null;
+        var accountHolders = accountHolderRepository.findAll();
+        return AccountHolderDTO.fromEntities(accountHolders);
     }
 
     @Override

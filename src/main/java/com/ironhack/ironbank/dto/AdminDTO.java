@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -15,5 +17,9 @@ public class AdminDTO extends UserDTO {
         adminDTO.setId(admin.getId());
         adminDTO.setName(admin.getName());
         return adminDTO;
+    }
+
+    public static List<AdminDTO> fromEntities(List<Admin> admins) {
+        return admins.stream().map(AdminDTO::fromEntity).toList();
     }
 }

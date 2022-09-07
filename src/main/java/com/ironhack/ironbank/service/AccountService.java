@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface AccountService {
 
-    AccountDTO create(@Valid AccountDTO accountDTO);
     AccountDTO findByIban(@Valid String iban);
     List<AccountDTO> findAll();
     AccountDTO update(@Valid String iban, @Valid AccountDTO accountDTO);

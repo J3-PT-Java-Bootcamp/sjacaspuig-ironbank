@@ -30,12 +30,14 @@ public class CurrentStudentCheckingAccountServiceImpl implements CurrentStudentC
 
     @Override
     public CurrentStudentCheckingAccountDTO findByIban(String iban) {
-        return null;
+        var currentStudentCheckingAccount = currentStudentCheckingAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Student checking account not found"));
+        return CurrentStudentCheckingAccountDTO.fromEntity(currentStudentCheckingAccount);
     }
 
     @Override
     public List<CurrentStudentCheckingAccountDTO> findAll() {
-        return null;
+        var currentStudentCheckingAccounts = currentStudentCheckingAccountRepository.findAll();
+        return CurrentStudentCheckingAccountDTO.fromList(currentStudentCheckingAccounts);
     }
 
     @Override

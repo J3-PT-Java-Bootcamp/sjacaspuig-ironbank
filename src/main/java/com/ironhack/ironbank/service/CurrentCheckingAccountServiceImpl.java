@@ -31,12 +31,14 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
 
     @Override
     public CurrentCheckingAccountDTO findByIban(String iban) {
-        return null;
+        var currentCheckingAccount = currentCheckingAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Checking account not found"));
+        return CurrentCheckingAccountDTO.fromEntity(currentCheckingAccount);
     }
 
     @Override
     public List<CurrentCheckingAccountDTO> findAll() {
-        return null;
+        var currentCheckingAccounts = currentCheckingAccountRepository.findAll();
+        return CurrentCheckingAccountDTO.fromList(currentCheckingAccounts);
     }
 
     @Override

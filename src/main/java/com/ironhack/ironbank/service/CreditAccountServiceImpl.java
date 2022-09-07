@@ -30,12 +30,14 @@ public class CreditAccountServiceImpl implements CreditAccountService {
 
     @Override
     public CreditAccountDTO findByIban(String iban) {
-        return null;
+        var creditAccount = creditAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Credit account not found"));
+        return CreditAccountDTO.fromEntity(creditAccount);
     }
 
     @Override
     public List<CreditAccountDTO> findAll() {
-        return null;
+        var creditAccounts = creditAccountRepository.findAll();
+        return CreditAccountDTO.fromList(creditAccounts);
     }
 
     @Override

@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,5 +39,9 @@ public class CreditAccountDTO extends AccountDTO {
         creditAccountDTO.setInterestRateDate(interestRateDateDTO);
 
         return creditAccountDTO;
+    }
+
+    public static List<CreditAccountDTO> fromList(List<CreditAccount> creditAccounts) {
+        return creditAccounts.stream().map(CreditAccountDTO::fromEntity).toList();
     }
 }

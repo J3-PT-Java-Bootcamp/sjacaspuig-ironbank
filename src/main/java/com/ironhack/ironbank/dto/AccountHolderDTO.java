@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -31,5 +33,9 @@ public class AccountHolderDTO extends UserDTO {
         }
 
         return accountHolderDTO;
+    }
+
+    public static List<AccountHolderDTO> fromEntities(List<AccountHolder> accountHolders) {
+        return accountHolders.stream().map(AccountHolderDTO::fromEntity).toList();
     }
 }

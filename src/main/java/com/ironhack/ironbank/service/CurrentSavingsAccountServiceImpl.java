@@ -30,12 +30,14 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
 
     @Override
     public CurrentSavingsAccountDTO findByIban(String iban) {
-        return null;
+        var currentSavingsAccount = currentSavingsAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Savings account not found"));
+        return CurrentSavingsAccountDTO.fromEntity(currentSavingsAccount);
     }
 
     @Override
     public List<CurrentSavingsAccountDTO> findAll() {
-        return null;
+        var currentSavingsAccounts = currentSavingsAccountRepository.findAll();
+        return CurrentSavingsAccountDTO.fromList(currentSavingsAccounts);
     }
 
     @Override

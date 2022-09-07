@@ -27,11 +27,6 @@ public class AccountController {
         return ResponseEntity.ok(accountService.findByIban(iban));
     }
 
-    @PostMapping
-    public ResponseEntity<AccountDTO> create(@RequestBody @Valid AccountDTO accountDTO) {
-        return ResponseEntity.ok(accountService.create(accountDTO));
-    }
-
     @PutMapping("/{iban}")
     public ResponseEntity<AccountDTO> update(@PathVariable @Valid String iban, @RequestBody @Valid AccountDTO accountDTO) {
         return ResponseEntity.ok(accountService.update(iban, accountDTO));

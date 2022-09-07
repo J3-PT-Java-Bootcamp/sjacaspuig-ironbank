@@ -16,7 +16,10 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     @Override
     public ThirdPartyDTO create(ThirdPartyDTO thirdPartyDTO) {
-        // TODO: Implement this method
+        if (thirdPartyDTO.getId() != null && thirdPartyRepository.findById(thirdPartyDTO.getId()).isPresent()) {
+            throw new IllegalArgumentException("Third party already exists");
+        }
+
         var thirdParty = ThirdParty.fromDTO(thirdPartyDTO);
         thirdParty = thirdPartyRepository.save(thirdParty);
         return ThirdPartyDTO.fromEntity(thirdParty);
@@ -24,12 +27,14 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     @Override
     public ThirdPartyDTO findById(Long id) {
-        return null;
+        var thirdParty = thirdPartyRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Third party not found"));
+        return ThirdPartyDTO.fromEntity(thirdParty);
     }
 
     @Override
     public List<ThirdPartyDTO> findAll() {
-        return null;
+        var thirdParties = thirdPartyRepository.findAll();
+        return ThirdPartyDTO.fromEntities(thirdParties);
     }
 
     @Override

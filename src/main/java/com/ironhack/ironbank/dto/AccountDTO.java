@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -33,5 +35,9 @@ public class AccountDTO {
         }
 
         return accountDTO;
+    }
+
+    public static List<AccountDTO> fromEntities(List<Account> accounts) {
+        return accounts.stream().map(AccountDTO::fromEntity).toList();
     }
 }
