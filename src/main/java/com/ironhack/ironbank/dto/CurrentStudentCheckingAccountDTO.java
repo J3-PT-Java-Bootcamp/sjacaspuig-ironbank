@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.dto;
 
 import com.ironhack.ironbank.model.account.CurrentStudentCheckingAccount;
+import com.ironhack.ironbank.utils.DateService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +23,8 @@ public class CurrentStudentCheckingAccountDTO extends CurrentAccountDTO {
 
         // From Current Account DTO model
         currentStudentCheckingAccountDTO.setSecretKey(currentStudentCheckingAccount.getSecretKey());
-        currentStudentCheckingAccountDTO.setCreationDate(currentStudentCheckingAccount.getCreationDate());
+        var creationDateDTO = DateService.parseInstant(currentStudentCheckingAccount.getCreationDate());
+        currentStudentCheckingAccountDTO.setCreationDate(creationDateDTO);
         currentStudentCheckingAccountDTO.setStatus(currentStudentCheckingAccount.getStatus());
 
         return currentStudentCheckingAccountDTO;

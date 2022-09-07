@@ -86,7 +86,11 @@ public class Money {
     }
 
     public static Money fromDTO(MoneyDTO moneyDTO) {
-        return new Money(moneyDTO.getAmount(), moneyDTO.getCurrency());
+        if (moneyDTO.getCurrency() == null) {
+            return new Money(moneyDTO.getAmount());
+        } else {
+            return new Money(moneyDTO.getAmount(), moneyDTO.getCurrency());
+        }
     }
 }
 

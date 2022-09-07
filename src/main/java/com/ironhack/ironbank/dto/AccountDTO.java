@@ -14,8 +14,8 @@ public class AccountDTO {
 
     private String iban;
     private MoneyDTO balance;
-    protected AccountHolderDTO primaryOwner;
-    protected AccountHolderDTO secondaryOwner;
+    protected Long primaryOwner;
+    protected Long secondaryOwner;
 
     public static AccountDTO fromEntity(Account account) {
         var accountDTO = new AccountDTO();
@@ -25,11 +25,11 @@ public class AccountDTO {
         accountDTO.setBalance(balanceDTO);
 
         var primaryOwnerDTO = AccountHolderDTO.fromEntity(account.getPrimaryOwner());
-        accountDTO.setPrimaryOwner(primaryOwnerDTO);
+        accountDTO.setPrimaryOwner(primaryOwnerDTO.getId());
 
         if (account.getSecondaryOwner() != null) {
             var secondaryOwnerDTO = AccountHolderDTO.fromEntity(account.getSecondaryOwner());
-            accountDTO.setSecondaryOwner(secondaryOwnerDTO);
+            accountDTO.setSecondaryOwner(secondaryOwnerDTO.getId());
         }
 
         return accountDTO;

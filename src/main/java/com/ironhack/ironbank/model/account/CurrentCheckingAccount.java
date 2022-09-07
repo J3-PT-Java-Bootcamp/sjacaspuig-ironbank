@@ -4,7 +4,7 @@ import com.ironhack.ironbank.dto.CurrentCheckingAccountDTO;
 import com.ironhack.ironbank.interfaces.PenaltyFee;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.user.AccountHolder;
-import com.ironhack.ironbank.utils.UtilsService;
+import com.ironhack.ironbank.utils.DateService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,7 +28,7 @@ public class CurrentCheckingAccount extends CurrentAccount implements PenaltyFee
     private static final int MIN_AGE = 24;
 
     private boolean isOwnerAllowedToCreate(AccountHolder accountHolder) {
-        return UtilsService.getDiffYears(accountHolder.getBirthDate()) >= MIN_AGE;
+        return DateService.getDiffYears(accountHolder.getBirthDate()) >= MIN_AGE;
     }
 
     @Override
@@ -42,10 +42,10 @@ public class CurrentCheckingAccount extends CurrentAccount implements PenaltyFee
         }
     }
 
-    public static CurrentCheckingAccount fromDTO(CurrentCheckingAccountDTO currentCheckingAccountDTO) {
+    public static CurrentCheckingAccount fromDTO(CurrentCheckingAccountDTO currentCheckingAccountDTO, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
 
         // From Account model
-        var account = Account.fromDTO(currentCheckingAccountDTO);
+        var account = Account.fromDTO(currentCheckingAccountDTO, primaryOwner, secondaryOwner);
         var currentCheckingAccount = new CurrentCheckingAccount();
         currentCheckingAccount.setIban(account.getIban());
         currentCheckingAccount.setBalance(account.getBalance());
@@ -54,7 +54,10 @@ public class CurrentCheckingAccount extends CurrentAccount implements PenaltyFee
 
         // From Current Account model
         currentCheckingAccount.setSecretKey(currentCheckingAccountDTO.getSecretKey());
-        currentCheckingAccount.setCreationDate(currentCheckingAccountDTO.getCreationDate());
+        if (currentCheckingAccountDTO.getCreationDate() != null) {
+            var creationDate = DateService.parseDate(currentCheckingAccountDTO.getCreationDate());
+            currentCheckingAccount.setCreationDate(creationDate);
+        }
         currentCheckingAccount.setStatus(currentCheckingAccountDTO.getStatus());
 
         return currentCheckingAccount;

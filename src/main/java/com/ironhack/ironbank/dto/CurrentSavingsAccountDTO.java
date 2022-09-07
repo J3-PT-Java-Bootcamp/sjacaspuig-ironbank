@@ -1,13 +1,14 @@
 package com.ironhack.ironbank.dto;
 
 import com.ironhack.ironbank.model.account.CurrentSavingsAccount;
+import com.ironhack.ironbank.utils.DateService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class CurrentSavingsAccountDTO extends CurrentAccountDTO {
 
     private MoneyDTO minimumBalance;
     private BigDecimal interestRate;
-    private Instant interestRateDate;
+    private Date interestRateDate;
 
     public static CurrentSavingsAccountDTO fromEntity(CurrentSavingsAccount currentSavingsAccount) {
 
@@ -31,7 +32,10 @@ public class CurrentSavingsAccountDTO extends CurrentAccountDTO {
 
         // From Current Account DTO model
         currentSavingsAccountDTO.setSecretKey(currentSavingsAccount.getSecretKey());
-        currentSavingsAccountDTO.setCreationDate(currentSavingsAccount.getCreationDate());
+        if (currentSavingsAccount.getCreationDate() != null) {
+            var creationDateDTO = DateService.parseInstant(currentSavingsAccount.getCreationDate());
+            currentSavingsAccountDTO.setCreationDate(creationDateDTO);
+        }
         currentSavingsAccountDTO.setStatus(currentSavingsAccount.getStatus());
 
         // From Current Savings Account DTO model
@@ -39,7 +43,11 @@ public class CurrentSavingsAccountDTO extends CurrentAccountDTO {
         currentSavingsAccountDTO.setMinimumBalance(minimumBalanceDTO);
 
         currentSavingsAccountDTO.setInterestRate(currentSavingsAccount.getInterestRate());
-        currentSavingsAccountDTO.setInterestRateDate(currentSavingsAccount.getInterestRateDate());
+
+        if (currentSavingsAccount.getInterestRateDate() != null) {
+            var interestRateDateDTO = DateService.parseInstant(currentSavingsAccount.getInterestRateDate());
+            currentSavingsAccountDTO.setInterestRateDate(interestRateDateDTO);
+        }
 
         return currentSavingsAccountDTO;
     }

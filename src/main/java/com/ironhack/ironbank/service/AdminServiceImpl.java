@@ -16,7 +16,10 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminDTO create(AdminDTO adminDTO) {
-        // TODO: Implement this method
+        if (adminDTO.getId() != null && adminRepository.findById(adminDTO.getId()).isPresent()) {
+            throw new IllegalArgumentException("Admin already exists");
+        }
+
         var admin = Admin.fromDTO(adminDTO);
         admin = adminRepository.save(admin);
         return AdminDTO.fromEntity(admin);

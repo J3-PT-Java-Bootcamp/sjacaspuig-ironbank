@@ -1,13 +1,14 @@
 package com.ironhack.ironbank.dto;
 
 import com.ironhack.ironbank.model.account.CreditAccount;
+import com.ironhack.ironbank.utils.DateService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class CreditAccountDTO extends AccountDTO {
 
     private MoneyDTO creditLimit;
     private BigDecimal interestRate;
-    private Instant interestRateDate;
+    private Date interestRateDate;
 
     public static CreditAccountDTO fromEntity(CreditAccount creditAccount) {
 
@@ -33,7 +34,8 @@ public class CreditAccountDTO extends AccountDTO {
         var moneyDTO = MoneyDTO.fromEntity(creditAccount.getCreditLimit());
         creditAccountDTO.setCreditLimit(moneyDTO);
         creditAccountDTO.setInterestRate(creditAccount.getInterestRate());
-        creditAccountDTO.setInterestRateDate(creditAccount.getInterestRateDate());
+        var interestRateDateDTO = DateService.parseInstant(creditAccount.getInterestRateDate());
+        creditAccountDTO.setInterestRateDate(interestRateDateDTO);
 
         return creditAccountDTO;
     }

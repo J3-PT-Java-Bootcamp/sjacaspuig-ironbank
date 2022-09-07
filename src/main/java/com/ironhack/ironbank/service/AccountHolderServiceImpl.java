@@ -16,7 +16,10 @@ public class AccountHolderServiceImpl implements AccountHolderService {
 
     @Override
     public AccountHolderDTO create(AccountHolderDTO accountHolderDTO) {
-        // TODO: Implement this method
+        if(accountHolderDTO.getId() != null && accountHolderRepository.findById(accountHolderDTO.getId()).isPresent()) {
+            throw new IllegalArgumentException("Account holder already exists");
+        }
+
         var accountHolder = AccountHolder.fromDTO(accountHolderDTO);
         accountHolder = accountHolderRepository.save(accountHolder);
         return AccountHolderDTO.fromEntity(accountHolder);
@@ -40,5 +43,18 @@ public class AccountHolderServiceImpl implements AccountHolderService {
     @Override
     public void delete(Long id) {
 
+    }
+
+    @Override
+    public AccountHolder findOwnerById(Long id) {
+        if (id != null) {
+            if (accountHolderRepository.findById(id).isPresent()) {
+                return accountHolderRepository.findById(id).get();
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 }

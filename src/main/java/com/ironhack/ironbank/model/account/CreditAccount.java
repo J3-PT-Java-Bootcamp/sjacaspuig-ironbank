@@ -3,7 +3,8 @@ package com.ironhack.ironbank.model.account;
 import com.ironhack.ironbank.dto.CreditAccountDTO;
 import com.ironhack.ironbank.interfaces.InterestRate;
 import com.ironhack.ironbank.model.Money;
-import com.ironhack.ironbank.utils.UtilsService;
+import com.ironhack.ironbank.model.user.AccountHolder;
+import com.ironhack.ironbank.utils.DateService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -52,7 +53,7 @@ public class CreditAccount extends Account implements InterestRate {
 
     @Override
     public void applyInterestRate() {
-        var diffInterestRateDate = UtilsService.getDiffMonths(getInterestRateDate());
+        var diffInterestRateDate = DateService.getDiffMonths(getInterestRateDate());
         if (diffInterestRateDate >= 1) addInterestRateToBalance(diffInterestRateDate);
     }
 
@@ -70,10 +71,10 @@ public class CreditAccount extends Account implements InterestRate {
         setInterestRateDate();
     }
 
-    public static CreditAccount fromDTO(CreditAccountDTO creditAccountDTO) {
+    public static CreditAccount fromDTO(CreditAccountDTO creditAccountDTO, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
 
         // From Account model
-        var account = Account.fromDTO(creditAccountDTO);
+        var account = Account.fromDTO(creditAccountDTO, primaryOwner, secondaryOwner);
         var creditAccount = new CreditAccount();
         creditAccount.setIban(account.getIban());
         creditAccount.setBalance(account.getBalance());
@@ -84,7 +85,10 @@ public class CreditAccount extends Account implements InterestRate {
         var money = Money.fromDTO(creditAccountDTO.getCreditLimit());
         creditAccount.setCreditLimit(money);
         creditAccount.setInterestRate(creditAccountDTO.getInterestRate());
-        creditAccount.setInterestRateDate(creditAccountDTO.getInterestRateDate());
+        if(creditAccountDTO.getInterestRateDate() != null) {
+            var interestRateDate = DateService.parseDate(creditAccountDTO.getInterestRateDate());
+            creditAccount.setInterestRateDate(interestRateDate);
+        }
 
         return creditAccount;
     }

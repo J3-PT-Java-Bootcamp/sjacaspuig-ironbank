@@ -4,10 +4,12 @@ import com.ironhack.ironbank.dto.CurrentSavingsAccountDTO;
 import com.ironhack.ironbank.interfaces.InterestRate;
 import com.ironhack.ironbank.interfaces.PenaltyFee;
 import com.ironhack.ironbank.model.Money;
-import com.ironhack.ironbank.utils.UtilsService;
+import com.ironhack.ironbank.model.user.AccountHolder;
+import com.ironhack.ironbank.utils.DateService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
@@ -47,6 +49,7 @@ public class CurrentSavingsAccount extends CurrentAccount implements PenaltyFee,
     @Min(0)
     private BigDecimal interestRate;
 
+    @CreationTimestamp()
     @Column(name = "interest_rate_date")
     private Instant interestRateDate;
 
@@ -63,10 +66,10 @@ public class CurrentSavingsAccount extends CurrentAccount implements PenaltyFee,
 
     @Override
     public void applyInterestRate() {
-        var diffCreationDate = UtilsService.getDiffYears(getCreationDate());
+        var diffCreationDate = DateService.getDiffYears(getCreationDate());
         if (diffCreationDate >= 1) addInterestRateToBalance(diffCreationDate);
         else {
-            var diffInterestRateDate = UtilsService.getDiffYears(getInterestRateDate());
+            var diffInterestRateDate = DateService.getDiffYears(getInterestRateDate());
             if (diffInterestRateDate >= 1) addInterestRateToBalance(diffInterestRateDate);
         }
     }
@@ -84,10 +87,10 @@ public class CurrentSavingsAccount extends CurrentAccount implements PenaltyFee,
         setInterestRateDate();
     }
 
-    public static CurrentSavingsAccount fromDTO(CurrentSavingsAccountDTO currentSavingsAccountDTO) {
+    public static CurrentSavingsAccount fromDTO(CurrentSavingsAccountDTO currentSavingsAccountDTO, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
 
         // From Account model
-        var account = Account.fromDTO(currentSavingsAccountDTO);
+        var account = Account.fromDTO(currentSavingsAccountDTO, primaryOwner, secondaryOwner);
         var currentSavingsAccount = new CurrentSavingsAccount();
         currentSavingsAccount.setIban(account.getIban());
         currentSavingsAccount.setBalance(account.getBalance());
@@ -96,14 +99,20 @@ public class CurrentSavingsAccount extends CurrentAccount implements PenaltyFee,
 
         // From Current Account model
         currentSavingsAccount.setSecretKey(currentSavingsAccountDTO.getSecretKey());
-        currentSavingsAccount.setCreationDate(currentSavingsAccountDTO.getCreationDate());
+        if (currentSavingsAccountDTO.getCreationDate() != null) {
+            var creationDate = DateService.parseDate(currentSavingsAccountDTO.getCreationDate());
+            currentSavingsAccount.setCreationDate(creationDate);
+        }
         currentSavingsAccount.setStatus(currentSavingsAccountDTO.getStatus());
 
         // From Current Savings Account model
         var minimumBalance = Money.fromDTO(currentSavingsAccountDTO.getMinimumBalance());
         currentSavingsAccount.setMinimumBalance(minimumBalance);
         currentSavingsAccount.setInterestRate(currentSavingsAccountDTO.getInterestRate());
-        currentSavingsAccount.setInterestRateDate(currentSavingsAccountDTO.getInterestRateDate());
+        if(currentSavingsAccountDTO.getInterestRateDate() != null) {
+            var interestRateDate = DateService.parseDate(currentSavingsAccountDTO.getInterestRateDate());
+            currentSavingsAccount.setInterestRateDate(interestRateDate);
+        }
 
         return currentSavingsAccount;
     }

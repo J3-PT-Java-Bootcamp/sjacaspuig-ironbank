@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.CurrentStudentCheckingAccountDTO;
+import com.ironhack.ironbank.model.account.CurrentStudentCheckingAccount;
 import com.ironhack.ironbank.repository.CurrentStudentCheckingAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,10 +13,19 @@ import java.util.List;
 public class CurrentStudentCheckingAccountServiceImpl implements CurrentStudentCheckingAccountService {
 
     private final CurrentStudentCheckingAccountRepository currentStudentCheckingAccountRepository;
+    private final AccountHolderService accountHolderService;
 
     @Override
     public CurrentStudentCheckingAccountDTO create(CurrentStudentCheckingAccountDTO currentStudentCheckingAccountDTO) {
-        return null;
+        if(currentStudentCheckingAccountDTO.getIban() != null && currentStudentCheckingAccountRepository.findById(currentStudentCheckingAccountDTO.getIban()).isPresent()) {
+            throw new IllegalArgumentException("Student checking account already exists");
+        }
+
+        var primaryOwner = accountHolderService.findOwnerById(currentStudentCheckingAccountDTO.getPrimaryOwner());
+        var secondaryOwner = accountHolderService.findOwnerById(currentStudentCheckingAccountDTO.getSecondaryOwner());
+        var currentStudentCheckingAccount = CurrentStudentCheckingAccount.fromDTO(currentStudentCheckingAccountDTO, primaryOwner, secondaryOwner);
+        currentStudentCheckingAccount = currentStudentCheckingAccountRepository.save(currentStudentCheckingAccount);
+        return CurrentStudentCheckingAccountDTO.fromEntity(currentStudentCheckingAccount);
     }
 
     @Override

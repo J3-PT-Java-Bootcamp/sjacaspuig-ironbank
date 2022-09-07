@@ -38,18 +38,18 @@ public class Account {
     @JoinColumn(name = "secondary_owner_id")
     protected AccountHolder secondaryOwner;
 
-    public static Account fromDTO(AccountDTO accountDTO) {
+    public static Account fromDTO(AccountDTO accountDTO, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
         var account = new Account();
         account.setIban(accountDTO.getIban());
 
         var money = Money.fromDTO(accountDTO.getBalance());
         account.setBalance(money);
 
-        var primaryOwner = AccountHolder.fromDTO(accountDTO.getPrimaryOwner());
         account.setPrimaryOwner(primaryOwner);
 
-        var secondaryOwner = AccountHolder.fromDTO(accountDTO.getSecondaryOwner());
-        account.setSecondaryOwner(secondaryOwner);
+        if (accountDTO.getSecondaryOwner() != null) {
+            account.setSecondaryOwner(secondaryOwner);
+        }
 
         return account;
     }
