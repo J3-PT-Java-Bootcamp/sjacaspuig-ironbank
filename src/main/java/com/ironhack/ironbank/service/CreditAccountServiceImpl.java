@@ -42,11 +42,15 @@ public class CreditAccountServiceImpl implements CreditAccountService {
 
     @Override
     public CreditAccountDTO update(String iban, CreditAccountDTO creditAccountDTO) {
-        return null;
+        var creditAccount = creditAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Credit account not found"));
+        var creditAccountUpdated = CreditAccount.fromDTO(creditAccountDTO, creditAccount.getPrimaryOwner(), creditAccount.getSecondaryOwner());
+        creditAccountUpdated.setIban(creditAccount.getIban());
+        creditAccountUpdated = creditAccountRepository.save(creditAccountUpdated);
+        return CreditAccountDTO.fromEntity(creditAccountUpdated);
     }
 
     @Override
     public void delete(String iban) {
-
+        creditAccountRepository.deleteById(iban);
     }
 }

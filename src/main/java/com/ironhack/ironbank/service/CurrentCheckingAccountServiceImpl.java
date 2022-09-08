@@ -43,11 +43,15 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
 
     @Override
     public CurrentCheckingAccountDTO update(String iban, CurrentCheckingAccountDTO currentCheckingAccountDTO) {
-        return null;
+        var currentCheckingAccount = currentCheckingAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Checking account not found"));
+        var currentCheckingAccountUpdated = CurrentCheckingAccount.fromDTO(currentCheckingAccountDTO, currentCheckingAccount.getPrimaryOwner(), currentCheckingAccount.getSecondaryOwner());
+        currentCheckingAccountUpdated.setIban(currentCheckingAccount.getIban());
+        currentCheckingAccountUpdated = currentCheckingAccountRepository.save(currentCheckingAccountUpdated);
+        return CurrentCheckingAccountDTO.fromEntity(currentCheckingAccountUpdated);
     }
 
     @Override
     public void delete(String iban) {
-
+        currentCheckingAccountRepository.deleteById(iban);
     }
 }

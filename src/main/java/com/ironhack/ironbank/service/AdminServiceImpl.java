@@ -39,11 +39,15 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminDTO update(Long id, AdminDTO adminDTO) {
-        return null;
+        var admin = adminRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+        var adminUpdated = Admin.fromDTO(adminDTO);
+        adminUpdated.setId(admin.getId());
+        adminUpdated = adminRepository.save(adminUpdated);
+        return AdminDTO.fromEntity(adminUpdated);
     }
 
     @Override
     public void delete(Long id) {
-
+        adminRepository.deleteById(id);
     }
 }

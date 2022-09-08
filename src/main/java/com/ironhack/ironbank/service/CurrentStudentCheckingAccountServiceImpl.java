@@ -42,11 +42,15 @@ public class CurrentStudentCheckingAccountServiceImpl implements CurrentStudentC
 
     @Override
     public CurrentStudentCheckingAccountDTO update(String iban, CurrentStudentCheckingAccountDTO currentStudentCheckingAccountDTO) {
-        return null;
+        var currentStudentCheckingAccount = currentStudentCheckingAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Student checking account not found"));
+        var currentStudentCheckingAccountUpdated = CurrentStudentCheckingAccount.fromDTO(currentStudentCheckingAccountDTO, currentStudentCheckingAccount.getPrimaryOwner(), currentStudentCheckingAccount.getSecondaryOwner());
+        currentStudentCheckingAccountUpdated.setIban(currentStudentCheckingAccount.getIban());
+        currentStudentCheckingAccountUpdated = currentStudentCheckingAccountRepository.save(currentStudentCheckingAccountUpdated);
+        return CurrentStudentCheckingAccountDTO.fromEntity(currentStudentCheckingAccountUpdated);
     }
 
     @Override
     public void delete(String iban) {
-
+        currentStudentCheckingAccountRepository.deleteById(iban);
     }
 }

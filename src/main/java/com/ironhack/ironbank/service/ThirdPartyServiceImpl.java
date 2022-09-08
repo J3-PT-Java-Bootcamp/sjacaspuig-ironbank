@@ -39,11 +39,15 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     @Override
     public ThirdPartyDTO update(Long id, ThirdPartyDTO thirdPartyDTO) {
-        return null;
+        var thirdParty = thirdPartyRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Third party not found"));
+        var thirdPartyUpdated = ThirdParty.fromDTO(thirdPartyDTO);
+        thirdPartyUpdated.setId(thirdParty.getId());
+        thirdPartyUpdated = thirdPartyRepository.save(thirdPartyUpdated);
+        return ThirdPartyDTO.fromEntity(thirdPartyUpdated);
     }
 
     @Override
     public void delete(Long id) {
-
+        thirdPartyRepository.deleteById(id);
     }
 }

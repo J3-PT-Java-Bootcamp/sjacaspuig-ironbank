@@ -42,11 +42,15 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
 
     @Override
     public CurrentSavingsAccountDTO update(String iban, CurrentSavingsAccountDTO currentSavingsAccountDTO) {
-        return null;
+        var currentSavingsAccount = currentSavingsAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Savings account not found"));
+        var currentSavingsAccountUpdated = CurrentSavingsAccount.fromDTO(currentSavingsAccountDTO, currentSavingsAccount.getPrimaryOwner(), currentSavingsAccount.getSecondaryOwner());
+        currentSavingsAccountUpdated.setIban(currentSavingsAccount.getIban());
+        currentSavingsAccountUpdated = currentSavingsAccountRepository.save(currentSavingsAccountUpdated);
+        return CurrentSavingsAccountDTO.fromEntity(currentSavingsAccountUpdated);
     }
 
     @Override
     public void delete(String iban) {
-
+        currentSavingsAccountRepository.deleteById(iban);
     }
 }

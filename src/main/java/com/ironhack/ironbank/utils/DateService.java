@@ -16,7 +16,7 @@ public class DateService {
         int diff = now.get(YEAR) - lateDate.get(YEAR);
         if (
                 now.get(MONTH_OF_YEAR) > lateDate.get(MONTH_OF_YEAR) ||
-                        (now.get(MONTH_OF_YEAR) == lateDate.get(MONTH_OF_YEAR) && now.get(DAY_OF_MONTH) > lateDate.get(DAY_OF_MONTH))
+                (now.get(MONTH_OF_YEAR) == lateDate.get(MONTH_OF_YEAR) && now.get(DAY_OF_MONTH) > lateDate.get(DAY_OF_MONTH))
         ) {
             diff--;
         }
@@ -36,21 +36,4 @@ public class DateService {
     public static Instant parseDate(Date date) {
         return date.toInstant();
     }
-
-    public static Date parseStringToDate(String date) {
-        return Date.from(Instant.parse(date));
-    }
-
-    public static Instant parseStringToInstant(String date) {
-        return Instant.parse(date);
-    }
-
-    public static String parseToString(Date date) {
-        return date.toInstant().toString();
-    }
-
-    public static String parseToString(Instant instant) {
-        return instant.toString();
-    }
-
 }

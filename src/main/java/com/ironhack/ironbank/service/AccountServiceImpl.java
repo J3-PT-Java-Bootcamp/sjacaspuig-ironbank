@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.AccountDTO;
+import com.ironhack.ironbank.model.account.Account;
 import com.ironhack.ironbank.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,15 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDTO update(String iban, AccountDTO accountDTO) {
-        return null;
+        var account = accountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        var accountUpdated = Account.fromDTO(accountDTO, account.getPrimaryOwner(), account.getSecondaryOwner());
+        accountUpdated.setIban(account.getIban());
+        accountUpdated = accountRepository.save(accountUpdated);
+        return AccountDTO.fromEntity(accountUpdated);
     }
 
     @Override
     public void delete(String iban) {
-
+        accountRepository.deleteById(iban);
     }
 }
