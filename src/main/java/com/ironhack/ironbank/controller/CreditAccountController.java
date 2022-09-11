@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/credit-accounts")
 @RequiredArgsConstructor
+@CrossOrigin
 public class CreditAccountController {
 
     private final CreditAccountService creditAccountService;

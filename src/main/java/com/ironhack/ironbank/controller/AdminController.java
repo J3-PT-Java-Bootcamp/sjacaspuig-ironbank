@@ -7,12 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.util.List;
 
-@Controller
+
+@RestController
 @RequestMapping("/admins")
 @RequiredArgsConstructor
+@CrossOrigin
 public class AdminController {
 
     private final AdminService adminService;
@@ -23,22 +26,22 @@ public class AdminController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AdminDTO> findById(@PathVariable @Valid Long id) {
+    public ResponseEntity<AdminDTO> findById(@PathVariable @Valid String id) {
         return ResponseEntity.ok(adminService.findById(id));
     }
 
     @PostMapping
     public ResponseEntity<AdminDTO> create(@RequestBody @Valid AdminDTO adminDTO) {
-        return ResponseEntity.ok(adminService.create(adminDTO));
+        return ResponseEntity.ok(adminService.create(adminDTO, "password"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AdminDTO> update(@PathVariable @Valid Long id, @RequestBody @Valid AdminDTO adminDTO) {
+    public ResponseEntity<AdminDTO> update(@PathVariable @Valid String id, @RequestBody @Valid AdminDTO adminDTO) {
         return ResponseEntity.ok(adminService.update(id, adminDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable @Valid Long id) {
+    public ResponseEntity<Void> delete(@PathVariable @Valid String id) {
         adminService.delete(id);
         return ResponseEntity.noContent().build();
     }

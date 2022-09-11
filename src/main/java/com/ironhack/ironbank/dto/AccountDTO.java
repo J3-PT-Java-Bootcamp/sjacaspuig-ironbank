@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.util.List;
 
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -16,8 +17,8 @@ public class AccountDTO {
 
     private String iban;
     private MoneyDTO balance;
-    protected Long primaryOwner;
-    protected Long secondaryOwner;
+    protected String primaryOwner;
+    protected String secondaryOwner;
 
     public static AccountDTO fromEntity(Account account) {
         var accountDTO = new AccountDTO();

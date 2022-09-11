@@ -2,7 +2,6 @@ package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.CurrentCheckingAccountDTO;
 import com.ironhack.ironbank.model.account.CurrentCheckingAccount;
-import com.ironhack.ironbank.model.user.AccountHolder;
 import com.ironhack.ironbank.repository.CurrentCheckingAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.ironbank.dto.AccountHolderDTO;
 import com.ironhack.ironbank.model.Address;
 import com.ironhack.ironbank.model.account.Account;
+import com.ironhack.ironbank.utils.DateService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,9 +12,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -21,7 +19,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Table(name = "account_holders")
-public class AccountHolder extends User {
+public class AccountHolder extends UserSecurity {
 
     @NotNull
     @Column(name = "date_of_birth")
@@ -65,8 +63,12 @@ public class AccountHolder extends User {
     public static AccountHolder fromDTO(AccountHolderDTO accountHolderDTO) {
         var accountHolder = new AccountHolder();
         accountHolder.setId(accountHolderDTO.getId());
-        accountHolder.setName(accountHolderDTO.getName());
-        accountHolder.setBirthDate(LocalDate.parse("1992-02-08").atStartOfDay(ZoneId.of("Europe/Paris")).toInstant()); // TODO: Change to Date
+        accountHolder.setFirstName(accountHolderDTO.getFirstName());
+        accountHolder.setEmail(accountHolderDTO.getEmail());
+        accountHolder.setLastName(accountHolderDTO.getLastName());
+        accountHolder.setUsername(accountHolderDTO.getUsername());
+        var birthDate = DateService.parseDate(accountHolderDTO.getBirthDate());
+        accountHolder.setBirthDate(birthDate);
 
         var primaryAddress = Address.fromDTO(accountHolderDTO.getPrimaryAddress());
         accountHolder.setPrimaryAddress(primaryAddress);

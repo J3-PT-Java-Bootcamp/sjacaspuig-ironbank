@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -22,7 +24,7 @@ public class ThirdParty extends User {
     public static ThirdParty fromDTO(ThirdPartyDTO thirdPartyDTO) {
         ThirdParty thirdParty = new ThirdParty();
         thirdParty.setId(thirdPartyDTO.getId());
-        thirdParty.setName(thirdPartyDTO.getName());
+        thirdParty.setFirstName(thirdPartyDTO.getFirstName());
         thirdParty.setHashedKey(thirdPartyDTO.getHashedKey());
         return thirdParty;
     }

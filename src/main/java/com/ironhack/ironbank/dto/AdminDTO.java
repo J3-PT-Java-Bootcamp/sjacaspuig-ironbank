@@ -10,12 +10,15 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class AdminDTO extends UserDTO {
+public class AdminDTO extends UserSecurityDTO {
 
     public static AdminDTO fromEntity(Admin admin) {
         var adminDTO = new AdminDTO();
         adminDTO.setId(admin.getId());
-        adminDTO.setName(admin.getName());
+        adminDTO.setFirstName(admin.getFirstName());
+        adminDTO.setLastName(admin.getLastName());
+        adminDTO.setUsername(admin.getUsername());
+        adminDTO.setEmail(admin.getEmail());
         return adminDTO;
     }
 

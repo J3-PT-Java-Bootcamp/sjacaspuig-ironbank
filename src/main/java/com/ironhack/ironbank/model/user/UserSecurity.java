@@ -4,25 +4,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
-
 
 @Getter
 @Setter
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class User {
-
-    @Id
-    private String id;
+public class UserSecurity extends User {
 
     @NotNull
-    @Column(name = "first_name")
-    private String firstName;
+    private String username;
 
-    @Column(name = "last_name")
-    private String lastName;
+    @NotNull
+    private String email;
 }

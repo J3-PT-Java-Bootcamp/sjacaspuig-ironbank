@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
 public class ThirdPartyServiceImpl implements ThirdPartyService {
@@ -26,7 +27,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     }
 
     @Override
-    public ThirdPartyDTO findById(Long id) {
+    public ThirdPartyDTO findById(String id) {
         var thirdParty = thirdPartyRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Third party not found"));
         return ThirdPartyDTO.fromEntity(thirdParty);
     }
@@ -38,7 +39,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     }
 
     @Override
-    public ThirdPartyDTO update(Long id, ThirdPartyDTO thirdPartyDTO) {
+    public ThirdPartyDTO update(String id, ThirdPartyDTO thirdPartyDTO) {
         var thirdParty = thirdPartyRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Third party not found"));
         var thirdPartyUpdated = ThirdParty.fromDTO(thirdPartyDTO);
         thirdPartyUpdated.setId(thirdParty.getId());
@@ -47,7 +48,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(String id) {
         thirdPartyRepository.deleteById(id);
     }
 }

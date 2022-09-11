@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@Controller
+
+@RestController
 @RequestMapping("/third-parties")
 @RequiredArgsConstructor
+@CrossOrigin
 public class ThirdPartyController {
 
     private final ThirdPartyService thirdPartyService;
@@ -23,7 +25,7 @@ public class ThirdPartyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ThirdPartyDTO> findById(@PathVariable @Valid Long id) {
+    public ResponseEntity<ThirdPartyDTO> findById(@PathVariable @Valid String id) {
         return ResponseEntity.ok(thirdPartyService.findById(id));
     }
 
@@ -33,12 +35,12 @@ public class ThirdPartyController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ThirdPartyDTO> update(@PathVariable @Valid Long id, @RequestBody @Valid ThirdPartyDTO thirdPartyDTO) {
+    public ResponseEntity<ThirdPartyDTO> update(@PathVariable @Valid String id, @RequestBody @Valid ThirdPartyDTO thirdPartyDTO) {
         return ResponseEntity.ok(thirdPartyService.update(id, thirdPartyDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable @Valid Long id) {
+    public ResponseEntity<Void> delete(@PathVariable @Valid String id) {
         thirdPartyService.delete(id);
         return ResponseEntity.noContent().build();
     }

@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/student-checking-accounts")
 @RequiredArgsConstructor
+@CrossOrigin
 public class CurrentStudentCheckingAccountController {
 
     private final CurrentStudentCheckingAccountService currentStudentCheckingAccountService;

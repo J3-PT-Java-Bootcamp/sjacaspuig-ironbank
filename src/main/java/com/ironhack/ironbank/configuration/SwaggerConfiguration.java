@@ -1,6 +1,5 @@
 package com.ironhack.ironbank.configuration;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
@@ -16,7 +15,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
-public class SwaggerConfig {
+public class SwaggerConfiguration {
 
     @Bean
     public Docket apiDocket() {
@@ -34,7 +33,7 @@ public class SwaggerConfig {
                 "Ironbank Service API",
                 "Ironbank Service API Description",
                 "1.0",
-                "http://codmind.com/terms",
+                "",
                 new Contact("Sergi Jacas", "https://www.instagram.com/jacas28", "sjacaspuig@gmail.com"),
                 "LICENSE",
                 "LICENSE URL",

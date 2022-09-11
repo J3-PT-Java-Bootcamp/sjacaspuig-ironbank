@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@Controller
+
+@RestController
 @RequestMapping("/account-holders")
 @RequiredArgsConstructor
+@CrossOrigin
 public class AccountHolderController {
 
     private final AccountHolderService accountHolderService;
@@ -23,22 +25,22 @@ public class AccountHolderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AccountHolderDTO> findById(@PathVariable @Valid Long id) {
+    public ResponseEntity<AccountHolderDTO> findById(@PathVariable String id) {
         return ResponseEntity.ok(accountHolderService.findById(id));
     }
 
     @PostMapping
     public ResponseEntity<AccountHolderDTO> create(@RequestBody @Valid AccountHolderDTO accountHoldertDTO) {
-        return ResponseEntity.ok(accountHolderService.create(accountHoldertDTO));
+        return ResponseEntity.ok(accountHolderService.create(accountHoldertDTO, "password"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AccountHolderDTO> update(@PathVariable @Valid Long id, @RequestBody @Valid AccountHolderDTO accountHoldertDTO) {
+    public ResponseEntity<AccountHolderDTO> update(@PathVariable @Valid String id, @RequestBody @Valid AccountHolderDTO accountHoldertDTO) {
         return ResponseEntity.ok(accountHolderService.update(id, accountHoldertDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable @Valid Long id) {
+    public ResponseEntity<Void> delete(@PathVariable @Valid String id) {
         accountHolderService.delete(id);
         return ResponseEntity.noContent().build();
     }

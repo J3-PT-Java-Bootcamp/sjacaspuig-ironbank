@@ -1,28 +1,34 @@
 package com.ironhack.ironbank.dto;
 
 import com.ironhack.ironbank.model.user.AccountHolder;
+import com.ironhack.ironbank.utils.DateService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class AccountHolderDTO extends UserDTO {
+public class AccountHolderDTO extends UserSecurityDTO {
 
-    private String birthDate; // TODO: Change to Date
+    private Date birthDate;
     private AddressDTO primaryAddress;
     private AddressDTO secondaryAddress;
 
     public static AccountHolderDTO fromEntity(AccountHolder accountHolder) {
         var accountHolderDTO = new AccountHolderDTO();
         accountHolderDTO.setId(accountHolder.getId());
-        accountHolderDTO.setName(accountHolder.getName());
-        accountHolderDTO.setBirthDate(accountHolder.getBirthDate().toString());
+        accountHolderDTO.setFirstName(accountHolder.getFirstName());
+        accountHolderDTO.setLastName(accountHolder.getLastName());
+        accountHolderDTO.setUsername(accountHolder.getUsername());
+        accountHolderDTO.setEmail(accountHolder.getEmail());
+        var birthDate = DateService.parseInstant(accountHolder.getBirthDate());
+        accountHolderDTO.setBirthDate(birthDate);
 
         var primaryAddressDTO = AddressDTO.fromEntity(accountHolder.getPrimaryAddress());
         accountHolderDTO.setPrimaryAddress(primaryAddressDTO);

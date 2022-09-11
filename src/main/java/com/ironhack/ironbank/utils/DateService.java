@@ -3,10 +3,10 @@ package com.ironhack.ironbank.utils;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Date;
 
 import static java.time.temporal.ChronoField.*;
-import static java.time.temporal.ChronoField.DAY_OF_MONTH;
 
 @Service
 public class DateService {
@@ -30,10 +30,10 @@ public class DateService {
     }
 
     public static Date parseInstant(Instant instant) {
-        return Date.from(instant);
+        return Date.from(instant.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     public static Instant parseDate(Date date) {
-        return date.toInstant();
+        return date.toInstant().atZone(ZoneId.systemDefault()).toInstant();
     }
 }
