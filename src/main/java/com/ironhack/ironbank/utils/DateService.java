@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 
 import static java.time.temporal.ChronoField.*;
@@ -12,21 +13,25 @@ import static java.time.temporal.ChronoField.*;
 public class DateService {
 
     public static int getDiffYears(Instant lateDate) {
-        Instant now = Instant.now();
-        int diff = now.get(YEAR) - lateDate.get(YEAR);
-        if (
-                now.get(MONTH_OF_YEAR) > lateDate.get(MONTH_OF_YEAR) ||
-                (now.get(MONTH_OF_YEAR) == lateDate.get(MONTH_OF_YEAR) && now.get(DAY_OF_MONTH) > lateDate.get(DAY_OF_MONTH))
-        ) {
-            diff--;
-        }
-        return diff;
+        Date now = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+        Date date = parseInstant(lateDate);
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.setTime(date);
+
+        return calendar.get(Calendar.YEAR) - calendar2.get(Calendar.YEAR);
     }
 
     public static int getDiffMonths(Instant lateDate) {
-        Instant now = Instant.now();
-        int diffYear = now.get(YEAR) - lateDate.get(YEAR);
-        return diffYear * 12 + now.get(MONTH_OF_YEAR) - lateDate.get(MONTH_OF_YEAR);
+        Date now = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+        Date date = parseInstant(lateDate);
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.setTime(date);
+
+        return calendar.get(Calendar.MONTH) - calendar2.get(Calendar.MONTH);
     }
 
     public static Date parseInstant(Instant instant) {

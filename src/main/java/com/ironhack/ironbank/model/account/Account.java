@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.model.account;
 
 import com.ironhack.ironbank.dto.AccountDTO;
+import com.ironhack.ironbank.interfaces.PenaltyFee;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.user.AccountHolder;
 import lombok.Getter;
@@ -9,18 +10,18 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
+
+import static com.ironhack.ironbank.constants.AccountConstants.ACCOUNT_PENALTY_FEE;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @Table(name = "accounts")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Account {
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Account implements PenaltyFee {
 
-    @Embedded
-    protected static final Money PENALTY_FEE = new Money(new BigDecimal("40"));
+    public static final Money PENALTY_FEE = ACCOUNT_PENALTY_FEE;
 
     @Id
     private String iban;
@@ -38,6 +39,9 @@ public class Account {
     @JoinColumn(name = "secondary_owner_id")
     protected AccountHolder secondaryOwner;
 
+    @Column(name = "secret_key")
+    private String secretKey;
+
     public static Account fromDTO(AccountDTO accountDTO, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
         var account = new Account();
         account.setIban(accountDTO.getIban());
@@ -52,5 +56,27 @@ public class Account {
         }
 
         return account;
+    }
+
+    public static Account fromDTO(AccountDTO accountDTO) {
+        var account = new Account();
+        account.setIban(accountDTO.getIban());
+
+        var money = Money.fromDTO(accountDTO.getBalance());
+        account.setBalance(money);
+
+        return account;
+    }
+
+    public void setBalance(Money balance, Money minimumBalance) {
+        // First check if minimum balance is not null
+        if (minimumBalance != null) {
+            // If balance is less than minimum balance, apply penalty fee
+            if (balance.getAmount().compareTo(minimumBalance.getAmount()) < 0) {
+                this.balance = chargePenaltyFee(balance, PENALTY_FEE);
+            } else { // If balance is greater than minimum balance, set balance
+                this.balance = balance;
+            }
+        }
     }
 }

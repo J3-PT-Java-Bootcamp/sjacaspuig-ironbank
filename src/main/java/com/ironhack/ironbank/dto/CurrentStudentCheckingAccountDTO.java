@@ -35,4 +35,16 @@ public class CurrentStudentCheckingAccountDTO extends CurrentAccountDTO {
     public static List<CurrentStudentCheckingAccountDTO> fromList(List<CurrentStudentCheckingAccount> currentStudentCheckingAccounts) {
         return currentStudentCheckingAccounts.stream().map(CurrentStudentCheckingAccountDTO::fromEntity).toList();
     }
+
+    public static CurrentStudentCheckingAccountDTO fromCurrentAccountDTO(CurrentAccountDTO currentAccountDTO) {
+        var studentAccountDTO = new CurrentStudentCheckingAccountDTO();
+        studentAccountDTO.setIban(currentAccountDTO.getIban());
+        studentAccountDTO.setBalance(currentAccountDTO.getBalance());
+        studentAccountDTO.setPrimaryOwner(currentAccountDTO.getPrimaryOwner());
+        studentAccountDTO.setSecondaryOwner(currentAccountDTO.getSecondaryOwner());
+        studentAccountDTO.setSecretKey(currentAccountDTO.getSecretKey());
+        studentAccountDTO.setCreationDate(currentAccountDTO.getCreationDate());
+        studentAccountDTO.setStatus(currentAccountDTO.getStatus());
+        return studentAccountDTO;
+    }
 }

@@ -3,9 +3,11 @@ package com.ironhack.ironbank.service;
 import com.ironhack.ironbank.dto.CurrentCheckingAccountDTO;
 import com.ironhack.ironbank.model.account.CurrentCheckingAccount;
 import com.ironhack.ironbank.repository.CurrentCheckingAccountRepository;
+import com.ironhack.ironbank.utils.IbanGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -14,12 +16,26 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
 
     private final CurrentCheckingAccountRepository currentCheckingAccountRepository;
     private final AccountHolderService accountHolderService;
+    private final AccountService accountService;
 
     @Override
     public CurrentCheckingAccountDTO create(CurrentCheckingAccountDTO currentCheckingAccountDTO) {
         if (currentCheckingAccountDTO.getIban() != null && currentCheckingAccountRepository.findById(currentCheckingAccountDTO.getIban()).isPresent()) {
             throw new IllegalArgumentException("Checking account already exists");
         }
+        if (currentCheckingAccountDTO.getBalance().getAmount().compareTo(new BigDecimal("0")) < 0) {
+            throw new IllegalArgumentException("Balance cannot be negative");
+        }
+        if (currentCheckingAccountDTO.getBalance().getAmount().compareTo(CurrentCheckingAccount.MINIMUM_BALANCE.getAmount()) < 0) {
+            throw new IllegalArgumentException("Balance cannot be less than the minimum balance");
+        }
+
+        // Generate iban, check if it exists on accounts, if it does, generate another one, if not, save it
+        String iban = new IbanGenerator().generateIban();
+        while (accountService.findById(iban).isPresent()) {
+            iban = new IbanGenerator().generateIban();
+        }
+        currentCheckingAccountDTO.setIban(iban);
 
         var primaryOwner = accountHolderService.findOwnerById(currentCheckingAccountDTO.getPrimaryOwner());
         var secondaryOwner = accountHolderService.findOwnerById(currentCheckingAccountDTO.getSecondaryOwner());

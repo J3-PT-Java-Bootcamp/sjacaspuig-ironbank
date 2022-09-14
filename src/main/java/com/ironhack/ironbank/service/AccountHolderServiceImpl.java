@@ -16,7 +16,7 @@ import java.util.List;
 public class AccountHolderServiceImpl implements AccountHolderService {
 
     private final AccountHolderRepository accountHolderRepository;
-    private final SecurityService securityService;
+//    private final SecurityService securityService;
 
 
     @Override
@@ -26,21 +26,21 @@ public class AccountHolderServiceImpl implements AccountHolderService {
         }
 
         var userKeycloakDTO = UserKeycloakDTO.fromDTO(accountHolderDTO, password);
-        var serviceResponse = securityService.createUser(userKeycloakDTO, RealmGroup.USERS);
-        var status = (Integer) serviceResponse[0];
-        UserKeycloakDTO userKeycloakDTOCreated = (UserKeycloakDTO) serviceResponse[1];
+//        var serviceResponse = securityService.createUser(userKeycloakDTO, RealmGroup.USERS);
+//        var status = (Integer) serviceResponse[0];
+//        UserKeycloakDTO userKeycloakDTOCreated = (UserKeycloakDTO) serviceResponse[1];
 
-        if (status == 201) {
+//        if (status == 201) {
             var accountHolder = AccountHolder.fromDTO(accountHolderDTO);
-            accountHolder.setId(userKeycloakDTOCreated.getId());
+//            accountHolder.setId(userKeycloakDTOCreated.getId());
             accountHolder = accountHolderRepository.save(accountHolder);
             return AccountHolderDTO.fromEntity(accountHolder);
-        } else if (status == 409) {
-            var accountHolder = accountHolderRepository.findById(userKeycloakDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Account holder not found"));
-            return AccountHolderDTO.fromEntity(accountHolder);
-        } else {
-            throw new IllegalArgumentException("Error creating user");
-        }
+//        } else if (status == 409) {
+//            var accountHolder = accountHolderRepository.findById(userKeycloakDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Account holder not found"));
+//            return AccountHolderDTO.fromEntity(accountHolder);
+//        } else {
+//            throw new IllegalArgumentException("Error creating user");
+//        }
     }
 
     @Override
@@ -60,7 +60,7 @@ public class AccountHolderServiceImpl implements AccountHolderService {
         var accountHolder = accountHolderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Account holder not found"));
 
         var userKeycloakDTO = UserKeycloakDTO.fromDTO(accountHolderDTO, null);
-        securityService.updateUser(accountHolder.getId(), userKeycloakDTO);
+//        securityService.updateUser(accountHolder.getId(), userKeycloakDTO);
 
         var accountHolderUpdated = AccountHolder.fromDTO(accountHolderDTO);
         accountHolderUpdated.setId(accountHolder.getId());
@@ -70,7 +70,7 @@ public class AccountHolderServiceImpl implements AccountHolderService {
 
     @Override
     public void delete(String id) {
-        securityService.deleteUser(id);
+//        securityService.deleteUser(id);
         accountHolderRepository.deleteById(id);
     }
 
@@ -86,4 +86,6 @@ public class AccountHolderServiceImpl implements AccountHolderService {
             return null;
         }
     }
+
+
 }

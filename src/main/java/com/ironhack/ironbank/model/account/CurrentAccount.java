@@ -15,13 +15,8 @@ import java.time.Instant;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @MappedSuperclass
 public abstract class CurrentAccount extends Account {
-
-    @NotNull
-    @Column(name = "secret_key")
-    private String secretKey;
 
     @CreationTimestamp
     @Column(name = "creation_date", updatable = false)
@@ -30,4 +25,6 @@ public abstract class CurrentAccount extends Account {
     @NotNull
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
+
+    public CurrentAccount() {}
 }

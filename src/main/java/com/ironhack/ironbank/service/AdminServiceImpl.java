@@ -16,7 +16,7 @@ import java.util.List;
 public class AdminServiceImpl implements AdminService {
 
     private final AdminRepository adminRepository;
-    private final SecurityService securityService;
+//    private final SecurityService securityService;
 
     @Override
     public AdminDTO create(AdminDTO adminDTO, String password) {
@@ -25,21 +25,21 @@ public class AdminServiceImpl implements AdminService {
         }
 
         var userKeycloakDTO = UserKeycloakDTO.fromDTO(adminDTO, password);
-        var serviceResponse = securityService.createUser(userKeycloakDTO, RealmGroup.ADMINS);
-        var status = (Integer) serviceResponse[0];
-        UserKeycloakDTO userKeycloakDTOCreated = (UserKeycloakDTO) serviceResponse[1];
+//        var serviceResponse = securityService.createUser(userKeycloakDTO, RealmGroup.ADMINS);
+//        var status = (Integer) serviceResponse[0];
+//        UserKeycloakDTO userKeycloakDTOCreated = (UserKeycloakDTO) serviceResponse[1];
 
-        if (status == 201) {
+//        if (status == 201) {
             var admin = Admin.fromDTO(adminDTO);
-            admin.setId(userKeycloakDTOCreated.getId());
+//            admin.setId(userKeycloakDTOCreated.getId());
             admin = adminRepository.save(admin);
             return AdminDTO.fromEntity(admin);
-        } else if (status == 409) {
-            var admin = adminRepository.findById(userKeycloakDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
-            return AdminDTO.fromEntity(admin);
-        } else {
-            throw new IllegalArgumentException("Status: " + status);
-        }
+//        } else if (status == 409) {
+//            var admin = adminRepository.findById(userKeycloakDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+//            return AdminDTO.fromEntity(admin);
+//        } else {
+//            throw new IllegalArgumentException("Status: " + status);
+//        }
     }
 
     @Override
@@ -59,7 +59,7 @@ public class AdminServiceImpl implements AdminService {
         var admin = adminRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
 
         var userKeycloakDTO = UserKeycloakDTO.fromDTO(adminDTO, null);
-        securityService.updateUser(admin.getId(), userKeycloakDTO);
+//        securityService.updateUser(admin.getId(), userKeycloakDTO);
 
         var adminUpdated = Admin.fromDTO(adminDTO);
         adminUpdated.setId(admin.getId());
@@ -69,7 +69,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void delete(String id) {
-        securityService.deleteUser(id);
+//        securityService.deleteUser(id);
         adminRepository.deleteById(id);
     }
 }

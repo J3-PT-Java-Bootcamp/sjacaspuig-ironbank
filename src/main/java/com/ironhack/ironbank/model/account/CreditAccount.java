@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.model.account;
 
+import com.ironhack.ironbank.constants.AccountConstants;
 import com.ironhack.ironbank.dto.CreditAccountDTO;
 import com.ironhack.ironbank.interfaces.InterestRate;
 import com.ironhack.ironbank.model.Money;
@@ -20,16 +21,13 @@ import java.time.Instant;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @Table(name = "credit_accounts")
 public class CreditAccount extends Account implements InterestRate {
 
-    @Embedded
-    private static final Money DEFAULT_CREDIT_LIMIT = new Money(new BigDecimal("100"));
-    @Embedded
-    private static final Money MAX_CREDIT_LIMIT = new Money(new BigDecimal("100000"));
-    private static final BigDecimal DEFAULT_INTEREST_RATE = new BigDecimal("0.2");
-    private static final BigDecimal MIN_INTEREST_RATE = new BigDecimal("0.1");
+    public static final Money DEFAULT_CREDIT_LIMIT = AccountConstants.CREDIT_ACCOUNT_DEFAULT_CREDIT_LIMIT;
+    public static final Money MAX_CREDIT_LIMIT = AccountConstants.CREDIT_ACCOUNT_MAX_CREDIT_LIMIT;
+    public static final BigDecimal DEFAULT_INTEREST_RATE = AccountConstants.CREDIT_ACCOUNT_DEFAULT_INTEREST_RATE;
+    public static final BigDecimal MIN_INTEREST_RATE = AccountConstants.CREDIT_ACCOUNT_MIN_INTEREST_RATE;
 
     @NotNull
     @Embedded
@@ -51,24 +49,61 @@ public class CreditAccount extends Account implements InterestRate {
     @Column(name = "interest_rate_date")
     private Instant interestRateDate;
 
+    public CreditAccount() {
+        setCreditLimit(DEFAULT_CREDIT_LIMIT);
+        setInterestRate(DEFAULT_INTEREST_RATE);
+    }
+
+    public void setCreditLimit(Money creditLimit) {
+        if (creditLimit.getAmount().compareTo(MAX_CREDIT_LIMIT.getAmount()) > 0) {
+            throw new IllegalArgumentException("Credit limit cannot be greater than " + MAX_CREDIT_LIMIT);
+        }
+        this.creditLimit = creditLimit;
+    }
+
+    public void setBalance(Money balance) {
+        if (balance.getAmount().compareTo(creditLimit.getAmount()) > 0) {
+            throw new IllegalArgumentException("Balance cannot be greater than the maximum credit limit.");
+        } else {
+            super.setBalance(balance, AccountConstants.GLOBAL_MINIMUM_BALANCE);
+        }
+    }
+
+    public void setInterestRate(BigDecimal interestRate) {
+        // Check if interest rate is null and if it is, set it to the default value
+        if (interestRate == null) {
+            this.interestRate = DEFAULT_INTEREST_RATE;
+        } else {
+            // Check if interest rate is less than the minimum allowed
+            if (isInterestRateValid(interestRate, MIN_INTEREST_RATE)) {
+                this.interestRate = interestRate;
+            } else {
+                throw new IllegalArgumentException("Interest rate cannot be less than " + MIN_INTEREST_RATE);
+            }
+        }
+    }
+
     @Override
     public void applyInterestRate() {
         var diffInterestRateDate = DateService.getDiffMonths(getInterestRateDate());
         if (diffInterestRateDate >= 1) addInterestRateToBalance(diffInterestRateDate);
     }
 
-    private void setInterestRateDate() {
-        this.interestRateDate = Instant.now();
-    }
-
     private void addInterestRateToBalance(Integer diffDate) {
+
         for (int i = 0; i < diffDate; i++) {
             var interestRatePerMonth = getInterestRate().divide(new BigDecimal("12"));
             var amountObtained = getBalance().getAmount().multiply(interestRatePerMonth);
             var newAmount = getBalance().increaseAmount(amountObtained);
             setBalance(new Money(newAmount));
         }
-        setInterestRateDate();
+
+        this.interestRateDate = Instant.now();
+    }
+
+    @Override
+    public void setSecretKey(String secretKey) {
+        super.setSecretKey(null);
     }
 
     public static CreditAccount fromDTO(CreditAccountDTO creditAccountDTO, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
@@ -82,8 +117,10 @@ public class CreditAccount extends Account implements InterestRate {
         creditAccount.setSecondaryOwner(account.getSecondaryOwner());
 
         // From Credit Account model
-        var money = Money.fromDTO(creditAccountDTO.getCreditLimit());
-        creditAccount.setCreditLimit(money);
+        if (creditAccountDTO.getCreditLimit() != null) {
+            var money = Money.fromDTO(creditAccountDTO.getCreditLimit());
+            creditAccount.setCreditLimit(money);
+        }
         creditAccount.setInterestRate(creditAccountDTO.getInterestRate());
         if(creditAccountDTO.getInterestRateDate() != null) {
             var interestRateDate = DateService.parseDate(creditAccountDTO.getInterestRateDate());
