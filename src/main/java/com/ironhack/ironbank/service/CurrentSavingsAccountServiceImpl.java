@@ -3,6 +3,7 @@ package com.ironhack.ironbank.service;
 import com.ironhack.ironbank.dto.CurrentSavingsAccountDTO;
 import com.ironhack.ironbank.dto.MoneyDTO;
 import com.ironhack.ironbank.model.account.CurrentSavingsAccount;
+import com.ironhack.ironbank.model.user.AccountHolder;
 import com.ironhack.ironbank.repository.CurrentSavingsAccountRepository;
 import com.ironhack.ironbank.utils.IbanGenerator;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,10 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
         currentSavingsAccountDTO.setIban(iban);
 
         var primaryOwner = accountHolderService.findOwnerById(currentSavingsAccountDTO.getPrimaryOwner());
-        var secondaryOwner = accountHolderService.findOwnerById(currentSavingsAccountDTO.getSecondaryOwner());
+        AccountHolder secondaryOwner = null;
+        if(currentSavingsAccountDTO.getSecondaryOwner() != null) {
+            secondaryOwner = accountHolderService.findOwnerById(currentSavingsAccountDTO.getSecondaryOwner());
+        }
         var currentSavingsAccount = CurrentSavingsAccount.fromDTO(currentSavingsAccountDTO, primaryOwner, secondaryOwner);
         currentSavingsAccount = currentSavingsAccountRepository.save(currentSavingsAccount);
         return CurrentSavingsAccountDTO.fromEntity(currentSavingsAccount);

@@ -5,17 +5,14 @@ import com.ironhack.ironbank.dto.CurrentSavingsAccountDTO;
 import com.ironhack.ironbank.enums.AccountStatus;
 import com.ironhack.ironbank.enums.AccountType;
 import com.ironhack.ironbank.interfaces.InterestRate;
-import com.ironhack.ironbank.interfaces.PenaltyFee;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.user.AccountHolder;
 import com.ironhack.ironbank.utils.DateService;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -46,8 +43,8 @@ public class CurrentSavingsAccount extends CurrentAccount implements InterestRat
 
     @NotNull
     @Column(name = "interest_rate")
-    @DecimalMax(value = "0.5", message = "Interest rate must be less than 0.5")
-    @Min(0)
+    @Max(value = 1, message = "Interest rate cannot be greater than 1")
+    @Min(value = 0, message = "Interest rate cannot be less than 0")
     private BigDecimal interestRate;
 
     @CreationTimestamp()
@@ -65,7 +62,21 @@ public class CurrentSavingsAccount extends CurrentAccount implements InterestRat
         if (minimumBalance.getAmount().compareTo(MIN_MINIMUM_BALANCE.getAmount()) >= 0) {
             this.minimumBalance = minimumBalance;
         } else {
-            throw new IllegalArgumentException("Minimum balance must be greater than " + MIN_MINIMUM_BALANCE);
+            throw new IllegalArgumentException("Minimum balance must be greater than " + MIN_MINIMUM_BALANCE.getAmount());
+        }
+    }
+
+    public void setInterestRate(BigDecimal interestRate) {
+        // Check if interest rate is null and if it is, set it to the default value
+        if (interestRate == null) {
+            this.interestRate = DEFAULT_INTEREST_RATE;
+        } else {
+            // Check if interest rate is less than the minimum allowed
+            if (isInterestRateUnderMax(interestRate, MAX_INTEREST_RATE)) {
+                this.interestRate = interestRate;
+            } else {
+                throw new IllegalArgumentException("Interest rate cannot be greater than " + MAX_INTEREST_RATE);
+            }
         }
     }
 

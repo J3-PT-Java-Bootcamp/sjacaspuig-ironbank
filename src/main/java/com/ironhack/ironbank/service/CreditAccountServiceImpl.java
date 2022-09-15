@@ -2,6 +2,7 @@ package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.CreditAccountDTO;
 import com.ironhack.ironbank.model.account.CreditAccount;
+import com.ironhack.ironbank.model.user.AccountHolder;
 import com.ironhack.ironbank.repository.CreditAccountRepository;
 import com.ironhack.ironbank.utils.IbanGenerator;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,11 @@ public class CreditAccountServiceImpl implements CreditAccountService {
         creditAccountDTO.setIban(iban);
 
         var primaryOwner = accountHolderService.findOwnerById(creditAccountDTO.getPrimaryOwner());
-        var secondaryOwner = accountHolderService.findOwnerById(creditAccountDTO.getSecondaryOwner());
+
+        AccountHolder secondaryOwner = null;
+        if (creditAccountDTO.getSecondaryOwner() != null) {
+            secondaryOwner = accountHolderService.findOwnerById(creditAccountDTO.getSecondaryOwner());
+        }
         var creditAccount = CreditAccount.fromDTO(creditAccountDTO, primaryOwner, secondaryOwner);
         creditAccount = creditAccountRepository.save(creditAccount);
         return CreditAccountDTO.fromEntity(creditAccount);

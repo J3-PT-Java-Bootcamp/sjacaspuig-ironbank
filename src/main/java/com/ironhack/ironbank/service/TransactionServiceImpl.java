@@ -45,8 +45,11 @@ public class TransactionServiceImpl implements TransactionService {
                 var targetAccountDTO = accountService.findByIban(transactionDTO.getTargetAccount());
                 var primaryOwnerDTO = accountHolderService.findById(targetAccountDTO.getPrimaryOwner());
                 var primaryOwner = AccountHolder.fromDTO(primaryOwnerDTO);
-                var secondaryOwnerDTO = accountHolderService.findById(targetAccountDTO.getSecondaryOwner());
-                var secondaryOwner = AccountHolder.fromDTO(secondaryOwnerDTO);
+                AccountHolder secondaryOwner = null;
+                if(targetAccountDTO.getSecondaryOwner() != null) {
+                    var secondaryOwnerDTO = accountHolderService.findById(targetAccountDTO.getSecondaryOwner());
+                    secondaryOwner = AccountHolder.fromDTO(secondaryOwnerDTO);
+                }
                 var targetAccount = Account.fromDTO(targetAccountDTO, primaryOwner, secondaryOwner);
 
                 var transactionUpdated = Transaction.fromDTO(transactionDTO, null, targetAccount);
@@ -65,7 +68,7 @@ public class TransactionServiceImpl implements TransactionService {
 
                 // Check if the account has sufficient funds
                 if (account.getBalance().getAmount().compareTo(transactionDTO.getAmount().getAmount()) < 0) {
-                    throw new RuntimeException("Insufficient funds of the sender account");
+                    throw new RuntimeException("Insufficient funds in the sender's account");
                 } else {
                     var amount = Money.fromDTO(transactionDTO.getAmount());
                     var fee = new Money(new BigDecimal(0));
@@ -81,8 +84,11 @@ public class TransactionServiceImpl implements TransactionService {
                 var sourceAccountDTO = accountService.findByIban(transactionDTO.getSourceAccount());
                 var primaryOwnerDTO = accountHolderService.findById(sourceAccountDTO.getPrimaryOwner());
                 var primaryOwner = AccountHolder.fromDTO(primaryOwnerDTO);
-                var secondaryOwnerDTO = accountHolderService.findById(sourceAccountDTO.getSecondaryOwner());
-                var secondaryOwner = AccountHolder.fromDTO(secondaryOwnerDTO);
+                AccountHolder secondaryOwner = null;
+                if(sourceAccountDTO.getSecondaryOwner() != null) {
+                    var secondaryOwnerDTO = accountHolderService.findById(sourceAccountDTO.getSecondaryOwner());
+                    secondaryOwner = AccountHolder.fromDTO(secondaryOwnerDTO);
+                }
                 var sourceAccount = Account.fromDTO(sourceAccountDTO, primaryOwner, secondaryOwner);
 
                 var transactionUpdated = Transaction.fromDTO(transactionDTO, sourceAccount, null);
@@ -107,7 +113,7 @@ public class TransactionServiceImpl implements TransactionService {
 
                 // Check if the sender account has sufficient funds
                 if (senderAccount.getBalance().getAmount().compareTo(transactionDTO.getAmount().getAmount()) < 0) {
-                    throw new RuntimeException("Insufficient funds of the sender account");
+                    throw new RuntimeException("Insufficient funds in the sender's account");
                 } else {
                     var amount = Money.fromDTO(transactionDTO.getAmount());
                     var fee = new Money(new BigDecimal(0));
@@ -136,6 +142,7 @@ public class TransactionServiceImpl implements TransactionService {
                 return TransactionDTO.fromEntity(transactionUpdated);
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return saveFailedTransaction(transaction, e.getMessage());
         }
     }

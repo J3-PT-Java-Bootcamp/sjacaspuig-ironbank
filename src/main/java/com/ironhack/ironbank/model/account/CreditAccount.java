@@ -8,7 +8,6 @@ import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.user.AccountHolder;
 import com.ironhack.ironbank.utils.DateService;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -42,8 +41,8 @@ public class CreditAccount extends Account implements InterestRate {
 
     @NotNull
     @Column(name = "interest_rate")
-    @Max(1)
-    @Min(0)
+    @Max(value = 1, message = "Interest rate cannot be greater than 1")
+    @Min(value = 0, message = "Interest rate cannot be less than 0")
     private BigDecimal interestRate;
 
     @CreationTimestamp()
@@ -77,7 +76,7 @@ public class CreditAccount extends Account implements InterestRate {
             this.interestRate = DEFAULT_INTEREST_RATE;
         } else {
             // Check if interest rate is less than the minimum allowed
-            if (isInterestRateValid(interestRate, MIN_INTEREST_RATE)) {
+            if (isInterestRateOverMin(interestRate, MIN_INTEREST_RATE)) {
                 this.interestRate = interestRate;
             } else {
                 throw new IllegalArgumentException("Interest rate cannot be less than " + MIN_INTEREST_RATE);

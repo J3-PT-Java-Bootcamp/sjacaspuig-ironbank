@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.configuration;
 
 import com.ironhack.ironbank.dto.*;
+import com.ironhack.ironbank.model.account.Account;
 import com.ironhack.ironbank.model.account.CurrentAccount;
 import com.ironhack.ironbank.repository.*;
 import com.ironhack.ironbank.service.*;
@@ -168,7 +169,7 @@ public class PopulateConfiguration {
                     savingsAccountDTO.setSecretKey(faker.internet().password());
                     var accountHolder = accountHolderService.findAll().get(faker.number().numberBetween(0, accountHolderService.findAll().size() - 1));
                     savingsAccountDTO.setPrimaryOwner(accountHolder.getId());
-                    var result = savingsAccountService.create(savingsAccountDTO);
+                    savingsAccountService.create(savingsAccountDTO);
                     countB++;
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -184,6 +185,7 @@ public class PopulateConfiguration {
             var countC = 0;
             while (countC < 10) {
                 try {
+
                     var creditAccountDTO = new CreditAccountDTO();
 
                     // Add account holder 2 if random number is even
