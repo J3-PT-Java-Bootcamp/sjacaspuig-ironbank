@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -22,12 +23,10 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @ManyToOne()
     @JoinColumn(name = "source_account_id")
     private Account sourceAccount;
 
-    @NotNull
     @ManyToOne()
     @JoinColumn(name = "target_account_id")
     private Account targetAccount;
@@ -61,6 +60,7 @@ public class Transaction {
     private String secretKey;
 
     private String concept;
+    private String failureReason;
 
     public Transaction() {
         setStatus(TransactionStatus.PENDING);
@@ -80,6 +80,9 @@ public class Transaction {
         if (transactionDTO.getFee() != null) {
             var fee = Money.fromDTO(transactionDTO.getFee());
             transaction.setFee(fee);
+        } else {
+            var zeroFee = new Money(new BigDecimal(0));
+            transaction.setFee(zeroFee);
         }
 
         transaction.setHashedKey(transactionDTO.getHashedKey());
@@ -87,6 +90,7 @@ public class Transaction {
         transaction.setSourceAccount(sourceAccount);
         transaction.setTargetAccount(targetAccount);
         transaction.setConcept(transactionDTO.getConcept());
+        transaction.setFailureReason(transactionDTO.getFailureReason());
         return transaction;
     }
 }

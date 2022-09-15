@@ -1,10 +1,8 @@
 package com.ironhack.ironbank.configuration;
 
 import com.ironhack.ironbank.dto.*;
-import com.ironhack.ironbank.repository.CreditAccountRepository;
-import com.ironhack.ironbank.repository.CurrentCheckingAccountRepository;
-import com.ironhack.ironbank.repository.CurrentSavingsAccountRepository;
-import com.ironhack.ironbank.repository.CurrentStudentCheckingAccountRepository;
+import com.ironhack.ironbank.model.account.CurrentAccount;
+import com.ironhack.ironbank.repository.*;
 import com.ironhack.ironbank.service.*;
 import com.ironhack.ironbank.utils.DateService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +30,7 @@ public class PopulateConfiguration {
     private final CreditAccountRepository creditAccountRepository;
     private final TransactionService transactionService;
     private final AccountService accountService;
+    private final TransactionRepository transactionRepository;
     private final Faker faker = new Faker();
 
     @Bean
@@ -41,6 +40,7 @@ public class PopulateConfiguration {
         savingsAccountRepository.deleteAll();
         studentAccountRepository.deleteAll();
         creditAccountRepository.deleteAll();
+        transactionRepository.deleteAll();
 
         if (adminService.findAll().size() == 0) {
             // Populate admin
@@ -98,6 +98,9 @@ public class PopulateConfiguration {
 
         if (checkingAccountService.findAll().size() == 0) {
             // Populate checking accounts
+            System.out.println("*******************************");
+            System.out.println("Populating checking accounts...");
+            System.out.println("*******************************");
             var count = 0;
             while (count < 10) {
                 try {
@@ -133,6 +136,9 @@ public class PopulateConfiguration {
 
         if (savingsAccountService.findAll().size() == 0) {
             // Populate savings accounts
+            System.out.println("*******************************");
+            System.out.println("Populating savings accounts...");
+            System.out.println("*******************************");
             var countB = 0;
             while (countB < 10) {
                 try {
@@ -165,17 +171,16 @@ public class PopulateConfiguration {
                     var result = savingsAccountService.create(savingsAccountDTO);
                     countB++;
                 } catch (Exception e) {
-                    // Balance greater than the maximum allowed or negative
-//                    System.out.println(e.getMessage());
-
-                    if(e.getMessage().contains("Could not commit JPA transaction")) {
-                        System.out.println(e.getSuppressed());
-                    }
+                    System.out.println(e.getMessage());
                 }
             }
         }
 
         if (creditAccountService.findAll().size() == 0) {
+            // Populate credit accounts
+            System.out.println("*******************************");
+            System.out.println("Populating credit accounts...");
+            System.out.println("*******************************");
             var countC = 0;
             while (countC < 10) {
                 try {
@@ -215,13 +220,14 @@ public class PopulateConfiguration {
 
         if (transactionService.findAll().size() == 0) {
             // Populate transactions between account holder 1 and 2
+            System.out.println("*******************************");
+            System.out.println("Populating transactions between account holder 1 and 2...");
+            System.out.println("*******************************");
             var countD = 0;
-            while (countD < 30) {
+            while (countD < 20) {
                 try {
                     var transactionDTO = new TransactionDTO();
-                    var position = faker.number().numberBetween(0, accountService.findAll().size() - 1);
-                    var allAccounts = accountService.findAll();
-                    var account1 = allAccounts.get(position);
+                    var account1 = accountService.findAll().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));
                     var account2 = accountService.findAll().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));
                     transactionDTO.setSourceAccount(account1.getIban());
                     transactionDTO.setTargetAccount(account2.getIban());
@@ -245,6 +251,99 @@ public class PopulateConfiguration {
             }
 
             // Populate transactions between account holder 1 and third party
+            System.out.println("*******************************");
+            System.out.println("Populating transactions between account holder 1 and third party...");
+            System.out.println("*******************************");
+            var countE = 0;
+            while (countE < 20) {
+                try {
+                    var transactionDTO = new TransactionDTO();
+                    var account = accountService.findAllAccounts().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));
+                    transactionDTO.setSourceAccount(account.getIban());
+
+                    if(account instanceof CurrentAccount) {
+                        var studentAccount = (CurrentAccount) account;
+                        transactionDTO.setSecretKey(studentAccount.getSecretKey());
+                    }
+
+                    var thirdParty = thirdPartyService.findAll().get(faker.number().numberBetween(0, thirdPartyService.findAll().size() - 1));
+                    transactionDTO.setHashedKey(thirdParty.getHashedKey());
+
+                    transactionDTO.setName(Faker.instance().name().fullName());
+
+                    var amount = new MoneyDTO();
+                    amount.setAmount(new BigDecimal(faker.number().randomNumber()));
+                    transactionDTO.setAmount(amount);
+
+                    // Add concept if random number is even
+                    if (faker.number().randomNumber(1, false) % 2 == 0) {
+                        transactionDTO.setConcept(faker.lorem().sentence());
+                    }
+
+                    // Add fee if random number is even
+                    if (faker.number().randomNumber(1, false) % 2 == 0) {
+                        var fee = new MoneyDTO();
+                        fee.setAmount(new BigDecimal(faker.number().numberBetween(1, 10)));
+                        transactionDTO.setFee(fee);
+                    }
+
+                    transactionService.create(transactionDTO);
+                    countE++;
+                } catch (Exception e) {
+                    // Balance greater than the maximum allowed or negative
+                    System.out.println(e.getMessage());
+                }
+            }
+
+            // Populate transactions between third party and account holder 1
+            System.out.println("*******************************");
+            System.out.println("Populating transactions between third party and account holder 1...");
+            System.out.println("*******************************");
+            var countF = 0;
+            while (countF < 20) {
+                try {
+                    var transactionDTO = new TransactionDTO();
+                    var account = accountService.findAllAccounts().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));
+                    transactionDTO.setTargetAccount(account.getIban());
+
+                    if (faker.number().randomNumber(1, false) % 2 == 0) {
+                        if(account instanceof CurrentAccount) {
+                            var studentAccount = (CurrentAccount) account;
+                            transactionDTO.setSecretKey(studentAccount.getSecretKey());
+                        }
+                    } else {
+                        transactionDTO.setSecretKey(faker.internet().password());
+                    }
+
+                    var thirdParty = thirdPartyService.findAll().get(faker.number().numberBetween(0, thirdPartyService.findAll().size() - 1));
+                    transactionDTO.setHashedKey(thirdParty.getHashedKey());
+
+                    var primaryOwner = account.getPrimaryOwner();
+                    transactionDTO.setName(primaryOwner.getFirstName() + " " + primaryOwner.getLastName());
+
+                    var amount = new MoneyDTO();
+                    amount.setAmount(new BigDecimal(faker.number().randomNumber()));
+                    transactionDTO.setAmount(amount);
+
+                    // Add concept if random number is even
+                    if (faker.number().randomNumber(1, false) % 2 == 0) {
+                        transactionDTO.setConcept(faker.lorem().sentence());
+                    }
+
+                    // Add fee if random number is even
+                    if (faker.number().randomNumber(1, false) % 2 == 0) {
+                        var fee = new MoneyDTO();
+                        fee.setAmount(new BigDecimal(faker.number().numberBetween(1, 10)));
+                        transactionDTO.setFee(fee);
+                    }
+
+                    transactionService.create(transactionDTO);
+                    countF++;
+                } catch (Exception e) {
+                    // Balance greater than the maximum allowed or negative
+                    System.out.println(e.getMessage());
+                }
+            }
         }
 
     }

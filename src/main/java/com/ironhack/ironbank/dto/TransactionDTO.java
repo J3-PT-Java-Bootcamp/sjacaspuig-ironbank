@@ -32,12 +32,22 @@ public class TransactionDTO {
     private String hashedKey;
     private String secretKey;
     private String concept;
+    private String failureReason;
 
     public static TransactionDTO fromEntity(Transaction transaction) {
         var transactionDTO = new TransactionDTO();
         transactionDTO.setId(transaction.getId());
-        transactionDTO.setSourceAccount(transaction.getSourceAccount().getIban());
-        transactionDTO.setTargetAccount(transaction.getTargetAccount().getIban());
+
+        // Check if sourceAccount is null
+        if (transaction.getSourceAccount() != null) {
+            transactionDTO.setSourceAccount(transaction.getSourceAccount().getIban().toString());
+        }
+
+        // Check if targetAccount is null
+        if (transaction.getTargetAccount() != null) {
+            transactionDTO.setTargetAccount(transaction.getTargetAccount().getIban().toString());
+        }
+
         transactionDTO.setName(transaction.getName());
         var amountDTO = MoneyDTO.fromEntity(transaction.getAmount());
         transactionDTO.setAmount(amountDTO);
@@ -50,6 +60,7 @@ public class TransactionDTO {
         transactionDTO.setHashedKey(transaction.getHashedKey());
         transactionDTO.setSecretKey(transaction.getSecretKey());
         transactionDTO.setConcept(transaction.getConcept());
+        transactionDTO.setFailureReason(transaction.getFailureReason());
         return transactionDTO;
     }
 

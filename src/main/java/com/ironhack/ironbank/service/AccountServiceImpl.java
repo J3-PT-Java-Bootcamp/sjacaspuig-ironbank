@@ -66,12 +66,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account findByIbanAndSecretKey(String iban, String secretKey) {
-
-        var account = accountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Account not found"));
-//        if (!account.getSecretKey().equals(secretKey)) {
-//            throw new IllegalArgumentException("Secret key is not valid");
-//        }
-        return account;
+    public List<Account> findAllAccounts() {
+        return accountRepository.findAll();
     }
 }

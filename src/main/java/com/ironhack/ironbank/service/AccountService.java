@@ -12,7 +12,7 @@ public interface AccountService {
     AccountDTO findByIban(@Valid String iban);
     Optional<Account> findById(@Valid String iban);
     List<AccountDTO> findAll();
+    List<Account> findAllAccounts();
     AccountDTO update(@Valid String iban, @Valid AccountDTO accountDTO);
     void delete(@Valid String iban);
-    Account findByIbanAndSecretKey(@Valid String iban, @Valid String secretKey);
 }
