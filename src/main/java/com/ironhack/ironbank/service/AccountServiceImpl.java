@@ -1,7 +1,8 @@
 package com.ironhack.ironbank.service;
 
-import com.ironhack.ironbank.dto.AccountDTO;
-import com.ironhack.ironbank.model.account.Account;
+import com.ironhack.ironbank.dto.*;
+import com.ironhack.ironbank.model.Money;
+import com.ironhack.ironbank.model.account.*;
 import com.ironhack.ironbank.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,10 @@ import java.util.Optional;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
+    private final CreditAccountRepository creditAccountRepository;
+    private final CurrentCheckingAccountRepository currentCheckingAccountRepository;
+    private final CurrentSavingsAccountRepository currentSavingsAccountRepository;
+    private final CurrentStudentCheckingAccountRepository currentStudentCheckingAccountRepository;
 
     @Override
     public AccountDTO findByIban(String iban) {
@@ -34,10 +39,24 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDTO update(String iban, AccountDTO accountDTO) {
-        var account = accountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Account not found"));
-        var accountUpdated = Account.fromDTO(accountDTO, account.getPrimaryOwner(), account.getSecondaryOwner());
-        accountUpdated.setIban(account.getIban());
-        accountUpdated = accountRepository.save(accountUpdated);
+        var accountUpdated = accountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        accountUpdated.setBalance(Money.fromDTO(accountDTO.getBalance()));
+        
+        // Check account type, cast and update
+        if (accountUpdated instanceof CreditAccount) {
+            var creditAccountUpdated = (CreditAccount) accountUpdated;
+            creditAccountRepository.save(creditAccountUpdated);
+        } else if (accountUpdated instanceof CurrentCheckingAccount) {
+            var currentCheckingAccountUpdated = (CurrentCheckingAccount) accountUpdated;
+            currentCheckingAccountRepository.save(currentCheckingAccountUpdated);
+        } else if (accountUpdated instanceof CurrentSavingsAccount) {
+            var currentSavingsAccountUpdated = (CurrentSavingsAccount) accountUpdated;
+            currentSavingsAccountRepository.save(currentSavingsAccountUpdated);
+        } else if (accountUpdated instanceof CurrentStudentCheckingAccount) {
+            var currentStudentCheckingAccountUpdated = (CurrentStudentCheckingAccount) accountUpdated;
+            currentStudentCheckingAccountRepository.save(currentStudentCheckingAccountUpdated);
+        }
+
         return AccountDTO.fromEntity(accountUpdated);
     }
 
@@ -50,9 +69,9 @@ public class AccountServiceImpl implements AccountService {
     public Account findByIbanAndSecretKey(String iban, String secretKey) {
 
         var account = accountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Account not found"));
-        if (!account.getSecretKey().equals(secretKey)) {
-            throw new IllegalArgumentException("Secret key is not valid");
-        }
+//        if (!account.getSecretKey().equals(secretKey)) {
+//            throw new IllegalArgumentException("Secret key is not valid");
+//        }
         return account;
     }
 }

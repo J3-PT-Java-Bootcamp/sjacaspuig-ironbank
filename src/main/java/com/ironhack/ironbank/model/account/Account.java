@@ -1,8 +1,11 @@
 package com.ironhack.ironbank.model.account;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.ironbank.dto.AccountDTO;
+import com.ironhack.ironbank.enums.AccountType;
 import com.ironhack.ironbank.interfaces.PenaltyFee;
 import com.ironhack.ironbank.model.Money;
+import com.ironhack.ironbank.model.Transaction;
 import com.ironhack.ironbank.model.user.AccountHolder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +14,8 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+import java.util.Set;
+
 import static com.ironhack.ironbank.constants.AccountConstants.ACCOUNT_PENALTY_FEE;
 
 @Entity
@@ -18,17 +23,17 @@ import static com.ironhack.ironbank.constants.AccountConstants.ACCOUNT_PENALTY_F
 @Setter
 @NoArgsConstructor
 @Table(name = "accounts")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Account implements PenaltyFee {
 
-    public static final Money PENALTY_FEE = ACCOUNT_PENALTY_FEE;
+    private static final Money PENALTY_FEE = ACCOUNT_PENALTY_FEE;
 
     @Id
-    private String iban;
+    protected String iban;
 
     @NotNull
     @Embedded
-    private Money balance;
+    protected Money balance;
 
     @NotNull
     @ManyToOne
@@ -39,8 +44,25 @@ public class Account implements PenaltyFee {
     @JoinColumn(name = "secondary_owner_id")
     protected AccountHolder secondaryOwner;
 
-    @Column(name = "secret_key")
-    private String secretKey;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    protected AccountType accountType;
+
+    @OneToMany(
+            mappedBy = "sourceAccount",
+            cascade = CascadeType.ALL,
+            orphanRemoval= true
+    )
+    @JsonIgnore
+    private Set<Transaction> sourceTransactions;
+
+    @OneToMany(
+            mappedBy = "targetAccount",
+            cascade = CascadeType.ALL,
+            orphanRemoval= true
+    )
+    @JsonIgnore
+    private Set<Transaction> targetTransactions;
 
     public static Account fromDTO(AccountDTO accountDTO, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
         var account = new Account();
@@ -55,15 +77,7 @@ public class Account implements PenaltyFee {
             account.setSecondaryOwner(secondaryOwner);
         }
 
-        return account;
-    }
-
-    public static Account fromDTO(AccountDTO accountDTO) {
-        var account = new Account();
-        account.setIban(accountDTO.getIban());
-
-        var money = Money.fromDTO(accountDTO.getBalance());
-        account.setBalance(money);
+        account.setAccountType(accountDTO.getAccountType());
 
         return account;
     }

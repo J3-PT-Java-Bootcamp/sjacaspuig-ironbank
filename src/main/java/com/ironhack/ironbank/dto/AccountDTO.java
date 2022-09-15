@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.dto;
 
+import com.ironhack.ironbank.enums.AccountType;
 import com.ironhack.ironbank.model.account.Account;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class AccountDTO {
     private MoneyDTO balance;
     protected String primaryOwner;
     protected String secondaryOwner;
+    private AccountType accountType;
 
     public static AccountDTO fromEntity(Account account) {
         var accountDTO = new AccountDTO();
@@ -34,6 +36,8 @@ public class AccountDTO {
             var secondaryOwnerDTO = AccountHolderDTO.fromEntity(account.getSecondaryOwner());
             accountDTO.setSecondaryOwner(secondaryOwnerDTO.getId());
         }
+
+        accountDTO.setAccountType(account.getAccountType());
 
         return accountDTO;
     }

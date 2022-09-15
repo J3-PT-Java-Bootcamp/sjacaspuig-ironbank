@@ -44,11 +44,12 @@ public class CurrentSavingsAccountDTO extends CurrentAccountDTO {
         currentSavingsAccountDTO.setMinimumBalance(minimumBalanceDTO);
 
         currentSavingsAccountDTO.setInterestRate(currentSavingsAccount.getInterestRate());
-
+        currentSavingsAccountDTO.setAccountType(currentSavingsAccount.getAccountType());
         if (currentSavingsAccount.getInterestRateDate() != null) {
             var interestRateDateDTO = DateService.parseInstant(currentSavingsAccount.getInterestRateDate());
             currentSavingsAccountDTO.setInterestRateDate(interestRateDateDTO);
         }
+
 
         return currentSavingsAccountDTO;
     }

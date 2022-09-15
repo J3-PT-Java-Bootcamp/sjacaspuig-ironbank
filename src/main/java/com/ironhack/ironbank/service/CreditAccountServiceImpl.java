@@ -17,6 +17,7 @@ public class CreditAccountServiceImpl implements CreditAccountService {
     private final CreditAccountRepository creditAccountRepository;
     private final AccountHolderService accountHolderService;
     private final AccountService accountService;
+    private final IbanGenerator ibanGenerator;
 
     @Override
     public CreditAccountDTO create(CreditAccountDTO creditAccountDTO) {
@@ -28,9 +29,9 @@ public class CreditAccountServiceImpl implements CreditAccountService {
         }
 
         // Generate iban, check if it exists on accounts, if it does, generate another one, if not, save it
-        String iban = new IbanGenerator().generateIban();
+        String iban = ibanGenerator.generateIban();
         while (accountService.findById(iban).isPresent()) {
-            iban = new IbanGenerator().generateIban();
+            iban = ibanGenerator.generateIban();
         }
         creditAccountDTO.setIban(iban);
 

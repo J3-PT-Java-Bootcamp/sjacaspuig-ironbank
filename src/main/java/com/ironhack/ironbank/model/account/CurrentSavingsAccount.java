@@ -3,6 +3,7 @@ package com.ironhack.ironbank.model.account;
 import com.ironhack.ironbank.constants.AccountConstants;
 import com.ironhack.ironbank.dto.CurrentSavingsAccountDTO;
 import com.ironhack.ironbank.enums.AccountStatus;
+import com.ironhack.ironbank.enums.AccountType;
 import com.ironhack.ironbank.interfaces.InterestRate;
 import com.ironhack.ironbank.interfaces.PenaltyFee;
 import com.ironhack.ironbank.model.Money;
@@ -27,10 +28,10 @@ import java.time.Instant;
 @Table(name = "current_savings_accounts")
 public class CurrentSavingsAccount extends CurrentAccount implements InterestRate {
 
-    public static final BigDecimal DEFAULT_INTEREST_RATE = AccountConstants.SAVINGS_ACCOUNT_DEFAULT_INTEREST_RATE;
-    public final BigDecimal MAX_INTEREST_RATE = AccountConstants.SAVINGS_ACCOUNT_MAX_INTEREST_RATE;
+    private static final BigDecimal DEFAULT_INTEREST_RATE = AccountConstants.SAVINGS_ACCOUNT_DEFAULT_INTEREST_RATE;
+    private static final BigDecimal MAX_INTEREST_RATE = AccountConstants.SAVINGS_ACCOUNT_MAX_INTEREST_RATE;
     public static final Money DEFAULT_MINIMUM_BALANCE = AccountConstants.SAVINGS_ACCOUNT_DEFAULT_MINIMUM_BALANCE;
-    public static final Money MIN_MINIMUM_BALANCE = AccountConstants.SAVINGS_ACCOUNT_MIN_MINIMUM_BALANCE;
+    private static final Money MIN_MINIMUM_BALANCE = AccountConstants.SAVINGS_ACCOUNT_MIN_MINIMUM_BALANCE;
 
     @NotNull
     @NotNull
@@ -57,6 +58,7 @@ public class CurrentSavingsAccount extends CurrentAccount implements InterestRat
         super.setStatus(AccountStatus.ACTIVE);
         setMinimumBalance(DEFAULT_MINIMUM_BALANCE);
         setInterestRate(DEFAULT_INTEREST_RATE);
+        setAccountType(AccountType.SAVINGS);
     }
 
     public void setMinimumBalance (Money minimumBalance) {
@@ -69,7 +71,11 @@ public class CurrentSavingsAccount extends CurrentAccount implements InterestRat
 
     @Override
     public void setBalance(@NotNull Money balance) {
-        super.setBalance(balance, minimumBalance);
+        if (getStatus() == AccountStatus.ACTIVE) {
+            super.setBalance(balance);
+        } else {
+            throw new IllegalArgumentException("Account status must be active to set the balance");
+        }
     }
 
     @Override

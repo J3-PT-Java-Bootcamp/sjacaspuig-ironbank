@@ -1,15 +1,18 @@
 package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.*;
+import com.ironhack.ironbank.enums.AccountType;
+import com.ironhack.ironbank.enums.TransactionStatus;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.Transaction;
-import com.ironhack.ironbank.model.account.Account;
+import com.ironhack.ironbank.model.account.*;
 import com.ironhack.ironbank.model.user.AccountHolder;
 import com.ironhack.ironbank.repository.AccountRepository;
 import com.ironhack.ironbank.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -27,10 +30,27 @@ public class TransactionServiceImpl implements TransactionService {
         if (transactionDTO.getHashedKey() != null && transactionDTO.getSourceAccount() == null) { // It's sent by a third party to an account holder
 
             // Check if the secret key from the third party matches the one in the database
-            var account = accountService.findByIbanAndSecretKey(transactionDTO.getSourceAccount(), transactionDTO.getSecretKey());
+            var account = accountService.findById(transactionDTO.getTargetAccount()).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+            // Cast the account
+            switch (account.getAccountType()) {
+                case CHECKING:
+                    account = new CurrentCheckingAccount();
+                    break;
+                case CREDIT:
+                    account = account;
+                    break;
+                case SAVINGS:
+                    account = (CurrentSavingsAccount) account;
+                    break;
+                case STUDENT_CHECKING:
+                    account = (CurrentStudentCheckingAccount) account;
+                    break;
+            }
 
             // If it matches, create the transaction
-            var amountToBeAdded = account.getBalance().increaseAmount(transactionDTO.getAmount());
+            var amount = Money.fromDTO(transactionDTO.getAmount());
+            var amountToBeAdded = account.getBalance().increaseAmount(amount);
             account.setBalance(new Money(amountToBeAdded));
             var accountDTO = AccountDTO.fromEntity(account);
             accountService.update(accountDTO.getIban(), accountDTO);
@@ -43,6 +63,7 @@ public class TransactionServiceImpl implements TransactionService {
             var targetAccount = Account.fromDTO(targetAccountDTO, primaryOwner, secondaryOwner);
 
             var transaction = Transaction.fromDTO(transactionDTO, null, targetAccount);
+            transaction.setStatus(TransactionStatus.COMPLETED);
             transaction = transactionRepository.save(transaction);
 
             return TransactionDTO.fromEntity(transaction);
@@ -56,7 +77,12 @@ public class TransactionServiceImpl implements TransactionService {
             if (account.getBalance().getAmount().compareTo(transactionDTO.getAmount().getAmount()) < 0) {
                 throw new RuntimeException("Insufficient funds");
             } else {
-                var amountToBeSubtracted = account.getBalance().decreaseAmount(transactionDTO.getAmount());
+                var amount = Money.fromDTO(transactionDTO.getAmount());
+                var fee = new Money(new BigDecimal(0));
+                if (transactionDTO.getFee() != null) {
+                    fee = Money.fromDTO(transactionDTO.getFee());
+                }
+                var amountToBeSubtracted = account.getBalance().decreaseAmount(amount.increaseAmount(fee));
                 account.setBalance(new Money(amountToBeSubtracted));
                 var accountDTOUpdated = AccountDTO.fromEntity(account);
                 accountService.update(accountDTOUpdated.getIban(), accountDTOUpdated);
@@ -70,6 +96,7 @@ public class TransactionServiceImpl implements TransactionService {
             var sourceAccount = Account.fromDTO(sourceAccountDTO, primaryOwner, secondaryOwner);
 
             var transaction = Transaction.fromDTO(transactionDTO, sourceAccount, null);
+            transaction.setStatus(TransactionStatus.COMPLETED);
             transaction = transactionRepository.save(transaction);
 
             return TransactionDTO.fromEntity(transaction);
@@ -88,21 +115,29 @@ public class TransactionServiceImpl implements TransactionService {
             if (senderAccount.getBalance().getAmount().compareTo(transactionDTO.getAmount().getAmount()) < 0) {
                 throw new RuntimeException("Insufficient funds");
             } else {
-                var amountToBeSubtracted = senderAccount.getBalance().decreaseAmount(transactionDTO.getAmount());
+                var amount = Money.fromDTO(transactionDTO.getAmount());
+                var fee = new Money(new BigDecimal(0));
+                if (transactionDTO.getFee() != null) {
+                    fee = Money.fromDTO(transactionDTO.getFee());
+                }
+                var amountToBeSubtracted = senderAccount.getBalance().decreaseAmount(amount.increaseAmount(fee));
                 senderAccount.setBalance(new Money(amountToBeSubtracted));
                 var senderAccountDTOUpdated = AccountDTO.fromEntity(senderAccount);
                 accountService.update(senderAccountDTOUpdated.getIban(), senderAccountDTOUpdated);
             }
 
             // Add the amount to the receiver account
-            var amountToBeAdded = receiverAccount.getBalance().increaseAmount(transactionDTO.getAmount());
+            var amount = Money.fromDTO(transactionDTO.getAmount());
+            var amountToBeAdded = receiverAccount.getBalance().increaseAmount(amount);
             receiverAccount.setBalance(new Money(amountToBeAdded));
             var receiverAccountDTOUpdated = AccountDTO.fromEntity(receiverAccount);
             accountService.update(receiverAccountDTOUpdated.getIban(), receiverAccountDTOUpdated);
 
             // Create the transaction
-
             var transaction = Transaction.fromDTO(transactionDTO, senderAccount, receiverAccount);
+            transaction.setStatus(TransactionStatus.COMPLETED);
+            transaction = transactionRepository.save(transaction);
+
             return TransactionDTO.fromEntity(transaction);
         }
     }

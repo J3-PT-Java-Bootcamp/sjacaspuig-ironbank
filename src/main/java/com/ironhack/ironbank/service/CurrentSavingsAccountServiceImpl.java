@@ -18,6 +18,7 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
     private final CurrentSavingsAccountRepository currentSavingsAccountRepository;
     private final AccountHolderService accountHolderService;
     private final AccountService accountService;
+    private final IbanGenerator ibanGenerator;
 
     @Override
     public CurrentSavingsAccountDTO create(CurrentSavingsAccountDTO currentSavingsAccountDTO) {
@@ -34,9 +35,9 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
         }
 
         // Generate iban, check if it exists on accounts, if it does, generate another one, if not, save it
-        String iban = new IbanGenerator().generateIban();
+        String iban = ibanGenerator.generateIban();
         while (accountService.findById(iban).isPresent()) {
-            iban = new IbanGenerator().generateIban();
+            iban = ibanGenerator.generateIban();
         }
         currentSavingsAccountDTO.setIban(iban);
 

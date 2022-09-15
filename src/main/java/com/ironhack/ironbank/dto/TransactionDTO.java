@@ -25,12 +25,13 @@ public class TransactionDTO {
     private String sourceAccount;
     private String targetAccount;
     private String name;
-    private Money amount;
+    private MoneyDTO amount;
     private Instant transactionDate;
     private TransactionStatus status;
-    private Money fee;
+    private MoneyDTO fee;
     private String hashedKey;
     private String secretKey;
+    private String concept;
 
     public static TransactionDTO fromEntity(Transaction transaction) {
         var transactionDTO = new TransactionDTO();
@@ -38,12 +39,17 @@ public class TransactionDTO {
         transactionDTO.setSourceAccount(transaction.getSourceAccount().getIban());
         transactionDTO.setTargetAccount(transaction.getTargetAccount().getIban());
         transactionDTO.setName(transaction.getName());
-        transactionDTO.setAmount(transaction.getAmount());
+        var amountDTO = MoneyDTO.fromEntity(transaction.getAmount());
+        transactionDTO.setAmount(amountDTO);
         transactionDTO.setTransactionDate(transaction.getTransactionDate());
         transactionDTO.setStatus(transaction.getStatus());
-        transactionDTO.setFee(transaction.getFee());
+        if (transaction.getFee() != null) {
+            var feeDTO = MoneyDTO.fromEntity(transaction.getFee());
+            transactionDTO.setFee(feeDTO);
+        }
         transactionDTO.setHashedKey(transaction.getHashedKey());
         transactionDTO.setSecretKey(transaction.getSecretKey());
+        transactionDTO.setConcept(transaction.getConcept());
         return transactionDTO;
     }
 

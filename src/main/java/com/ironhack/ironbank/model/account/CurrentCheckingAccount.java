@@ -3,6 +3,7 @@ package com.ironhack.ironbank.model.account;
 import com.ironhack.ironbank.constants.AccountConstants;
 import com.ironhack.ironbank.dto.CurrentCheckingAccountDTO;
 import com.ironhack.ironbank.enums.AccountStatus;
+import com.ironhack.ironbank.enums.AccountType;
 import com.ironhack.ironbank.interfaces.MonthlyFee;
 import com.ironhack.ironbank.interfaces.PenaltyFee;
 import com.ironhack.ironbank.model.Money;
@@ -28,14 +29,15 @@ import java.time.Instant;
 public class CurrentCheckingAccount extends CurrentAccount implements MonthlyFee {
 
     public static final Money MINIMUM_BALANCE = AccountConstants.CHECKING_ACCOUNT_MINIMUM_BALANCE;
-    public static final Money MONTHLY_MAINTENANCE_FEE = AccountConstants.CHECKING_ACCOUNT_MONTHLY_MAINTENANCE_FEE;
-    public static final int MIN_AGE = AccountConstants.CHECKING_ACCOUNT_MIN_AGE;
+    private static final Money MONTHLY_MAINTENANCE_FEE = AccountConstants.CHECKING_ACCOUNT_MONTHLY_MAINTENANCE_FEE;
+    private static final int MIN_AGE = AccountConstants.CHECKING_ACCOUNT_MIN_AGE;
 
     @CreationTimestamp
     @Column(name = "monthly_maintenance_fee")
     private Instant lastMonthlyFeeDate;
 
     public CurrentCheckingAccount() {
+        setAccountType(AccountType.CHECKING);
         super.setStatus(AccountStatus.ACTIVE);
     }
 
@@ -70,7 +72,12 @@ public class CurrentCheckingAccount extends CurrentAccount implements MonthlyFee
 
     @Override
     public void setBalance(@NotNull Money balance) {
-        super.setBalance(balance, MINIMUM_BALANCE);
+        // Check if the status is active
+        if (getStatus() == AccountStatus.ACTIVE) {
+            super.setBalance(balance);
+        } else {
+            throw new IllegalArgumentException("Cannot set balance on a frozen account");
+        }
     }
 
     public static CurrentCheckingAccount fromDTO(CurrentCheckingAccountDTO currentCheckingAccountDTO, AccountHolder primaryOwner, AccountHolder secondaryOwner) {

@@ -43,7 +43,6 @@ public class AccountHolder extends UserSecurity {
     )
     private Address secondaryAddress;
 
-
     @OneToMany(
             mappedBy = "primaryOwner",
             cascade = CascadeType.ALL,

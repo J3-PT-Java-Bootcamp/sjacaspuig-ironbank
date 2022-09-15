@@ -2,6 +2,7 @@ package com.ironhack.ironbank.model.account;
 
 import com.ironhack.ironbank.constants.AccountConstants;
 import com.ironhack.ironbank.dto.CreditAccountDTO;
+import com.ironhack.ironbank.enums.AccountType;
 import com.ironhack.ironbank.interfaces.InterestRate;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.user.AccountHolder;
@@ -24,10 +25,10 @@ import java.time.Instant;
 @Table(name = "credit_accounts")
 public class CreditAccount extends Account implements InterestRate {
 
-    public static final Money DEFAULT_CREDIT_LIMIT = AccountConstants.CREDIT_ACCOUNT_DEFAULT_CREDIT_LIMIT;
-    public static final Money MAX_CREDIT_LIMIT = AccountConstants.CREDIT_ACCOUNT_MAX_CREDIT_LIMIT;
-    public static final BigDecimal DEFAULT_INTEREST_RATE = AccountConstants.CREDIT_ACCOUNT_DEFAULT_INTEREST_RATE;
-    public static final BigDecimal MIN_INTEREST_RATE = AccountConstants.CREDIT_ACCOUNT_MIN_INTEREST_RATE;
+    private static final Money DEFAULT_CREDIT_LIMIT = AccountConstants.CREDIT_ACCOUNT_DEFAULT_CREDIT_LIMIT;
+    private static final Money MAX_CREDIT_LIMIT = AccountConstants.CREDIT_ACCOUNT_MAX_CREDIT_LIMIT;
+    private static final BigDecimal DEFAULT_INTEREST_RATE = AccountConstants.CREDIT_ACCOUNT_DEFAULT_INTEREST_RATE;
+    private static final BigDecimal MIN_INTEREST_RATE = AccountConstants.CREDIT_ACCOUNT_MIN_INTEREST_RATE;
 
     @NotNull
     @Embedded
@@ -52,6 +53,7 @@ public class CreditAccount extends Account implements InterestRate {
     public CreditAccount() {
         setCreditLimit(DEFAULT_CREDIT_LIMIT);
         setInterestRate(DEFAULT_INTEREST_RATE);
+        setAccountType(AccountType.CREDIT);
     }
 
     public void setCreditLimit(Money creditLimit) {
@@ -99,11 +101,6 @@ public class CreditAccount extends Account implements InterestRate {
         }
 
         this.interestRateDate = Instant.now();
-    }
-
-    @Override
-    public void setSecretKey(String secretKey) {
-        super.setSecretKey(null);
     }
 
     public static CreditAccount fromDTO(CreditAccountDTO creditAccountDTO, AccountHolder primaryOwner, AccountHolder secondaryOwner) {

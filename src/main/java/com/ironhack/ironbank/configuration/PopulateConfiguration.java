@@ -31,7 +31,7 @@ public class PopulateConfiguration {
     private final CurrentStudentCheckingAccountRepository studentAccountRepository;
     private final CreditAccountRepository creditAccountRepository;
     private final TransactionService transactionService;
-    private final DateService dateService;
+    private final AccountService accountService;
     private final Faker faker = new Faker();
 
     @Bean
@@ -166,7 +166,11 @@ public class PopulateConfiguration {
                     countB++;
                 } catch (Exception e) {
                     // Balance greater than the maximum allowed or negative
-                    System.out.println(e.getMessage());
+//                    System.out.println(e.getMessage());
+
+                    if(e.getMessage().contains("Could not commit JPA transaction")) {
+                        System.out.println(e.getSuppressed());
+                    }
                 }
             }
         }
@@ -209,13 +213,39 @@ public class PopulateConfiguration {
             }
         }
 
-//        if (transactionService.findAll().size() == 0) {
-//            // Populate transactions
-//            for (int i = 0; i < 100; i++) {
-//                var transactionDTO = new TransactionDTO();
-//
-//            }
-//        }
+        if (transactionService.findAll().size() == 0) {
+            // Populate transactions between account holder 1 and 2
+            var countD = 0;
+            while (countD < 30) {
+                try {
+                    var transactionDTO = new TransactionDTO();
+                    var position = faker.number().numberBetween(0, accountService.findAll().size() - 1);
+                    var allAccounts = accountService.findAll();
+                    var account1 = allAccounts.get(position);
+                    var account2 = accountService.findAll().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));
+                    transactionDTO.setSourceAccount(account1.getIban());
+                    transactionDTO.setTargetAccount(account2.getIban());
+                    var primaryOwner = accountHolderService.findById(account1.getPrimaryOwner());
+                    transactionDTO.setName(primaryOwner.getFirstName() + " " + primaryOwner.getLastName());
+                    var amount = new MoneyDTO();
+                    amount.setAmount(new BigDecimal(faker.number().randomNumber()));
+                    transactionDTO.setAmount(amount);
+
+                    // Add concept if random number is even
+                    if (faker.number().randomNumber(1, false) % 2 == 0) {
+                        transactionDTO.setConcept(faker.lorem().sentence());
+                    }
+
+                    transactionService.create(transactionDTO);
+                    countD++;
+                } catch (Exception e) {
+                    // Balance greater than the maximum allowed or negative
+                    System.out.println(e.getMessage());
+                }
+            }
+
+            // Populate transactions between account holder 1 and third party
+        }
 
     }
 }

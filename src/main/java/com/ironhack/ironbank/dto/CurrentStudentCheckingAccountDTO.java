@@ -28,6 +28,7 @@ public class CurrentStudentCheckingAccountDTO extends CurrentAccountDTO {
         var creationDateDTO = DateService.parseInstant(currentStudentCheckingAccount.getCreationDate());
         currentStudentCheckingAccountDTO.setCreationDate(creationDateDTO);
         currentStudentCheckingAccountDTO.setStatus(currentStudentCheckingAccount.getStatus());
+        currentStudentCheckingAccountDTO.setAccountType(currentStudentCheckingAccount.getAccountType());
 
         return currentStudentCheckingAccountDTO;
     }

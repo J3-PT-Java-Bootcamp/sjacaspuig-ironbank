@@ -17,6 +17,7 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
     private final CurrentCheckingAccountRepository currentCheckingAccountRepository;
     private final AccountHolderService accountHolderService;
     private final AccountService accountService;
+    private final IbanGenerator ibanGenerator;
 
     @Override
     public CurrentCheckingAccountDTO create(CurrentCheckingAccountDTO currentCheckingAccountDTO) {
@@ -31,9 +32,9 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
         }
 
         // Generate iban, check if it exists on accounts, if it does, generate another one, if not, save it
-        String iban = new IbanGenerator().generateIban();
+        String iban = ibanGenerator.generateIban();
         while (accountService.findById(iban).isPresent()) {
-            iban = new IbanGenerator().generateIban();
+            iban = ibanGenerator.generateIban();
         }
         currentCheckingAccountDTO.setIban(iban);
 

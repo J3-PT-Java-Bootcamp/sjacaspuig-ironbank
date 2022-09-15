@@ -15,7 +15,6 @@ import java.time.Instant;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @Table(name = "transactions")
 public class Transaction {
 
@@ -23,10 +22,12 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @ManyToOne()
     @JoinColumn(name = "source_account_id")
     private Account sourceAccount;
 
+    @NotNull
     @ManyToOne()
     @JoinColumn(name = "target_account_id")
     private Account targetAccount;
@@ -41,6 +42,7 @@ public class Transaction {
     @Column(name = "transaction_date")
     private Instant transactionDate;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
 
@@ -58,17 +60,33 @@ public class Transaction {
     @Column(name = "secret_key")
     private String secretKey;
 
+    private String concept;
+
+    public Transaction() {
+        setStatus(TransactionStatus.PENDING);
+    }
+
     public static Transaction fromDTO(TransactionDTO transactionDTO, Account sourceAccount, Account targetAccount) {
         var transaction = new Transaction();
         transaction.setId(transactionDTO.getId());
         transaction.setName(transactionDTO.getName());
-        transaction.setAmount(transactionDTO.getAmount());
-        transaction.setStatus(transactionDTO.getStatus());
-        transaction.setFee(transactionDTO.getFee());
+        var amount = Money.fromDTO(transactionDTO.getAmount());
+        transaction.setAmount(amount);
+        if (transactionDTO.getStatus() != null) {
+            transaction.setStatus(transactionDTO.getStatus());
+        }
+
+        // check if fee is null
+        if (transactionDTO.getFee() != null) {
+            var fee = Money.fromDTO(transactionDTO.getFee());
+            transaction.setFee(fee);
+        }
+
         transaction.setHashedKey(transactionDTO.getHashedKey());
         transaction.setSecretKey(transactionDTO.getSecretKey());
         transaction.setSourceAccount(sourceAccount);
         transaction.setTargetAccount(targetAccount);
+        transaction.setConcept(transactionDTO.getConcept());
         return transaction;
     }
 }
