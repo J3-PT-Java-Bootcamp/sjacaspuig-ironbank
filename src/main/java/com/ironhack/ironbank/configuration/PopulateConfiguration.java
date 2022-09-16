@@ -1,11 +1,10 @@
 package com.ironhack.ironbank.configuration;
 
 import com.ironhack.ironbank.dto.*;
-import com.ironhack.ironbank.model.account.Account;
+import com.ironhack.ironbank.model.MyDecimal;
 import com.ironhack.ironbank.model.account.CurrentAccount;
 import com.ironhack.ironbank.repository.*;
 import com.ironhack.ironbank.service.*;
-import com.ironhack.ironbank.utils.DateService;
 import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
 import org.springframework.context.annotation.Bean;
@@ -32,11 +31,17 @@ public class PopulateConfiguration {
     private final TransactionService transactionService;
     private final AccountService accountService;
     private final TransactionRepository transactionRepository;
+    private final AdminRepository adminRepository;
+    private final AccountHolderRepository accountHolderRepository;
+    private final ThirdPartyRepository thirdPartyRepository;
     private final Faker faker = new Faker();
 
     @Bean
     public void populate() {
 
+        adminRepository.deleteAll();
+        accountHolderRepository.deleteAll();
+        thirdPartyRepository.deleteAll();
         checkingAccountRepository.deleteAll();
         savingsAccountRepository.deleteAll();
         studentAccountRepository.deleteAll();
@@ -58,7 +63,7 @@ public class PopulateConfiguration {
 
         if (accountHolderService.findAll().size() == 0) {
             // Populate account holders
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 5; i++) {
                 var accountHolderDTO = new AccountHolderDTO();
                 accountHolderDTO.setId(faker.internet().uuid());
                 accountHolderDTO.setFirstName(faker.name().firstName());
@@ -87,7 +92,7 @@ public class PopulateConfiguration {
 
         if (thirdPartyService.findAll().size() == 0) {
             // Populate third parties
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < 5; i++) {
                 var thirdPartyDTO = new ThirdPartyDTO();
                 thirdPartyDTO.setId(faker.internet().uuid());
                 thirdPartyDTO.setFirstName(faker.name().firstName());
@@ -103,7 +108,7 @@ public class PopulateConfiguration {
             System.out.println("Populating checking accounts...");
             System.out.println("*******************************");
             var count = 0;
-            while (count < 10) {
+            while (count < 5) {
                 try {
                     var checkingAccountDTO = new CurrentCheckingAccountDTO();
 
@@ -141,7 +146,7 @@ public class PopulateConfiguration {
             System.out.println("Populating savings accounts...");
             System.out.println("*******************************");
             var countB = 0;
-            while (countB < 10) {
+            while (countB < 5) {
                 try {
                     var savingsAccountDTO = new CurrentSavingsAccountDTO();
 
@@ -160,7 +165,12 @@ public class PopulateConfiguration {
 
                     // Add interestRate if random number is even
                     if (faker.number().randomNumber(1, false) % 2 == 0) {
-                        savingsAccountDTO.setInterestRate(new BigDecimal(faker.number().randomDouble(2, 0, 1)));
+                        // Random double no equal to 0
+                        var interestRate = faker.number().randomDouble(4, 0, 1);
+                        while (interestRate == 0) {
+                            interestRate = faker.number().randomDouble(4, 0, 1);
+                        }
+                        savingsAccountDTO.setInterestRate(new MyDecimal(new BigDecimal(interestRate)));
                     }
 
                     var balance = new MoneyDTO();
@@ -183,7 +193,7 @@ public class PopulateConfiguration {
             System.out.println("Populating credit accounts...");
             System.out.println("*******************************");
             var countC = 0;
-            while (countC < 10) {
+            while (countC < 5) {
                 try {
 
                     var creditAccountDTO = new CreditAccountDTO();
@@ -203,7 +213,12 @@ public class PopulateConfiguration {
 
                     //Add interestRate if random number is even
                     if (faker.number().randomNumber(1, false) % 2 == 0) {
-                        creditAccountDTO.setInterestRate(new BigDecimal(faker.number().randomDouble(2, 0, 1)));
+                        // Random double no equal to 0
+                        var interestRate = faker.number().randomDouble(4, 0, 1);
+                        while (interestRate == 0) {
+                            interestRate = faker.number().randomDouble(4, 0, 1);
+                        }
+                        creditAccountDTO.setInterestRate(new BigDecimal(interestRate));
                     }
 
                     var balance = new MoneyDTO();
@@ -226,7 +241,7 @@ public class PopulateConfiguration {
             System.out.println("Populating transactions between account holder 1 and 2...");
             System.out.println("*******************************");
             var countD = 0;
-            while (countD < 20) {
+            while (countD < 5) {
                 try {
                     var transactionDTO = new TransactionDTO();
                     var account1 = accountService.findAll().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));
@@ -257,7 +272,7 @@ public class PopulateConfiguration {
             System.out.println("Populating transactions between account holder 1 and third party...");
             System.out.println("*******************************");
             var countE = 0;
-            while (countE < 20) {
+            while (countE < 5) {
                 try {
                     var transactionDTO = new TransactionDTO();
                     var account = accountService.findAllAccounts().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));
@@ -302,19 +317,19 @@ public class PopulateConfiguration {
             System.out.println("Populating transactions between third party and account holder 1...");
             System.out.println("*******************************");
             var countF = 0;
-            while (countF < 20) {
+            while (countF < 5) {
                 try {
                     var transactionDTO = new TransactionDTO();
                     var account = accountService.findAllAccounts().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));
                     transactionDTO.setTargetAccount(account.getIban());
 
-                    if (faker.number().randomNumber(1, false) % 2 == 0) {
+                    if (faker.number().randomNumber(1, false) % 3 == 0 && faker.number().randomNumber(1, false) % 3 == 0) {
+                        transactionDTO.setSecretKey(faker.internet().password());
+                    } else {
                         if(account instanceof CurrentAccount) {
                             var studentAccount = (CurrentAccount) account;
                             transactionDTO.setSecretKey(studentAccount.getSecretKey());
                         }
-                    } else {
-                        transactionDTO.setSecretKey(faker.internet().password());
                     }
 
                     var thirdParty = thirdPartyService.findAll().get(faker.number().numberBetween(0, thirdPartyService.findAll().size() - 1));

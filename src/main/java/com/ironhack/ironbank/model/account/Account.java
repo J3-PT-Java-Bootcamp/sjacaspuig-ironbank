@@ -48,21 +48,23 @@ public class Account implements PenaltyFee {
     @Enumerated(EnumType.STRING)
     protected AccountType accountType;
 
+    @Column(name = "secret_key")
+    private String secretKey;
+
     @OneToMany(
             mappedBy = "sourceAccount",
-            cascade = CascadeType.ALL,
-            orphanRemoval= true
+            cascade = CascadeType.ALL
     )
     @JsonIgnore
     private Set<Transaction> sourceTransactions;
 
     @OneToMany(
             mappedBy = "targetAccount",
-            cascade = CascadeType.ALL,
-            orphanRemoval= true
+            cascade = CascadeType.ALL
     )
     @JsonIgnore
     private Set<Transaction> targetTransactions;
+
 
     public static Account fromDTO(AccountDTO accountDTO, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
         var account = new Account();
@@ -78,6 +80,10 @@ public class Account implements PenaltyFee {
         }
 
         account.setAccountType(accountDTO.getAccountType());
+
+        if (accountDTO.getSecretKey() != null) {
+            account.setSecretKey(accountDTO.getSecretKey());
+        }
 
         return account;
     }

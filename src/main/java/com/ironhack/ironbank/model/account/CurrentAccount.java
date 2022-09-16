@@ -26,8 +26,5 @@ public abstract class CurrentAccount extends Account {
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
-    @Column(name = "secret_key")
-    private String secretKey;
-
     public CurrentAccount() {}
 }

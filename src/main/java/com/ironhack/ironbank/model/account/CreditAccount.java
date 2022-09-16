@@ -45,7 +45,6 @@ public class CreditAccount extends Account implements InterestRate {
     @Min(value = 0, message = "Interest rate cannot be less than 0")
     private BigDecimal interestRate;
 
-    @CreationTimestamp()
     @Column(name = "interest_rate_date")
     private Instant interestRateDate;
 
@@ -82,24 +81,6 @@ public class CreditAccount extends Account implements InterestRate {
                 throw new IllegalArgumentException("Interest rate cannot be less than " + MIN_INTEREST_RATE);
             }
         }
-    }
-
-    @Override
-    public void applyInterestRate() {
-        var diffInterestRateDate = DateService.getDiffMonths(getInterestRateDate());
-        if (diffInterestRateDate >= 1) addInterestRateToBalance(diffInterestRateDate);
-    }
-
-    private void addInterestRateToBalance(Integer diffDate) {
-
-        for (int i = 0; i < diffDate; i++) {
-            var interestRatePerMonth = getInterestRate().divide(new BigDecimal("12"));
-            var amountObtained = getBalance().getAmount().multiply(interestRatePerMonth);
-            var newAmount = getBalance().increaseAmount(amountObtained);
-            setBalance(new Money(newAmount));
-        }
-
-        this.interestRateDate = Instant.now();
     }
 
     public static CreditAccount fromDTO(CreditAccountDTO creditAccountDTO, AccountHolder primaryOwner, AccountHolder secondaryOwner) {

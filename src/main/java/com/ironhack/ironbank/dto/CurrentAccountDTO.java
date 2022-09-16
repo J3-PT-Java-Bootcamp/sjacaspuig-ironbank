@@ -10,7 +10,6 @@ import java.util.Date;
 @Setter
 public abstract class CurrentAccountDTO extends AccountDTO {
 
-    private String secretKey;
     private Date creationDate;
     private AccountStatus status;
 }

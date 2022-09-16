@@ -29,6 +29,12 @@ public class TransactionController {
 
     @PostMapping
     public ResponseEntity<TransactionDTO> create(@RequestBody @Valid TransactionDTO transactionDTO) {
-        return ResponseEntity.ok(transactionService.create(transactionDTO));
+        var transactionResponse = transactionService.create(transactionDTO);
+
+        if (transactionResponse.getStatus().equals("SUCCESS")) {
+            return ResponseEntity.ok(transactionDTO);
+        } else {
+            return ResponseEntity.badRequest().body(transactionDTO);
+        }
     }
 }

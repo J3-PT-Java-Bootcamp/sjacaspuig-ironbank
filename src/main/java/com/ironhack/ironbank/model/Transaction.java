@@ -3,10 +3,12 @@ package com.ironhack.ironbank.model;
 import com.ironhack.ironbank.dto.TransactionDTO;
 import com.ironhack.ironbank.enums.TransactionStatus;
 import com.ironhack.ironbank.model.account.Account;
+import com.ironhack.ironbank.model.user.Admin;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedBy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -22,6 +24,11 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+//    @ManyToOne
+//    @JoinColumn(name = "admin_id")
+//    @CreatedBy
+//    private Admin admin;
 
     @ManyToOne()
     @JoinColumn(name = "source_account_id")

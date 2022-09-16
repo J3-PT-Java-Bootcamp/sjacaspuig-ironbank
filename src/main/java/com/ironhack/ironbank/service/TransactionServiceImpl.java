@@ -1,18 +1,17 @@
 package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.*;
-import com.ironhack.ironbank.enums.AccountType;
 import com.ironhack.ironbank.enums.TransactionStatus;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.Transaction;
 import com.ironhack.ironbank.model.account.*;
 import com.ironhack.ironbank.model.user.AccountHolder;
-import com.ironhack.ironbank.repository.AccountRepository;
 import com.ironhack.ironbank.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -22,17 +21,24 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
     private final AccountHolderService accountHolderService;
+    private final CurrentSavingsAccountService currentSavingsAccountService;
+    private final CreditAccountService creditAccountService;
 
     @Override
     public TransactionDTO create(TransactionDTO transactionDTO) {
         Transaction transaction = null;
         try {
+            // Initialize transaction setting the status to PENDING
             transaction = initializeTransaction(transactionDTO);
 
             if (transactionDTO.getHashedKey() != null && transactionDTO.getSourceAccount() == null) { // It's sent by a third party to an account holder
 
                 // Check if the secret key from the third party matches the one in the database
                 var account = accountService.findById(transactionDTO.getTargetAccount()).orElseThrow(() -> new IllegalArgumentException("Target account not found"));
+                if (transactionDTO.getSecretKey() != null && !transactionDTO.getSecretKey().equals(account.getSecretKey())) {
+                    throw new IllegalArgumentException("Secret key does not match");
+                }
+                account = checkAndApplyInterestRate(account);
                 transaction.setTargetAccount(account);
 
                 // If it matches, create the transaction
@@ -64,6 +70,7 @@ public class TransactionServiceImpl implements TransactionService {
                 // Secret key is not needed in this case
 
                 var account = accountService.findById(transactionDTO.getSourceAccount()).orElseThrow(() -> new IllegalArgumentException("Sender account not found"));
+                account = checkAndApplyInterestRate(account);
                 transaction.setSourceAccount(account);
 
                 // Check if the account has sufficient funds
@@ -102,8 +109,10 @@ public class TransactionServiceImpl implements TransactionService {
 
                 // Secret key is not needed in this case
                 var senderAccount = accountService.findById(transactionDTO.getSourceAccount()).orElseThrow(() -> new IllegalArgumentException("Sender account not found"));
+                senderAccount = checkAndApplyInterestRate(senderAccount);
                 transaction.setSourceAccount(senderAccount);
                 var receiverAccount = accountService.findById(transactionDTO.getTargetAccount()).orElseThrow(() -> new IllegalArgumentException("Target account not found"));
+                receiverAccount = checkAndApplyInterestRate(receiverAccount);
                 transaction.setTargetAccount(receiverAccount);
 
                 // Check if the accounts are the same
@@ -170,5 +179,53 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setStatus(TransactionStatus.FAILED);
         transaction = transactionRepository.save(transaction);
         return TransactionDTO.fromEntity(transaction);
+    }
+
+    private Account checkAndApplyInterestRate(Account account) {
+        if (account instanceof CurrentSavingsAccount) {
+            var checkingSavingAccount = (CurrentSavingsAccount) account;
+            var interestRate = currentSavingsAccountService.getInterestEarnings(checkingSavingAccount);
+
+            if(interestRate.getTimesApplied() > 0) {
+                // Add the interest rate to the account and update it
+                checkingSavingAccount.setBalance(new Money(checkingSavingAccount.getBalance().increaseAmount(interestRate.getEarnings())));
+                checkingSavingAccount.setInterestRateDate(Instant.now());
+                var savingsAccountDTO = CurrentSavingsAccountDTO.fromEntity(checkingSavingAccount);
+                currentSavingsAccountService.update(checkingSavingAccount.getIban(), savingsAccountDTO);
+
+                // Create the transaction
+                createAndSaveTransaction(checkingSavingAccount, interestRate);
+            }
+
+            account = checkingSavingAccount;
+        } else if (account instanceof CreditAccount) {
+            var creditCardAccount = (CreditAccount) account;
+            var interestRate = creditAccountService.getInterestEarnings(creditCardAccount);
+
+            if(interestRate.getTimesApplied() > 0) {
+                // Add the interest rate to the account and update it
+                creditCardAccount.setBalance(new Money(creditCardAccount.getBalance().increaseAmount(interestRate.getEarnings())));
+                creditCardAccount.setInterestRateDate(Instant.now());
+                var creditAccountDTO = CreditAccountDTO.fromEntity(creditCardAccount);
+                creditAccountService.update(creditCardAccount.getIban(), creditAccountDTO);
+
+                // Create the transaction
+                createAndSaveTransaction(creditCardAccount, interestRate);
+            }
+
+            account = creditCardAccount;
+        }
+
+        return account;
+    }
+
+    private void createAndSaveTransaction(Account account, InterestRateResponse response) {
+        var transaction = new Transaction();
+        transaction.setTargetAccount(account);
+        transaction.setAmount(response.getEarnings());
+        transaction.setName(account.getPrimaryOwner().getFirstName() + " " + account.getPrimaryOwner().getLastName());
+        transaction.setConcept("For " + response.getTimesApplied() + " periods an interest of " + response.getInterestRateApplied().multiply(new BigDecimal("100")) + "% has been applied.");
+        transaction.setStatus(TransactionStatus.COMPLETED);
+        transactionRepository.save(transaction);
     }
 }

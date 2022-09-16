@@ -21,6 +21,7 @@ public class AccountDTO {
     protected String primaryOwner;
     protected String secondaryOwner;
     private AccountType accountType;
+    private String secretKey;
 
     public static AccountDTO fromEntity(Account account) {
         var accountDTO = new AccountDTO();
@@ -38,6 +39,10 @@ public class AccountDTO {
         }
 
         accountDTO.setAccountType(account.getAccountType());
+
+        if (account.getSecretKey() != null) {
+            accountDTO.setSecretKey(account.getSecretKey());
+        }
 
         return accountDTO;
     }
