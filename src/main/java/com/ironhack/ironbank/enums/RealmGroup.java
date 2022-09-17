@@ -1,8 +1,8 @@
 package com.ironhack.ironbank.enums;
 
 public enum RealmGroup {
-    ADMINS("ADMINS"),
-    USERS("USERS");
+    ADMINS("admins"),
+    USERS("users");
 
     private String name;
 
