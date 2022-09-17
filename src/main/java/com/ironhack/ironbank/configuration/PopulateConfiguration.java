@@ -241,7 +241,7 @@ public class PopulateConfiguration {
             System.out.println("Populating transactions between account holder 1 and 2...");
             System.out.println("*******************************");
             var countD = 0;
-            while (countD < 5) {
+            while (countD < 15) {
                 try {
                     var transactionDTO = new TransactionDTO();
                     var account1 = accountService.findAll().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));
@@ -272,7 +272,7 @@ public class PopulateConfiguration {
             System.out.println("Populating transactions between account holder 1 and third party...");
             System.out.println("*******************************");
             var countE = 0;
-            while (countE < 5) {
+            while (countE < 15) {
                 try {
                     var transactionDTO = new TransactionDTO();
                     var account = accountService.findAllAccounts().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));
@@ -317,7 +317,7 @@ public class PopulateConfiguration {
             System.out.println("Populating transactions between third party and account holder 1...");
             System.out.println("*******************************");
             var countF = 0;
-            while (countF < 5) {
+            while (countF < 15) {
                 try {
                     var transactionDTO = new TransactionDTO();
                     var account = accountService.findAllAccounts().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));

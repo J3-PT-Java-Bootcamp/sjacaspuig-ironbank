@@ -65,7 +65,7 @@ public class CreditAccount extends Account implements InterestRate {
         if (balance.getAmount().compareTo(creditLimit.getAmount()) > 0) {
             throw new IllegalArgumentException("Balance cannot be greater than the maximum credit limit.");
         } else {
-            super.setBalance(balance, AccountConstants.GLOBAL_MINIMUM_BALANCE);
+            super.setBalance(balance);
         }
     }
 

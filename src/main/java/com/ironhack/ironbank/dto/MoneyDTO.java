@@ -8,23 +8,27 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.List;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class MoneyDTO {
 
+    private static final RoundingMode DEFAULT_ROUNDING = RoundingMode.HALF_EVEN;
+    private static final Currency EUR = Currency.getInstance("EUR");
     private Currency currency;
     private BigDecimal amount;
 
+    public MoneyDTO(Money money) {
+        this.currency = EUR;
+        this.amount = money.getAmount().setScale(money.getCurrency().getDefaultFractionDigits(), DEFAULT_ROUNDING);
+    }
+
     public static MoneyDTO fromEntity(Money money) {
-        var moneyDTO = new MoneyDTO();
-        moneyDTO.setCurrency(money.getCurrency());
-        moneyDTO.setAmount(money.getAmount());
-        return moneyDTO;
+        return new MoneyDTO(money);
     }
 
     public static List<MoneyDTO> fromEntities(List<Money> moneys) {

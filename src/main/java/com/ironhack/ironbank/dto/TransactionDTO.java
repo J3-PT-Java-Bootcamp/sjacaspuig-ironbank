@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.dto;
 
 import com.ironhack.ironbank.enums.TransactionStatus;
+import com.ironhack.ironbank.enums.TransactionType;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.Transaction;
 import com.ironhack.ironbank.model.account.Account;
@@ -33,6 +34,7 @@ public class TransactionDTO {
     private String secretKey;
     private String concept;
     private String failureReason;
+    private TransactionType type;
 
     public static TransactionDTO fromEntity(Transaction transaction) {
         var transactionDTO = new TransactionDTO();
@@ -48,6 +50,8 @@ public class TransactionDTO {
             transactionDTO.setTargetAccount(transaction.getTargetAccount().getIban().toString());
         }
 
+        var type = transaction.getType() == null ? TransactionType.TRANSFER : transaction.getType();
+        transactionDTO.setType(type);
         transactionDTO.setName(transaction.getName());
         var amountDTO = MoneyDTO.fromEntity(transaction.getAmount());
         transactionDTO.setAmount(amountDTO);

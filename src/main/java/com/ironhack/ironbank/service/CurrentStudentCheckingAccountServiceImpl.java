@@ -3,6 +3,7 @@ package com.ironhack.ironbank.service;
 import com.ironhack.ironbank.dto.CurrentStudentCheckingAccountDTO;
 import com.ironhack.ironbank.model.account.CurrentStudentCheckingAccount;
 import com.ironhack.ironbank.model.user.AccountHolder;
+import com.ironhack.ironbank.repository.AccountRepository;
 import com.ironhack.ironbank.repository.CurrentStudentCheckingAccountRepository;
 import com.ironhack.ironbank.utils.IbanGenerator;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class CurrentStudentCheckingAccountServiceImpl implements CurrentStudentC
 
     private final CurrentStudentCheckingAccountRepository currentStudentCheckingAccountRepository;
     private final AccountHolderService accountHolderService;
-    private final AccountService accountService;
+    private final AccountRepository accountRepository;
     private final IbanGenerator ibanGenerator;
 
     @Override
@@ -31,7 +33,7 @@ public class CurrentStudentCheckingAccountServiceImpl implements CurrentStudentC
 
         // Generate iban, check if it exists on accounts, if it does, generate another one, if not, save it
         String iban = ibanGenerator.generateIban();
-        while (accountService.findById(iban).isPresent()) {
+        while (accountRepository.findById(iban).isPresent()) {
             iban = ibanGenerator.generateIban();
         }
         currentStudentCheckingAccountDTO.setIban(iban);
@@ -48,14 +50,24 @@ public class CurrentStudentCheckingAccountServiceImpl implements CurrentStudentC
 
     @Override
     public CurrentStudentCheckingAccountDTO findByIban(String iban) {
-        var currentStudentCheckingAccount = currentStudentCheckingAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Student checking account not found"));
+        var currentStudentCheckingAccount = findEntity(iban).orElseThrow(() -> new IllegalArgumentException("Student checking account not found"));
         return CurrentStudentCheckingAccountDTO.fromEntity(currentStudentCheckingAccount);
     }
 
     @Override
+    public Optional<CurrentStudentCheckingAccount> findEntity(String iban) {
+        return currentStudentCheckingAccountRepository.findById(iban);
+    }
+
+    @Override
     public List<CurrentStudentCheckingAccountDTO> findAll() {
-        var currentStudentCheckingAccounts = currentStudentCheckingAccountRepository.findAll();
+        var currentStudentCheckingAccounts = findAllEntities();
         return CurrentStudentCheckingAccountDTO.fromList(currentStudentCheckingAccounts);
+    }
+
+    @Override
+    public List<CurrentStudentCheckingAccount> findAllEntities() {
+        return currentStudentCheckingAccountRepository.findAll();
     }
 
     @Override

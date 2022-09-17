@@ -45,16 +45,14 @@ public class AccountHolder extends UserSecurity {
 
     @OneToMany(
             mappedBy = "primaryOwner",
-            cascade = CascadeType.ALL,
-            orphanRemoval= true
+            cascade = CascadeType.ALL
     )
     @JsonIgnore
     private Set<Account> primaryAccounts;
 
     @OneToMany(
             mappedBy = "secondaryOwner",
-            cascade = CascadeType.ALL,
-            orphanRemoval= true
+            cascade = CascadeType.ALL
     )
     @JsonIgnore
     private Set<Account> secondaryAccounts;

@@ -40,6 +40,15 @@ public class CurrentStudentCheckingAccount extends CurrentAccount {
         else throw new IllegalArgumentException("Primary owner is older than " + MAX_AGE + " years old and should renew to a checking account");
     }
 
+    @Override
+    public void setBalance(@NotNull Money balance) {
+        if (getStatus() == AccountStatus.ACTIVE) {
+            super.setBalance(balance);
+        } else {
+            throw new IllegalArgumentException("Account status must be active to set the balance");
+        }
+    }
+
     public static CurrentStudentCheckingAccount fromDTO(CurrentStudentCheckingAccountDTO currentStudentCheckingAccountDTO, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
 
         // From Account model

@@ -35,8 +35,12 @@ public class CreditAccountDTO extends AccountDTO {
         var moneyDTO = MoneyDTO.fromEntity(creditAccount.getCreditLimit());
         creditAccountDTO.setCreditLimit(moneyDTO);
         creditAccountDTO.setInterestRate(creditAccount.getInterestRate());
-        var interestRateDateDTO = DateService.parseInstant(creditAccount.getInterestRateDate());
-        creditAccountDTO.setInterestRateDate(interestRateDateDTO);
+
+        if(creditAccount.getInterestRateDate() != null) {
+            var interestRateDateDTO = DateService.parseInstant(creditAccount.getInterestRateDate());
+            creditAccountDTO.setInterestRateDate(interestRateDateDTO);
+        }
+
         creditAccountDTO.setAccountType(creditAccount.getAccountType());
 
         return creditAccountDTO;

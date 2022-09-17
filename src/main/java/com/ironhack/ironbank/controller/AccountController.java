@@ -28,11 +28,6 @@ public class AccountController {
         return ResponseEntity.ok(accountService.findByIban(iban));
     }
 
-    @PutMapping("/{iban}")
-    public ResponseEntity<AccountDTO> update(@PathVariable @Valid String iban, @RequestBody @Valid AccountDTO accountDTO) {
-        return ResponseEntity.ok(accountService.update(iban, accountDTO));
-    }
-
     @DeleteMapping("/{iban}")
     public ResponseEntity<Void> delete(@PathVariable @Valid String iban) {
         accountService.delete(iban);

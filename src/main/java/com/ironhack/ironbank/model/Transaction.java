@@ -2,6 +2,7 @@ package com.ironhack.ironbank.model;
 
 import com.ironhack.ironbank.dto.TransactionDTO;
 import com.ironhack.ironbank.enums.TransactionStatus;
+import com.ironhack.ironbank.enums.TransactionType;
 import com.ironhack.ironbank.model.account.Account;
 import com.ironhack.ironbank.model.user.Admin;
 import lombok.Getter;
@@ -52,6 +53,10 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
+
     @AttributeOverrides(
             {
                     @AttributeOverride(name = "currency", column = @Column(name = "fee_currency")),
@@ -70,6 +75,7 @@ public class Transaction {
     private String failureReason;
 
     public Transaction() {
+        setType(TransactionType.TRANSFER);
         setStatus(TransactionStatus.PENDING);
     }
 
@@ -90,6 +96,11 @@ public class Transaction {
         } else {
             var zeroFee = new Money(new BigDecimal(0));
             transaction.setFee(zeroFee);
+        }
+
+
+        if (transactionDTO.getType() != null) {
+            transaction.setType(transactionDTO.getType());
         }
 
         transaction.setHashedKey(transactionDTO.getHashedKey());

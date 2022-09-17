@@ -10,9 +10,8 @@ import java.util.Optional;
 public interface AccountService {
 
     AccountDTO findByIban(@Valid String iban);
-    Optional<Account> findById(@Valid String iban);
+    Optional<? extends Account> findById(@Valid String iban);
     List<AccountDTO> findAll();
     List<Account> findAllAccounts();
-    AccountDTO update(@Valid String iban, @Valid AccountDTO accountDTO);
     void delete(@Valid String iban);
 }

@@ -2,6 +2,7 @@ package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.*;
 import com.ironhack.ironbank.enums.TransactionStatus;
+import com.ironhack.ironbank.enums.TransactionType;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.Transaction;
 import com.ironhack.ironbank.model.account.*;
@@ -11,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -21,8 +21,10 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
     private final AccountHolderService accountHolderService;
-    private final CurrentSavingsAccountService currentSavingsAccountService;
     private final CreditAccountService creditAccountService;
+    private final CurrentCheckingAccountService currentCheckingAccountService;
+    private final CurrentSavingsAccountService currentSavingsAccountService;
+    private final CurrentStudentCheckingAccountService currentStudentCheckingAccountService;
 
     @Override
     public TransactionDTO create(TransactionDTO transactionDTO) {
@@ -38,7 +40,6 @@ public class TransactionServiceImpl implements TransactionService {
                 if (transactionDTO.getSecretKey() != null && !transactionDTO.getSecretKey().equals(account.getSecretKey())) {
                     throw new IllegalArgumentException("Secret key does not match");
                 }
-                account = checkAndApplyInterestRate(account);
                 transaction.setTargetAccount(account);
 
                 // If it matches, create the transaction
@@ -46,7 +47,7 @@ public class TransactionServiceImpl implements TransactionService {
                 var amountToBeAdded = account.getBalance().increaseAmount(amount);
                 account.setBalance(new Money(amountToBeAdded));
                 var accountDTO = AccountDTO.fromEntity(account);
-                accountService.update(accountDTO.getIban(), accountDTO);
+                updateAccount(accountDTO.getIban(), accountDTO);
 
                 var targetAccountDTO = accountService.findByIban(transactionDTO.getTargetAccount());
                 var primaryOwnerDTO = accountHolderService.findById(targetAccountDTO.getPrimaryOwner());
@@ -68,9 +69,7 @@ public class TransactionServiceImpl implements TransactionService {
             } else if (transactionDTO.getHashedKey() != null && transactionDTO.getSourceAccount() != null) { // It's sent by an account holder to a third party
 
                 // Secret key is not needed in this case
-
                 var account = accountService.findById(transactionDTO.getSourceAccount()).orElseThrow(() -> new IllegalArgumentException("Sender account not found"));
-                account = checkAndApplyInterestRate(account);
                 transaction.setSourceAccount(account);
 
                 // Check if the account has sufficient funds
@@ -85,7 +84,7 @@ public class TransactionServiceImpl implements TransactionService {
                     var amountToBeSubtracted = account.getBalance().decreaseAmount(amount.increaseAmount(fee));
                     account.setBalance(new Money(amountToBeSubtracted));
                     var accountDTOUpdated = AccountDTO.fromEntity(account);
-                    accountService.update(accountDTOUpdated.getIban(), accountDTOUpdated);
+                    updateAccount(accountDTOUpdated.getIban(), accountDTOUpdated);
                 }
 
                 var sourceAccountDTO = accountService.findByIban(transactionDTO.getSourceAccount());
@@ -109,10 +108,8 @@ public class TransactionServiceImpl implements TransactionService {
 
                 // Secret key is not needed in this case
                 var senderAccount = accountService.findById(transactionDTO.getSourceAccount()).orElseThrow(() -> new IllegalArgumentException("Sender account not found"));
-                senderAccount = checkAndApplyInterestRate(senderAccount);
                 transaction.setSourceAccount(senderAccount);
                 var receiverAccount = accountService.findById(transactionDTO.getTargetAccount()).orElseThrow(() -> new IllegalArgumentException("Target account not found"));
-                receiverAccount = checkAndApplyInterestRate(receiverAccount);
                 transaction.setTargetAccount(receiverAccount);
 
                 // Check if the accounts are the same
@@ -132,7 +129,7 @@ public class TransactionServiceImpl implements TransactionService {
                     var amountToBeSubtracted = senderAccount.getBalance().decreaseAmount(amount.increaseAmount(fee));
                     senderAccount.setBalance(new Money(amountToBeSubtracted));
                     var senderAccountDTOUpdated = AccountDTO.fromEntity(senderAccount);
-                    accountService.update(senderAccountDTOUpdated.getIban(), senderAccountDTOUpdated);
+                    updateAccount(senderAccountDTOUpdated.getIban(), senderAccountDTOUpdated);
                 }
 
                 // Add the amount to the receiver account
@@ -140,7 +137,7 @@ public class TransactionServiceImpl implements TransactionService {
                 var amountToBeAdded = receiverAccount.getBalance().increaseAmount(amount);
                 receiverAccount.setBalance(new Money(amountToBeAdded));
                 var receiverAccountDTOUpdated = AccountDTO.fromEntity(receiverAccount);
-                accountService.update(receiverAccountDTOUpdated.getIban(), receiverAccountDTOUpdated);
+                updateAccount(receiverAccountDTOUpdated.getIban(), receiverAccountDTOUpdated);
 
                 // Create the transaction
                 var transactionUpdated = Transaction.fromDTO(transactionDTO, senderAccount, receiverAccount);
@@ -181,51 +178,57 @@ public class TransactionServiceImpl implements TransactionService {
         return TransactionDTO.fromEntity(transaction);
     }
 
-    private Account checkAndApplyInterestRate(Account account) {
-        if (account instanceof CurrentSavingsAccount) {
-            var checkingSavingAccount = (CurrentSavingsAccount) account;
-            var interestRate = currentSavingsAccountService.getInterestEarnings(checkingSavingAccount);
-
-            if(interestRate.getTimesApplied() > 0) {
-                // Add the interest rate to the account and update it
-                checkingSavingAccount.setBalance(new Money(checkingSavingAccount.getBalance().increaseAmount(interestRate.getEarnings())));
-                checkingSavingAccount.setInterestRateDate(Instant.now());
-                var savingsAccountDTO = CurrentSavingsAccountDTO.fromEntity(checkingSavingAccount);
-                currentSavingsAccountService.update(checkingSavingAccount.getIban(), savingsAccountDTO);
-
-                // Create the transaction
-                createAndSaveTransaction(checkingSavingAccount, interestRate);
-            }
-
-            account = checkingSavingAccount;
-        } else if (account instanceof CreditAccount) {
-            var creditCardAccount = (CreditAccount) account;
-            var interestRate = creditAccountService.getInterestEarnings(creditCardAccount);
-
-            if(interestRate.getTimesApplied() > 0) {
-                // Add the interest rate to the account and update it
-                creditCardAccount.setBalance(new Money(creditCardAccount.getBalance().increaseAmount(interestRate.getEarnings())));
-                creditCardAccount.setInterestRateDate(Instant.now());
-                var creditAccountDTO = CreditAccountDTO.fromEntity(creditCardAccount);
-                creditAccountService.update(creditCardAccount.getIban(), creditAccountDTO);
-
-                // Create the transaction
-                createAndSaveTransaction(creditCardAccount, interestRate);
-            }
-
-            account = creditCardAccount;
-        }
-
-        return account;
-    }
-
-    private void createAndSaveTransaction(Account account, InterestRateResponse response) {
+    @Override
+    public void createInterestTransaction(Account account, InterestRateResponse response) {
         var transaction = new Transaction();
         transaction.setTargetAccount(account);
         transaction.setAmount(response.getEarnings());
         transaction.setName(account.getPrimaryOwner().getFirstName() + " " + account.getPrimaryOwner().getLastName());
         transaction.setConcept("For " + response.getTimesApplied() + " periods an interest of " + response.getInterestRateApplied().multiply(new BigDecimal("100")) + "% has been applied.");
         transaction.setStatus(TransactionStatus.COMPLETED);
+        transaction.setType(TransactionType.INTEREST);
         transactionRepository.save(transaction);
+    }
+
+    @Override
+    public void createPenaltyMinBalanceTransaction(Account account) {
+        var transaction = new Transaction();
+        transaction.setSourceAccount(account);
+        transaction.setAmount(Account.PENALTY_FEE);
+        transaction.setName(account.getPrimaryOwner().getFirstName() + " " + account.getPrimaryOwner().getLastName());
+        transaction.setConcept("Penalty fee for not having the minimum balance");
+        transaction.setStatus(TransactionStatus.COMPLETED);
+        transaction.setType(TransactionType.PENALTY_MIN_BALANCE);
+        transactionRepository.save(transaction);
+    }
+    
+    private AccountDTO updateAccount(String iban, AccountDTO accountDTO) {
+        var accountUpdated = accountService.findById(iban).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        accountUpdated.setBalance(Money.fromDTO(accountDTO.getBalance()));
+
+        // Check account type, cast and update
+        update(accountUpdated);
+
+        return AccountDTO.fromEntity(accountUpdated);
+    }
+
+    private void update(Account account) {
+        if (account instanceof CreditAccount) {
+            var creditAccountUpdated = (CreditAccount) account;
+            var dto = CreditAccountDTO.fromEntity(creditAccountUpdated);
+            creditAccountService.update(account.getIban(), dto);
+        } else if (account instanceof CurrentCheckingAccount) {
+            var currentCheckingAccountUpdated = (CurrentCheckingAccount) account;
+            var dto = CurrentCheckingAccountDTO.fromEntity(currentCheckingAccountUpdated);
+            currentCheckingAccountService.update(account.getIban(), dto);
+        } else if (account instanceof CurrentSavingsAccount) {
+            var currentSavingsAccountUpdated = (CurrentSavingsAccount) account;
+            var dto = CurrentSavingsAccountDTO.fromEntity(currentSavingsAccountUpdated);
+            currentSavingsAccountService.update(account.getIban(), dto);
+        } else if (account instanceof CurrentStudentCheckingAccount) {
+            var currentStudentCheckingAccountUpdated = (CurrentStudentCheckingAccount) account;
+            var dto = CurrentStudentCheckingAccountDTO.fromEntity(currentStudentCheckingAccountUpdated);
+            currentStudentCheckingAccountService.update(account.getIban(), dto);
+        }
     }
 }

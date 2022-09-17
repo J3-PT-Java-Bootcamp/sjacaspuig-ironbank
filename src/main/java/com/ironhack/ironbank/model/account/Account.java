@@ -3,7 +3,6 @@ package com.ironhack.ironbank.model.account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ironhack.ironbank.dto.AccountDTO;
 import com.ironhack.ironbank.enums.AccountType;
-import com.ironhack.ironbank.interfaces.PenaltyFee;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.Transaction;
 import com.ironhack.ironbank.model.user.AccountHolder;
@@ -24,9 +23,9 @@ import static com.ironhack.ironbank.constants.AccountConstants.ACCOUNT_PENALTY_F
 @NoArgsConstructor
 @Table(name = "accounts")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Account implements PenaltyFee {
+public class Account {
 
-    private static final Money PENALTY_FEE = ACCOUNT_PENALTY_FEE;
+    public static final Money PENALTY_FEE = ACCOUNT_PENALTY_FEE;
 
     @Id
     protected String iban;
@@ -86,17 +85,5 @@ public class Account implements PenaltyFee {
         }
 
         return account;
-    }
-
-    public void setBalance(Money balance, Money minimumBalance) {
-        // First check if minimum balance is not null
-        if (minimumBalance != null) {
-            // If balance is less than minimum balance, apply penalty fee
-            if (balance.getAmount().compareTo(minimumBalance.getAmount()) < 0) {
-                this.balance = chargePenaltyFee(balance, PENALTY_FEE);
-            } else { // If balance is greater than minimum balance, set balance
-                this.balance = balance;
-            }
-        }
     }
 }
