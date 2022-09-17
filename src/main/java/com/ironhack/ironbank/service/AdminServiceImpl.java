@@ -1,8 +1,6 @@
 package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.AdminDTO;
-import com.ironhack.ironbank.dto.UserKeycloakDTO;
-import com.ironhack.ironbank.enums.RealmGroup;
 import com.ironhack.ironbank.model.user.Admin;
 import com.ironhack.ironbank.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,18 +22,18 @@ public class AdminServiceImpl implements AdminService {
             throw new IllegalArgumentException("Admin already exists");
         }
 
-        var userKeycloakDTO = UserKeycloakDTO.fromDTO(adminDTO, password);
-//        var serviceResponse = securityService.createUser(userKeycloakDTO, RealmGroup.ADMINS);
+//        var userSecurityDTO = UserSecurityDTO.fromDTO(adminDTO, password);
+//        var serviceResponse = securityService.createUser(userSecurityDTO, RealmGroup.ADMINS);
 //        var status = (Integer) serviceResponse[0];
-//        UserKeycloakDTO userKeycloakDTOCreated = (UserKeycloakDTO) serviceResponse[1];
+//        UserSecurityDTO userSecurityDTOCreated = (UserSecurityDTO) serviceResponse[1];
 
 //        if (status == 201) {
             var admin = Admin.fromDTO(adminDTO);
-//            admin.setId(userKeycloakDTOCreated.getId());
+//            admin.setId(userSecurityDTOCreated.getId());
             admin = adminRepository.save(admin);
             return AdminDTO.fromEntity(admin);
 //        } else if (status == 409) {
-//            var admin = adminRepository.findById(userKeycloakDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+//            var admin = adminRepository.findById(userSecurityDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
 //            return AdminDTO.fromEntity(admin);
 //        } else {
 //            throw new IllegalArgumentException("Status: " + status);
@@ -58,8 +56,8 @@ public class AdminServiceImpl implements AdminService {
     public AdminDTO update(String id, AdminDTO adminDTO) {
         var admin = adminRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
 
-        var userKeycloakDTO = UserKeycloakDTO.fromDTO(adminDTO, null);
-//        securityService.updateUser(admin.getId(), userKeycloakDTO);
+//        var userSecurityDTO = UserSecurityDTO.fromDTO(adminDTO, null);
+//        securityService.updateUser(admin.getId(), userSecurityDTO);
 
         var adminUpdated = Admin.fromDTO(adminDTO);
         adminUpdated.setId(admin.getId());

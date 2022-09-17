@@ -1,6 +1,5 @@
 package com.ironhack.ironbank.controller;
 
-import com.ironhack.ironbank.dto.ResponseMessage;
 import com.ironhack.ironbank.model.Foo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +40,7 @@ public class FooController {
         int maxIndex = foos.stream().max(Comparator.comparing(m -> m.getId())).get().getId();
         foo.setId(maxIndex + 1);
         foos.add(foo);
-        return new ResponseEntity(new ResponseMessage("creado"), HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(foo);
     }
 
     @RolesAllowed("backend-admin")
@@ -49,7 +48,7 @@ public class FooController {
     public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody Foo foo){
         Foo fooUpdate = foos.stream().filter(f -> f.getId() == id).findFirst().orElse(null);
         fooUpdate.setName(foo.getName());
-        return new ResponseEntity(new ResponseMessage("actualizado"), HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(fooUpdate);
     }
 
     @RolesAllowed("backend-admin")
@@ -57,7 +56,7 @@ public class FooController {
     public ResponseEntity<?> delete(@PathVariable("id") int id){
         Foo foo = foos.stream().filter(f -> f.getId() == id).findFirst().orElse(null);
         foos.remove(foo);
-        return new ResponseEntity(new ResponseMessage("eliminado"), HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(foo);
     }
 
 

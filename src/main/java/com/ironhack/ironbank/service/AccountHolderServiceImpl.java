@@ -1,8 +1,6 @@
 package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.AccountHolderDTO;
-import com.ironhack.ironbank.dto.UserKeycloakDTO;
-import com.ironhack.ironbank.enums.RealmGroup;
 import com.ironhack.ironbank.model.user.AccountHolder;
 import com.ironhack.ironbank.repository.AccountHolderRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,18 +23,18 @@ public class AccountHolderServiceImpl implements AccountHolderService {
             throw new IllegalArgumentException("Account holder already exists");
         }
 
-        var userKeycloakDTO = UserKeycloakDTO.fromDTO(accountHolderDTO, password);
-//        var serviceResponse = securityService.createUser(userKeycloakDTO, RealmGroup.USERS);
+//        var userSecurityDTO = UserSecurityDTO.fromDTO(accountHolderDTO, password);
+//        var serviceResponse = securityService.createUser(userSecurityDTO, RealmGroup.USERS);
 //        var status = (Integer) serviceResponse[0];
-//        UserKeycloakDTO userKeycloakDTOCreated = (UserKeycloakDTO) serviceResponse[1];
+//        UserSecurityDTO userSecurityDTOCreated = (UserSecurityDTO) serviceResponse[1];
 
 //        if (status == 201) {
             var accountHolder = AccountHolder.fromDTO(accountHolderDTO);
-//            accountHolder.setId(userKeycloakDTOCreated.getId());
+//            accountHolder.setId(userSecurityDTOCreated.getId());
             accountHolder = accountHolderRepository.save(accountHolder);
             return AccountHolderDTO.fromEntity(accountHolder);
 //        } else if (status == 409) {
-//            var accountHolder = accountHolderRepository.findById(userKeycloakDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Account holder not found"));
+//            var accountHolder = accountHolderRepository.findById(userSecurityDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Account holder not found"));
 //            return AccountHolderDTO.fromEntity(accountHolder);
 //        } else {
 //            throw new IllegalArgumentException("Error creating user");
@@ -59,8 +57,8 @@ public class AccountHolderServiceImpl implements AccountHolderService {
     public AccountHolderDTO update(String id, AccountHolderDTO accountHolderDTO) {
         var accountHolder = accountHolderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Account holder not found"));
 
-        var userKeycloakDTO = UserKeycloakDTO.fromDTO(accountHolderDTO, null);
-//        securityService.updateUser(accountHolder.getId(), userKeycloakDTO);
+//        var userSecurityDTO = UserSecurityDTO.fromDTO(accountHolderDTO, null);
+//        securityService.updateUser(accountHolder.getId(), userSecurityDTO);
 
         var accountHolderUpdated = AccountHolder.fromDTO(accountHolderDTO);
         accountHolderUpdated.setId(accountHolder.getId());

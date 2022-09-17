@@ -1,9 +1,8 @@
 package com.ironhack.ironbank.service;
 
-import com.ironhack.ironbank.dto.ResponseMessage;
-import com.ironhack.ironbank.dto.UserKeycloakDTO;
+import com.ironhack.ironbank.dto.KeycloakUserRespone;
+import com.ironhack.ironbank.dto.UserSecurityDTO;
 import com.ironhack.ironbank.enums.RealmGroup;
-import com.ironhack.ironbank.model.UserKeycloak;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -43,9 +42,9 @@ public class SecurityServiceImpl implements SecurityService {
     private String clientId;
 
     @Override
-    public Object[] createUser(UserKeycloak user, RealmGroup group) {
-        ResponseMessage message = new ResponseMessage();
-        int statusId = 0;
+    public KeycloakUserRespone createUser(UserSecurityDTO user, RealmGroup group) {
+        KeycloakUserRespone response = new KeycloakUserRespone();
+
          try {
              UsersResource usersResource = getUsersResource();
              UserRepresentation userRepresentation = new UserRepresentation();
@@ -59,36 +58,37 @@ public class SecurityServiceImpl implements SecurityService {
              userRepresentation.setGroups(List.of(group.toString()));
 
              Response result = usersResource.create(userRepresentation);
-             statusId = result.getStatus();
+             response.setStatus(result.getStatus());
 
-             if(statusId == 201){
+             if (response.getStatus() == 201) { // 201 Created: The request has been fulfilled and resulted in a new resource being created.
                  String path = result.getLocation().getPath();
                  String userId = path.substring(path.lastIndexOf("/") + 1);
 
-                 RealmResource realmResource = getRealmResource();
-                 RoleRepresentation roleRepresentation = realmResource.roles().get("realm-user").toRepresentation();
-                 realmResource.users().get(userId).roles().realmLevel().add(Arrays.asList(roleRepresentation));
-                 message.setMessage("usuario creado con éxito");
-             }else if(statusId == 409){
-                 message.setMessage("ese usuario ya existe");
-             }else{
-                 message.setMessage("error creando el usuario");
+                 var userRepresentationCreated = getUserRepresentationById(userId);
+                 response.setUser(UserSecurityDTO.fromUserRepresentation(userRepresentationCreated));
+             } else if(response.getStatus() == 409) { // 409 Conflict: The request could not be completed due to user already exists.
+
+                 var userRepresentationCreated = getUserRepresentationByEmail(user.getUsername());
+                 response.setUser(UserSecurityDTO.fromUserRepresentation(userRepresentationCreated));
              }
-         }catch (Exception e){
-             e.printStackTrace();
+
+         } catch (Exception e) {
+             System.out.println(e.getMessage());
+             response.setStatus(400);
+             return response;
          }
 
-         return new Object[]{statusId, message};
+         return response;
     }
 
     @Override
-    public void updateUser(String id, UserKeycloakDTO userKeycloakDTO){
+    public void updateUser(String id, UserSecurityDTO userSecurityDTO){
 
         UserRepresentation user = new UserRepresentation();
-        user.setUsername(userKeycloakDTO.getUsername());
-        user.setFirstName(userKeycloakDTO.getFirstName());
-        user.setLastName(userKeycloakDTO.getLastName());
-        user.setEmail(userKeycloakDTO.getEmail());
+        user.setUsername(userSecurityDTO.getUsername());
+        user.setFirstName(userSecurityDTO.getFirstName());
+        user.setLastName(userSecurityDTO.getLastName());
+        user.setEmail(userSecurityDTO.getEmail());
 
         UsersResource usersResource = getUsersResource();
         usersResource.get(id).update(user);
