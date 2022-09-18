@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.service;
 
+import com.ironhack.ironbank.dto.response.ThirdPartyCreateResponse;
 import com.ironhack.ironbank.dto.ThirdPartyDTO;
 import com.ironhack.ironbank.model.user.ThirdParty;
 import com.ironhack.ironbank.repository.ThirdPartyRepository;
@@ -16,14 +17,19 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     private final ThirdPartyRepository thirdPartyRepository;
 
     @Override
-    public ThirdPartyDTO create(ThirdPartyDTO thirdPartyDTO) {
+    public ThirdPartyCreateResponse create(ThirdPartyDTO thirdPartyDTO) {
+        var response = new ThirdPartyCreateResponse();
         if (thirdPartyDTO.getId() != null && thirdPartyRepository.findById(thirdPartyDTO.getId()).isPresent()) {
-            throw new IllegalArgumentException("Third party already exists");
+            response.setStatus(409);
+            response.setMessage("User already exists");
+            return response;
         }
 
         var thirdParty = ThirdParty.fromDTO(thirdPartyDTO);
         thirdParty = thirdPartyRepository.save(thirdParty);
-        return ThirdPartyDTO.fromEntity(thirdParty);
+        response.setStatus(201);
+        response.setThirdParty(ThirdPartyDTO.fromEntity(thirdParty));
+        return response;
     }
 
     @Override

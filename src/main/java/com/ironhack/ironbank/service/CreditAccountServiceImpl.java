@@ -2,14 +2,13 @@ package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.constants.AccountConstants;
 import com.ironhack.ironbank.dto.CreditAccountDTO;
-import com.ironhack.ironbank.dto.InterestRateResponse;
+import com.ironhack.ironbank.dto.response.InterestRateResponse;
 import com.ironhack.ironbank.enums.TransactionStatus;
 import com.ironhack.ironbank.enums.TransactionType;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.Transaction;
 import com.ironhack.ironbank.model.account.Account;
 import com.ironhack.ironbank.model.account.CreditAccount;
-import com.ironhack.ironbank.model.account.CurrentSavingsAccount;
 import com.ironhack.ironbank.model.user.AccountHolder;
 import com.ironhack.ironbank.repository.AccountRepository;
 import com.ironhack.ironbank.repository.CreditAccountRepository;

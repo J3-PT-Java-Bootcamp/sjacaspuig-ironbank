@@ -50,6 +50,9 @@ public class PopulateConfiguration {
 
         if (adminService.findAll().size() == 0) {
             // Populate admin
+            System.out.println("*******************************");
+            System.out.println("Populating admins...");
+            System.out.println("*******************************");
             for (int i = 0; i < 3; i++) {
                 var adminDTO = new AdminDTO();
                 adminDTO.setId(faker.internet().uuid());
@@ -57,12 +60,17 @@ public class PopulateConfiguration {
                 adminDTO.setLastName(faker.name().lastName());
                 adminDTO.setUsername(faker.internet().domainName());
                 adminDTO.setEmail(faker.internet().emailAddress());
-                adminService.create(adminDTO, "password");
+                adminDTO.setPassword("password");
+                var user = adminService.create(adminDTO);
+                System.out.println("Status: " + user.getStatus() + " - " + user.getMessage());
             }
         }
 
         if (accountHolderService.findAll().size() == 0) {
             // Populate account holders
+            System.out.println("*******************************");
+            System.out.println("Populating account holders...");
+            System.out.println("*******************************");
             for (int i = 0; i < 5; i++) {
                 var accountHolderDTO = new AccountHolderDTO();
                 accountHolderDTO.setId(faker.internet().uuid());
@@ -84,21 +92,27 @@ public class PopulateConfiguration {
                 addressDTO.setStreet(faker.address().streetAddress());
                 addressDTO.setNumber(faker.address().buildingNumber());
                 accountHolderDTO.setSecondaryAddress(addressDTO);
+                accountHolderDTO.setPassword("password");
 
-                accountHolderService.create(accountHolderDTO, "password");
+                var user = accountHolderService.create(accountHolderDTO);
+                System.out.println("Status: " + user.getStatus() + " - " + user.getMessage());
             }
         }
 
 
         if (thirdPartyService.findAll().size() == 0) {
             // Populate third parties
+            System.out.println("*******************************");
+            System.out.println("Populating third parties...");
+            System.out.println("*******************************");
             for (int i = 0; i < 5; i++) {
                 var thirdPartyDTO = new ThirdPartyDTO();
                 thirdPartyDTO.setId(faker.internet().uuid());
                 thirdPartyDTO.setFirstName(faker.name().firstName());
                 thirdPartyDTO.setLastName(faker.name().lastName());
                 thirdPartyDTO.setHashedKey(faker.internet().password());
-                thirdPartyService.create(thirdPartyDTO);
+                var user = thirdPartyService.create(thirdPartyDTO);
+                System.out.println("Status: " + user.getStatus() + " - " + user.getMessage());
             }
         }
 

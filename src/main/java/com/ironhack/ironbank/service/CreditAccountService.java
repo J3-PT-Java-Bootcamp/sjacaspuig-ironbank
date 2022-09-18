@@ -1,10 +1,7 @@
 package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.CreditAccountDTO;
-import com.ironhack.ironbank.dto.InterestRateResponse;
-import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.account.CreditAccount;
-import com.ironhack.ironbank.model.account.CurrentSavingsAccount;
 
 import javax.validation.Valid;
 import java.util.List;

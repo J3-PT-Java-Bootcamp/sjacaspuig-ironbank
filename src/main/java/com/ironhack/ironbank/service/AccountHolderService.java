@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.service;
 
+import com.ironhack.ironbank.dto.response.AccountHolderCreateResponse;
 import com.ironhack.ironbank.dto.AccountHolderDTO;
 import com.ironhack.ironbank.model.user.AccountHolder;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 public interface AccountHolderService {
 
-    AccountHolderDTO create(@Valid AccountHolderDTO accountHolderDTO, String password);
+    AccountHolderCreateResponse create(@Valid AccountHolderDTO accountHolderDTO);
     AccountHolderDTO findById(@Valid String id);
     List<AccountHolderDTO> findAll();
     AccountHolderDTO update(@Valid String id, @Valid AccountHolderDTO accountHolderDTO);

@@ -20,6 +20,20 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    @PostMapping()
+    @RolesAllowed("backend-admin")
+    public ResponseEntity<AdminDTO> create(@RequestBody @Valid AdminDTO adminDTO) {
+        var admin = adminService.create(adminDTO);
+
+        if (admin.getStatus() == 201) {
+            return ResponseEntity.status(201).body(admin.getAdmin());
+        } else if (admin.getStatus() == 409) {
+            return ResponseEntity.status(409).body(admin.getAdmin());
+        } else {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<AdminDTO>> findAll() {
         return ResponseEntity.ok(adminService.findAll());
@@ -28,11 +42,6 @@ public class AdminController {
     @GetMapping("/{id}")
     public ResponseEntity<AdminDTO> findById(@PathVariable @Valid String id) {
         return ResponseEntity.ok(adminService.findById(id));
-    }
-
-    @PostMapping
-    public ResponseEntity<AdminDTO> create(@RequestBody @Valid AdminDTO adminDTO) {
-        return ResponseEntity.ok(adminService.create(adminDTO, "password"));
     }
 
     @PutMapping("/{id}")

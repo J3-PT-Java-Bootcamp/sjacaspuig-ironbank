@@ -1,6 +1,9 @@
 package com.ironhack.ironbank.service;
 
+import com.ironhack.ironbank.dto.response.AdminCreateResponse;
 import com.ironhack.ironbank.dto.AdminDTO;
+import com.ironhack.ironbank.dto.UserSecurityDTO;
+import com.ironhack.ironbank.enums.RealmGroup;
 import com.ironhack.ironbank.model.user.Admin;
 import com.ironhack.ironbank.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,30 +17,33 @@ import java.util.List;
 public class AdminServiceImpl implements AdminService {
 
     private final AdminRepository adminRepository;
-//    private final SecurityService securityService;
+    private final SecurityService securityService;
 
     @Override
-    public AdminDTO create(AdminDTO adminDTO, String password) {
+    public AdminCreateResponse create(AdminDTO adminDTO) {
+        var response = new AdminCreateResponse();
         if (adminDTO.getId() != null && adminRepository.findById(adminDTO.getId()).isPresent()) {
-            throw new IllegalArgumentException("Admin already exists");
+            response.setStatus(409);
+            response.setMessage("User already exists");
+            return response;
         }
 
-//        var userSecurityDTO = UserSecurityDTO.fromDTO(adminDTO, password);
-//        var serviceResponse = securityService.createUser(userSecurityDTO, RealmGroup.ADMINS);
-//        var status = (Integer) serviceResponse[0];
-//        UserSecurityDTO userSecurityDTOCreated = (UserSecurityDTO) serviceResponse[1];
+        var userSecurityDTO = UserSecurityDTO.fromDTO(adminDTO);
+        var serviceResponse = securityService.createUser(userSecurityDTO, RealmGroup.ADMINS);
+        response.setStatus(serviceResponse.getStatus());
+        UserSecurityDTO userSecurityDTOCreated = serviceResponse.getUser();
 
-//        if (status == 201) {
+        if (response.getStatus() == 201) {
             var admin = Admin.fromDTO(adminDTO);
-//            admin.setId(userSecurityDTOCreated.getId());
+            admin.setId(userSecurityDTOCreated.getId());
             admin = adminRepository.save(admin);
-            return AdminDTO.fromEntity(admin);
-//        } else if (status == 409) {
-//            var admin = adminRepository.findById(userSecurityDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
-//            return AdminDTO.fromEntity(admin);
-//        } else {
-//            throw new IllegalArgumentException("Status: " + status);
-//        }
+            response.setAdmin(AdminDTO.fromEntity(admin));
+        } else if (response.getStatus() == 409) {
+            var admin = adminRepository.findById(userSecurityDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+            response.setAdmin(AdminDTO.fromEntity(admin));
+        }
+
+        return response;
     }
 
     @Override
@@ -56,8 +62,8 @@ public class AdminServiceImpl implements AdminService {
     public AdminDTO update(String id, AdminDTO adminDTO) {
         var admin = adminRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
 
-//        var userSecurityDTO = UserSecurityDTO.fromDTO(adminDTO, null);
-//        securityService.updateUser(admin.getId(), userSecurityDTO);
+        var userSecurityDTO = UserSecurityDTO.fromDTO(adminDTO);
+        securityService.updateUser(admin.getId(), userSecurityDTO);
 
         var adminUpdated = Admin.fromDTO(adminDTO);
         adminUpdated.setId(admin.getId());
@@ -67,7 +73,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void delete(String id) {
-//        securityService.deleteUser(id);
+        securityService.deleteUser(id);
         adminRepository.deleteById(id);
     }
 }

@@ -1,6 +1,6 @@
 package com.ironhack.ironbank.dto;
 
-import com.ironhack.ironbank.enums.RealmGroup;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ironhack.ironbank.model.user.AccountHolder;
 import com.ironhack.ironbank.model.user.Admin;
 import lombok.AllArgsConstructor;
@@ -8,8 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.keycloak.representations.idm.UserRepresentation;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -19,9 +17,11 @@ public class UserSecurityDTO extends UserDTO {
 
     private String username;
     private String email;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String password;
 
-    public static UserSecurityDTO fromDTO(AdminDTO adminDTO, String password) {
+    public static UserSecurityDTO fromDTO(AdminDTO adminDTO) {
         var userSecurityDTO = new UserSecurityDTO();
         if(adminDTO.getId() != null) {
             userSecurityDTO.setId(adminDTO.getId());
@@ -30,12 +30,12 @@ public class UserSecurityDTO extends UserDTO {
         userSecurityDTO.setLastName(adminDTO.getLastName());
         userSecurityDTO.setUsername(adminDTO.getUsername());
         userSecurityDTO.setEmail(adminDTO.getEmail());
-        userSecurityDTO.setPassword(password);
+        userSecurityDTO.setPassword(adminDTO.getPassword());
 
         return userSecurityDTO;
     }
 
-    public static UserSecurityDTO fromDTO(AccountHolderDTO accountHolderDTO, String password) {
+    public static UserSecurityDTO fromDTO(AccountHolderDTO accountHolderDTO) {
         var userSecurityDTO = new UserSecurityDTO();
         if (accountHolderDTO.getId() != null) {
             userSecurityDTO.setId(accountHolderDTO.getId());
@@ -44,7 +44,7 @@ public class UserSecurityDTO extends UserDTO {
         userSecurityDTO.setLastName(accountHolderDTO.getLastName());
         userSecurityDTO.setUsername(accountHolderDTO.getUsername());
         userSecurityDTO.setEmail(accountHolderDTO.getEmail());
-        userSecurityDTO.setPassword(password);
+        userSecurityDTO.setPassword(accountHolderDTO.getPassword());
 
         return userSecurityDTO;
     }

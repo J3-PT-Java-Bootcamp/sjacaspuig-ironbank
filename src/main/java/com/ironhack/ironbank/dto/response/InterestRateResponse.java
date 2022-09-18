@@ -1,4 +1,4 @@
-package com.ironhack.ironbank.dto;
+package com.ironhack.ironbank.dto.response;
 
 import com.ironhack.ironbank.model.Money;
 import lombok.AllArgsConstructor;

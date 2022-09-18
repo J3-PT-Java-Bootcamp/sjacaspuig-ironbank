@@ -1,6 +1,6 @@
 package com.ironhack.ironbank.service;
 
-import com.ironhack.ironbank.dto.KeycloakUserRespone;
+import com.ironhack.ironbank.dto.response.UserSecurityCreateResponse;
 import com.ironhack.ironbank.dto.UserSecurityDTO;
 import com.ironhack.ironbank.enums.RealmGroup;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -9,7 +9,6 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -42,8 +41,8 @@ public class SecurityServiceImpl implements SecurityService {
     private String clientId;
 
     @Override
-    public KeycloakUserRespone createUser(UserSecurityDTO user, RealmGroup group) {
-        KeycloakUserRespone response = new KeycloakUserRespone();
+    public UserSecurityCreateResponse createUser(UserSecurityDTO user, RealmGroup group) {
+        UserSecurityCreateResponse response = new UserSecurityCreateResponse();
 
          try {
              UsersResource usersResource = getUsersResource();

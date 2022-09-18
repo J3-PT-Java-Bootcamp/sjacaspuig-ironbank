@@ -1,10 +1,9 @@
 package com.ironhack.ironbank.controller;
 
-import com.ironhack.ironbank.dto.KeycloakUserRespone;
+import com.ironhack.ironbank.dto.response.UserSecurityCreateResponse;
 import com.ironhack.ironbank.dto.UserSecurityDTO;
 import com.ironhack.ironbank.enums.RealmGroup;
 import com.ironhack.ironbank.service.SecurityServiceImpl;
-import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,15 +18,23 @@ public class UserController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<UserSecurityDTO> create(@RequestBody UserSecurityDTO user){
+    public ResponseEntity<UserSecurityDTO> create(@RequestBody UserSecurityDTO user, @RequestParam RealmGroup realmGroup) {
 
-        Faker faker = new Faker();
-        // Set group as admin or user depending the random number
-        RealmGroup group = faker.random().nextInt(0, 2) == 0 ? RealmGroup.ADMINS : RealmGroup.USERS;
-
-        KeycloakUserRespone response = securityServiceImpl.createUser(user, group);
+        UserSecurityCreateResponse response = securityServiceImpl.createUser(user, realmGroup);
         int status = response.getStatus();
         UserSecurityDTO userSecurityDTO = response.getUser();
         return ResponseEntity.status(status).body(userSecurityDTO);
+    }
+
+    @PostMapping("/verification-link")
+    public ResponseEntity<Void> sendVerificationLink(@RequestParam String id) {
+        securityServiceImpl.sendVerificationLink(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> sendResetPassword(@RequestParam String id) {
+        securityServiceImpl.sendResetPassword(id);
+        return ResponseEntity.noContent().build();
     }
 }

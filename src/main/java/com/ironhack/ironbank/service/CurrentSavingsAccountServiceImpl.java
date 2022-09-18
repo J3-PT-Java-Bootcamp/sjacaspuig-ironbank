@@ -1,7 +1,7 @@
 package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.CurrentSavingsAccountDTO;
-import com.ironhack.ironbank.dto.InterestRateResponse;
+import com.ironhack.ironbank.dto.response.InterestRateResponse;
 import com.ironhack.ironbank.enums.TransactionStatus;
 import com.ironhack.ironbank.enums.TransactionType;
 import com.ironhack.ironbank.model.MyDecimal;

@@ -31,7 +31,14 @@ public class ThirdPartyController {
 
     @PostMapping
     public ResponseEntity<ThirdPartyDTO> create(@RequestBody @Valid ThirdPartyDTO thirdPartyDTO) {
-        return ResponseEntity.ok(thirdPartyService.create(thirdPartyDTO));
+        var response = thirdPartyService.create(thirdPartyDTO);
+        if (response.getStatus() == 201) {
+            return ResponseEntity.status(201).body(response.getThirdParty());
+        } else if (response.getStatus() == 409) {
+            return ResponseEntity.status(409).body(response.getThirdParty());
+        } else {
+            return ResponseEntity.status(500).build();
+        }
     }
 
     @PutMapping("/{id}")

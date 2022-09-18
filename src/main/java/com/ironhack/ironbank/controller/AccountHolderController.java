@@ -30,8 +30,16 @@ public class AccountHolderController {
     }
 
     @PostMapping
-    public ResponseEntity<AccountHolderDTO> create(@RequestBody @Valid AccountHolderDTO accountHoldertDTO) {
-        return ResponseEntity.ok(accountHolderService.create(accountHoldertDTO, "password"));
+    public ResponseEntity<AccountHolderDTO> create(@RequestBody @Valid AccountHolderDTO accountHolderDTO) {
+        var response = accountHolderService.create(accountHolderDTO);
+
+        if (response.getStatus() == 201) {
+            return ResponseEntity.status(201).body(response.getAccountHolder());
+        } else if (response.getStatus() == 409) {
+            return ResponseEntity.status(409).body(response.getAccountHolder());
+        } else {
+            return ResponseEntity.status(500).build();
+        }
     }
 
     @PutMapping("/{id}")

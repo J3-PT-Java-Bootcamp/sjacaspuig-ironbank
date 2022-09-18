@@ -1,6 +1,9 @@
 package com.ironhack.ironbank.service;
 
+import com.ironhack.ironbank.dto.response.AccountHolderCreateResponse;
 import com.ironhack.ironbank.dto.AccountHolderDTO;
+import com.ironhack.ironbank.dto.UserSecurityDTO;
+import com.ironhack.ironbank.enums.RealmGroup;
 import com.ironhack.ironbank.model.user.AccountHolder;
 import com.ironhack.ironbank.repository.AccountHolderRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,31 +17,34 @@ import java.util.List;
 public class AccountHolderServiceImpl implements AccountHolderService {
 
     private final AccountHolderRepository accountHolderRepository;
-//    private final SecurityService securityService;
+    private final SecurityService securityService;
 
 
     @Override
-    public AccountHolderDTO create(AccountHolderDTO accountHolderDTO, String password) {
+    public AccountHolderCreateResponse create(AccountHolderDTO accountHolderDTO) {
+        var response = new AccountHolderCreateResponse();
         if(accountHolderDTO.getId() != null && accountHolderRepository.findById(accountHolderDTO.getId()).isPresent()) {
-            throw new IllegalArgumentException("Account holder already exists");
+            response.setStatus(409);
+            response.setMessage("User already exists");
+            return response;
         }
 
-//        var userSecurityDTO = UserSecurityDTO.fromDTO(accountHolderDTO, password);
-//        var serviceResponse = securityService.createUser(userSecurityDTO, RealmGroup.USERS);
-//        var status = (Integer) serviceResponse[0];
-//        UserSecurityDTO userSecurityDTOCreated = (UserSecurityDTO) serviceResponse[1];
+        var userSecurityDTO = UserSecurityDTO.fromDTO(accountHolderDTO);
+        var serviceResponse = securityService.createUser(userSecurityDTO, RealmGroup.ADMINS);
+        response.setStatus(serviceResponse.getStatus());
+        UserSecurityDTO userSecurityDTOCreated = serviceResponse.getUser();
 
-//        if (status == 201) {
+        if (response.getStatus() == 201) {
             var accountHolder = AccountHolder.fromDTO(accountHolderDTO);
-//            accountHolder.setId(userSecurityDTOCreated.getId());
+            accountHolder.setId(userSecurityDTOCreated.getId());
             accountHolder = accountHolderRepository.save(accountHolder);
-            return AccountHolderDTO.fromEntity(accountHolder);
-//        } else if (status == 409) {
-//            var accountHolder = accountHolderRepository.findById(userSecurityDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Account holder not found"));
-//            return AccountHolderDTO.fromEntity(accountHolder);
-//        } else {
-//            throw new IllegalArgumentException("Error creating user");
-//        }
+            response.setAccountHolder(AccountHolderDTO.fromEntity(accountHolder));
+        } else if (response.getStatus() == 409) {
+            var accountHolder = accountHolderRepository.findById(userSecurityDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Account holder not found"));
+            response.setAccountHolder(AccountHolderDTO.fromEntity(accountHolder));
+        }
+
+        return response;
     }
 
     @Override
@@ -57,8 +63,8 @@ public class AccountHolderServiceImpl implements AccountHolderService {
     public AccountHolderDTO update(String id, AccountHolderDTO accountHolderDTO) {
         var accountHolder = accountHolderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Account holder not found"));
 
-//        var userSecurityDTO = UserSecurityDTO.fromDTO(accountHolderDTO, null);
-//        securityService.updateUser(accountHolder.getId(), userSecurityDTO);
+        var userSecurityDTO = UserSecurityDTO.fromDTO(accountHolderDTO);
+        securityService.updateUser(accountHolder.getId(), userSecurityDTO);
 
         var accountHolderUpdated = AccountHolder.fromDTO(accountHolderDTO);
         accountHolderUpdated.setId(accountHolder.getId());
@@ -68,7 +74,7 @@ public class AccountHolderServiceImpl implements AccountHolderService {
 
     @Override
     public void delete(String id) {
-//        securityService.deleteUser(id);
+        securityService.deleteUser(id);
         accountHolderRepository.deleteById(id);
     }
 

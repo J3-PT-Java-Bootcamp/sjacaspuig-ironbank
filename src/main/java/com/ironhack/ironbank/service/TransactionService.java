@@ -1,6 +1,6 @@
 package com.ironhack.ironbank.service;
 
-import com.ironhack.ironbank.dto.InterestRateResponse;
+import com.ironhack.ironbank.dto.response.InterestRateResponse;
 import com.ironhack.ironbank.dto.TransactionDTO;
 import com.ironhack.ironbank.model.account.Account;
 
