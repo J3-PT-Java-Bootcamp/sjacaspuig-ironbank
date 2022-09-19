@@ -89,9 +89,16 @@ public class PopulateConfiguration {
 
                 accountHolderDTO.setPrimaryAddress(addressDTO);
 
-                addressDTO.setStreet(faker.address().streetAddress());
-                addressDTO.setNumber(faker.address().buildingNumber());
-                accountHolderDTO.setSecondaryAddress(addressDTO);
+                if (i % 2 == 0) {
+                    var secondaryAddressDTO = new AddressDTO();
+                    secondaryAddressDTO.setStreet(faker.address().streetAddress());
+                    secondaryAddressDTO.setNumber(faker.address().buildingNumber());
+                    secondaryAddressDTO.setCity(faker.address().city());
+                    secondaryAddressDTO.setCountry(faker.address().country());
+                    secondaryAddressDTO.setPostalCode(faker.address().zipCode());
+                    accountHolderDTO.setSecondaryAddress(secondaryAddressDTO);
+                }
+
                 accountHolderDTO.setPassword("password");
 
                 var user = accountHolderService.create(accountHolderDTO);

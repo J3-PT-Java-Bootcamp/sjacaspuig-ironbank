@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -20,11 +21,13 @@ public class AccountHolderController {
     private final AccountHolderService accountHolderService;
 
     @GetMapping
+    @RolesAllowed("backend-admin")
     public ResponseEntity<List<AccountHolderDTO>> findAll() {
         return ResponseEntity.ok(accountHolderService.findAll());
     }
 
     @GetMapping("/{id}")
+    @RolesAllowed("backend-admin")
     public ResponseEntity<AccountHolderDTO> findById(@PathVariable String id) {
         return ResponseEntity.ok(accountHolderService.findById(id));
     }
@@ -43,11 +46,13 @@ public class AccountHolderController {
     }
 
     @PutMapping("/{id}")
+    @RolesAllowed({"backend-admin"})
     public ResponseEntity<AccountHolderDTO> update(@PathVariable @Valid String id, @RequestBody @Valid AccountHolderDTO accountHoldertDTO) {
         return ResponseEntity.ok(accountHolderService.update(id, accountHoldertDTO));
     }
 
     @DeleteMapping("/{id}")
+    @RolesAllowed("backend-admin")
     public ResponseEntity<Void> delete(@PathVariable @Valid String id) {
         accountHolderService.delete(id);
         return ResponseEntity.noContent().build();

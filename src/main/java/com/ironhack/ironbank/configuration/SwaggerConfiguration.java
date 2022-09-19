@@ -16,6 +16,8 @@ import java.util.Collections;
 @EnableSwagger2
 public class SwaggerConfiguration {
 
+//    http://localhost:8080/swagger-ui.html
+
     @Bean
     public Docket apiDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -23,8 +25,7 @@ public class SwaggerConfiguration {
                 .apis(RequestHandlerSelectors.basePackage("com.ironhack.ironbank.controller"))
                 .paths(PathSelectors.any())
                 .build()
-                .apiInfo(getApiInfo())
-                ;
+                .apiInfo(getApiInfo());
     }
 
     private ApiInfo getApiInfo() {

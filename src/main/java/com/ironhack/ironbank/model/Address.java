@@ -21,6 +21,7 @@ public class Address {
     @NotNull
     private String street;
 
+    @NotNull
     private String number;
 
     @Column(name = "extra_information")

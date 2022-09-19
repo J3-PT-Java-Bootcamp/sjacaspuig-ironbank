@@ -17,15 +17,6 @@ public class UserController {
     private SecurityServiceImpl securityServiceImpl;
 
 
-    @PostMapping("/create")
-    public ResponseEntity<UserSecurityDTO> create(@RequestBody UserSecurityDTO user, @RequestParam RealmGroup realmGroup) {
-
-        UserSecurityCreateResponse response = securityServiceImpl.createUser(user, realmGroup);
-        int status = response.getStatus();
-        UserSecurityDTO userSecurityDTO = response.getUser();
-        return ResponseEntity.status(status).body(userSecurityDTO);
-    }
-
     @PostMapping("/verification-link")
     public ResponseEntity<Void> sendVerificationLink(@RequestParam String id) {
         securityServiceImpl.sendVerificationLink(id);
