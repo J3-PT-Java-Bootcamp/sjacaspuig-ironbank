@@ -30,7 +30,7 @@ public class AccountHolderServiceImpl implements AccountHolderService {
         }
 
         var userSecurityDTO = UserSecurityDTO.fromDTO(accountHolderDTO);
-        var serviceResponse = securityService.createUser(userSecurityDTO, RealmGroup.ADMINS);
+        var serviceResponse = securityService.createUser(userSecurityDTO, RealmGroup.USERS);
         response.setStatus(serviceResponse.getStatus());
         UserSecurityDTO userSecurityDTOCreated = serviceResponse.getUser();
 

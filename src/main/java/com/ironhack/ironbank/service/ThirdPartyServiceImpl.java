@@ -5,9 +5,11 @@ import com.ironhack.ironbank.dto.ThirdPartyDTO;
 import com.ironhack.ironbank.model.user.ThirdParty;
 import com.ironhack.ironbank.repository.ThirdPartyRepository;
 import lombok.RequiredArgsConstructor;
+import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -23,6 +25,10 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
             response.setStatus(409);
             response.setMessage("User already exists");
             return response;
+        }
+
+        if(thirdPartyDTO.getId() == null) {
+            thirdPartyDTO.setId(UUID.randomUUID().toString());
         }
 
         var thirdParty = ThirdParty.fromDTO(thirdPartyDTO);

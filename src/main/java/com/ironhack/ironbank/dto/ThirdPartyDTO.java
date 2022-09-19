@@ -18,7 +18,11 @@ public class ThirdPartyDTO extends UserDTO {
 
         public static ThirdPartyDTO fromEntity(ThirdParty thirdParty) {
             var thirdPartyDTO = new ThirdPartyDTO();
-            thirdPartyDTO.setId(thirdParty.getId());
+
+            if (thirdParty.getId() != null) {
+                thirdPartyDTO.setId(thirdParty.getId());
+            }
+
             thirdPartyDTO.setFirstName(thirdParty.getFirstName());
             thirdPartyDTO.setLastName(thirdParty.getLastName());
             thirdPartyDTO.setHashedKey(thirdParty.getHashedKey());
