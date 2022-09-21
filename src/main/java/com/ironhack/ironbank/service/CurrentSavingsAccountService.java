@@ -14,6 +14,7 @@ public interface CurrentSavingsAccountService {
     CurrentSavingsAccountDTO findByIban(@Valid String iban);
     Optional<CurrentSavingsAccount> findEntity(@Valid String iban);
     List<CurrentSavingsAccountDTO> findAll();
+    List<CurrentSavingsAccountDTO> findByAccountHolderId(@Valid String id);
     List<CurrentSavingsAccount> findAllEntities();
     CurrentSavingsAccountDTO update(@Valid String iban, @Valid CurrentSavingsAccountDTO currentSavingsAccountDTO);
     void delete(@Valid String iban);

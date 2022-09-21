@@ -14,6 +14,7 @@ public interface CurrentStudentCheckingAccountService {
     CurrentStudentCheckingAccountDTO findByIban(@Valid String iban);
     Optional<CurrentStudentCheckingAccount> findEntity(@Valid String iban);
     List<CurrentStudentCheckingAccountDTO> findAll();
+    List<CurrentStudentCheckingAccountDTO> findByAccountHolderId(@Valid String id);
     List<CurrentStudentCheckingAccount> findAllEntities();
     CurrentStudentCheckingAccountDTO update(@Valid String iban, @Valid CurrentStudentCheckingAccountDTO currentStudentCheckingAccountDTO);
     void delete(@Valid String iban);

@@ -13,6 +13,7 @@ public interface CreditAccountService {
     CreditAccountDTO findByIban(@Valid String iban);
     Optional<CreditAccount> findEntity(@Valid String iban);
     List<CreditAccountDTO> findAll();
+    List<CreditAccountDTO> findByAccountHolderId(@Valid String id);
     List<CreditAccount> findAllEntities();
     CreditAccountDTO update(@Valid String iban, @Valid CreditAccountDTO creditAccountDTO);
     void delete(@Valid String iban);

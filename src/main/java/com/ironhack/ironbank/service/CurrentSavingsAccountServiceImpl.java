@@ -123,6 +123,12 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
         return CurrentSavingsAccountDTO.fromEntity(currentSavingsAccount);
     }
 
+    @Override
+    public List<CurrentSavingsAccountDTO> findByAccountHolderId(String id) {
+        var currentSavingsAccounts = currentSavingsAccountRepository.findAllByPrimaryOwnerIdOrSecondaryOwnerId(id, id);
+        return CurrentSavingsAccountDTO.fromList(currentSavingsAccounts);
+    }
+
     private CurrentSavingsAccount applyInterest(CurrentSavingsAccount savingsAccount) {
         var interestRate = getInterestEarnings(savingsAccount);
 

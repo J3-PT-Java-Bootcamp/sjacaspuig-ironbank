@@ -92,4 +92,10 @@ public class CurrentStudentCheckingAccountServiceImpl implements CurrentStudentC
         currentStudentCheckingAccount = currentStudentCheckingAccountRepository.save(currentStudentCheckingAccount);
         return CurrentStudentCheckingAccountDTO.fromEntity(currentStudentCheckingAccount);
     }
+
+    @Override
+    public List<CurrentStudentCheckingAccountDTO> findByAccountHolderId(String id) {
+        var currentStudentCheckingAccounts = currentStudentCheckingAccountRepository.findAllByPrimaryOwnerIdOrSecondaryOwnerId(id, id);
+        return CurrentStudentCheckingAccountDTO.fromList(currentStudentCheckingAccounts);
+    }
 }

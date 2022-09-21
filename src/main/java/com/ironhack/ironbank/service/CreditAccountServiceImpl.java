@@ -130,6 +130,12 @@ public class CreditAccountServiceImpl implements CreditAccountService {
 
         return creditAccount;
     }
+
+    @Override
+    public List<CreditAccountDTO> findByAccountHolderId(String id) {
+        var creditAccounts = creditAccountRepository.findAllByPrimaryOwnerIdOrSecondaryOwnerId(id, id);
+        return CreditAccountDTO.fromList(creditAccounts);
+    }
     private InterestRateResponse getInterestEarnings(CreditAccount creditAccount) {
         int diffMonths = 0;
         Money interestEarnings = new Money(new BigDecimal("0"));

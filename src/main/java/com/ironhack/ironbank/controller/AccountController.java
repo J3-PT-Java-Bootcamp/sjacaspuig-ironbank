@@ -45,4 +45,10 @@ public class AccountController {
         accountService.changeStatus(iban, accountStatusDTO);
         return ResponseEntity.ok(accountService.findByIban(iban));
     }
+
+    @GetMapping("/user/{id}")
+    @RolesAllowed("backend-user")
+    public ResponseEntity<List<AccountDTO>> findByAccountHolderId(@PathVariable @Valid String id) {
+        return ResponseEntity.ok(accountService.findByAccountHolderId(id));
+    }
 }

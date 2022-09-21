@@ -122,6 +122,12 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
         return CurrentCheckingAccountDTO.fromEntity(currentCheckingAccount);
     }
 
+    @Override
+    public List<CurrentCheckingAccountDTO> findByAccountHolderId(String id) {
+        var currentCheckingAccounts = currentCheckingAccountRepository.findAllByPrimaryOwnerIdOrSecondaryOwnerId(id, id);
+        return CurrentCheckingAccountDTO.fromList(currentCheckingAccounts);
+    }
+
     private CurrentCheckingAccount checkBalance(CurrentCheckingAccount currentCheckingAccount) {
         if (currentCheckingAccount.getBalance().getAmount().compareTo(CurrentCheckingAccount.MINIMUM_BALANCE.getAmount()) < 0) {
             var balanceUpdated = currentCheckingAccount.getBalance().decreaseAmount(Account.PENALTY_FEE);

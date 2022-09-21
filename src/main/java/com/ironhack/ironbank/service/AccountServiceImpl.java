@@ -94,6 +94,15 @@ public class AccountServiceImpl implements AccountService {
         } else {
             throw new IllegalArgumentException("Account is of the type" + account.getAccountType() + "and cannot be frozen");
         }
+    }
 
+    @Override
+    public List<AccountDTO> findByAccountHolderId(@Valid String id) {
+        List<AccountDTO> accountDTOList = new ArrayList<>();
+        accountDTOList.addAll(checkingAccountService.findByAccountHolderId(id));
+        accountDTOList.addAll(savingsAccountService.findByAccountHolderId(id));
+        accountDTOList.addAll(studentCheckingAccountService.findByAccountHolderId(id));
+        accountDTOList.addAll(creditAccountService.findByAccountHolderId(id));
+        return accountDTOList;
     }
 }
