@@ -26,10 +26,10 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "admin_id")
-//    @CreatedBy
-//    private Admin admin;
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    @CreatedBy
+    private Admin admin;
 
     @ManyToOne()
     @JoinColumn(name = "source_account_id")
@@ -90,7 +90,7 @@ public class Transaction {
         }
 
         // check if fee is null
-        if (transactionDTO.getFee() != null) {
+        if (transactionDTO.getFee() != null && transactionDTO.getFee().getAmount() != null) {
             var fee = Money.fromDTO(transactionDTO.getFee());
             transaction.setFee(fee);
         } else {

@@ -40,8 +40,14 @@ public class AccountHolderServiceImpl implements AccountHolderService {
             accountHolder = accountHolderRepository.save(accountHolder);
             response.setAccountHolder(AccountHolderDTO.fromEntity(accountHolder));
         } else if (response.getStatus() == 409) {
-            var accountHolder = accountHolderRepository.findById(userSecurityDTOCreated.getId()).orElseThrow(() -> new IllegalArgumentException("Account holder not found"));
-            response.setAccountHolder(AccountHolderDTO.fromEntity(accountHolder));
+            var accountHolder = accountHolderRepository.findById(userSecurityDTOCreated.getId());
+
+            if (accountHolder.isPresent()) {
+                response.setAccountHolder(AccountHolderDTO.fromEntity(accountHolder.get()));
+            } else {
+                response.setStatus(500);
+                response.setMessage("User exists on Keycloak but not in the database");
+            }
         }
 
         return response;

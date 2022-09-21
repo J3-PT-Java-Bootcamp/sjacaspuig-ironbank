@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.service;
 
+import com.ironhack.ironbank.dto.AccountStatusDTO;
 import com.ironhack.ironbank.dto.CurrentCheckingAccountDTO;
 import com.ironhack.ironbank.model.account.CurrentCheckingAccount;
 
@@ -16,4 +17,5 @@ public interface CurrentCheckingAccountService {
     List<CurrentCheckingAccount> findAllEntities();
     CurrentCheckingAccountDTO update(@Valid String iban, @Valid CurrentCheckingAccountDTO currentCheckingAccountDTO);
     void delete(@Valid String iban);
+    CurrentCheckingAccountDTO changeStatus(@Valid String iban, @Valid AccountStatusDTO accountStatusDTO);
 }

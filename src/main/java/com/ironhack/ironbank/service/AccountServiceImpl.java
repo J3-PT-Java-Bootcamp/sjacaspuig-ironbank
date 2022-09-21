@@ -6,6 +6,7 @@ import com.ironhack.ironbank.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -79,5 +80,20 @@ public class AccountServiceImpl implements AccountService {
         accountList.addAll(studentCheckingAccountService.findAllEntities());
         accountList.addAll(creditAccountService.findAllEntities());
         return accountList;
+    }
+
+    @Override
+    public AccountDTO changeStatus(@Valid String iban, @Valid AccountStatusDTO accountStatusDTO) {
+        var account = accountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        if(account instanceof CurrentCheckingAccount) {
+            return checkingAccountService.changeStatus(iban, accountStatusDTO);
+        } else if(account instanceof CurrentSavingsAccount) {
+            return savingsAccountService.changeStatus(iban, accountStatusDTO);
+        } else if(account instanceof CurrentStudentCheckingAccount) {
+            return studentCheckingAccountService.changeStatus(iban, accountStatusDTO);
+        } else {
+            throw new IllegalArgumentException("Account is of the type" + account.getAccountType() + "and cannot be frozen");
+        }
+
     }
 }

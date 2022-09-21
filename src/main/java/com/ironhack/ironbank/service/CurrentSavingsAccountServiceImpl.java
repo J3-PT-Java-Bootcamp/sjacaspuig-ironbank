@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.service;
 
+import com.ironhack.ironbank.dto.AccountStatusDTO;
 import com.ironhack.ironbank.dto.CurrentSavingsAccountDTO;
 import com.ironhack.ironbank.dto.response.InterestRateResponse;
 import com.ironhack.ironbank.enums.TransactionStatus;
@@ -18,6 +19,7 @@ import com.ironhack.ironbank.utils.IbanGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -111,6 +113,14 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
     @Override
     public void delete(String iban) {
         currentSavingsAccountRepository.deleteById(iban);
+    }
+
+    @Override
+    public CurrentSavingsAccountDTO changeStatus(@Valid String iban, @Valid AccountStatusDTO accountStatusDTO) {
+        var currentSavingsAccount = currentSavingsAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Savings account not found"));
+        currentSavingsAccount.setStatus(accountStatusDTO.getStatus());
+        currentSavingsAccount = currentSavingsAccountRepository.save(currentSavingsAccount);
+        return CurrentSavingsAccountDTO.fromEntity(currentSavingsAccount);
     }
 
     private CurrentSavingsAccount applyInterest(CurrentSavingsAccount savingsAccount) {

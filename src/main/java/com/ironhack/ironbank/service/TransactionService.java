@@ -12,6 +12,8 @@ public interface TransactionService {
     TransactionDTO create(@Valid TransactionDTO transactionDTO);
     TransactionDTO findById(@Valid Long id);
     List<TransactionDTO> findAll();
+    List<TransactionDTO> findByIban(@Valid String iban);
+    List<TransactionDTO> findByAccountHolderId(@Valid String id);
     void createInterestTransaction(Account account, InterestRateResponse response);
     void createPenaltyMinBalanceTransaction(Account account);
 }

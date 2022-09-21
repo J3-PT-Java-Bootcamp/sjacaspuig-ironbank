@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.service;
 
+import com.ironhack.ironbank.dto.AccountStatusDTO;
 import com.ironhack.ironbank.dto.CurrentStudentCheckingAccountDTO;
 import com.ironhack.ironbank.model.account.CurrentStudentCheckingAccount;
 import com.ironhack.ironbank.model.user.AccountHolder;
@@ -82,5 +83,13 @@ public class CurrentStudentCheckingAccountServiceImpl implements CurrentStudentC
     @Override
     public void delete(String iban) {
         currentStudentCheckingAccountRepository.deleteById(iban);
+    }
+
+    @Override
+    public CurrentStudentCheckingAccountDTO changeStatus(String iban, AccountStatusDTO accountStatusDTO) {
+        var currentStudentCheckingAccount = currentStudentCheckingAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Student checking account not found"));
+        currentStudentCheckingAccount.setStatus(accountStatusDTO.getStatus());
+        currentStudentCheckingAccount = currentStudentCheckingAccountRepository.save(currentStudentCheckingAccount);
+        return CurrentStudentCheckingAccountDTO.fromEntity(currentStudentCheckingAccount);
     }
 }

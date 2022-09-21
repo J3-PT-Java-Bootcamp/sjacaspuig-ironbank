@@ -35,10 +35,23 @@ public class TransactionController {
     public ResponseEntity<TransactionDTO> create(@RequestBody @Valid TransactionDTO transactionDTO) {
         var transactionResponse = transactionService.create(transactionDTO);
 
-        if (transactionResponse.getStatus().equals("SUCCESS")) {
+        if (transactionResponse.getStatus().equals("COMPLETED")) {
             return ResponseEntity.ok(transactionDTO);
         } else {
             return ResponseEntity.badRequest().body(transactionDTO);
         }
+    }
+
+    // Get transaction by iban
+    @GetMapping("/iban/{iban}")
+    @RolesAllowed("backend-user")
+    public ResponseEntity<List<TransactionDTO>> findByIban(@PathVariable @Valid String iban) {
+        return ResponseEntity.ok(transactionService.findByIban(iban));
+    }
+
+    @GetMapping("/account-holder/{id}")
+    @RolesAllowed("backend-user")
+    public ResponseEntity<List<TransactionDTO>> findByAccountHolderId(@PathVariable @Valid String id) {
+        return ResponseEntity.ok(transactionService.findByAccountHolderId(id));
     }
 }

@@ -39,15 +39,6 @@ public class PopulateConfiguration {
     @Bean
     public void populate() {
 
-        adminRepository.deleteAll();
-        accountHolderRepository.deleteAll();
-        thirdPartyRepository.deleteAll();
-        checkingAccountRepository.deleteAll();
-        savingsAccountRepository.deleteAll();
-        studentAccountRepository.deleteAll();
-        creditAccountRepository.deleteAll();
-        transactionRepository.deleteAll();
-
         if (adminService.findAll().size() == 0) {
             // Populate admin
             System.out.println("*******************************");
@@ -106,7 +97,6 @@ public class PopulateConfiguration {
             }
         }
 
-
         if (thirdPartyService.findAll().size() == 0) {
             // Populate third parties
             System.out.println("*******************************");
@@ -117,7 +107,7 @@ public class PopulateConfiguration {
                 thirdPartyDTO.setId(faker.internet().uuid());
                 thirdPartyDTO.setFirstName(faker.name().firstName());
                 thirdPartyDTO.setLastName(faker.name().lastName());
-                thirdPartyDTO.setHashedKey(faker.internet().password());
+                thirdPartyDTO.setHashedKey(faker.hashing().sha256());
                 var user = thirdPartyService.create(thirdPartyDTO);
                 System.out.println("Status: " + user.getStatus() + " - " + user.getMessage());
             }
@@ -383,6 +373,5 @@ public class PopulateConfiguration {
                 }
             }
         }
-
     }
 }

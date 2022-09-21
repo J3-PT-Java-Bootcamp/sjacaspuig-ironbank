@@ -21,13 +21,13 @@ public class AccountHolderController {
     private final AccountHolderService accountHolderService;
 
     @GetMapping
-    @RolesAllowed("backend-admin")
+    @RolesAllowed({"backend-super-admin", "backend-admin"})
     public ResponseEntity<List<AccountHolderDTO>> findAll() {
         return ResponseEntity.ok(accountHolderService.findAll());
     }
 
     @GetMapping("/{id}")
-    @RolesAllowed("backend-admin")
+    @RolesAllowed({"backend-super-admin", "backend-admin", "backend-user"})
     public ResponseEntity<AccountHolderDTO> findById(@PathVariable String id) {
         return ResponseEntity.ok(accountHolderService.findById(id));
     }
@@ -46,13 +46,13 @@ public class AccountHolderController {
     }
 
     @PutMapping("/{id}")
-    @RolesAllowed({"backend-admin"})
+    @RolesAllowed({"backend-super-admin", "backend-admin"})
     public ResponseEntity<AccountHolderDTO> update(@PathVariable @Valid String id, @RequestBody @Valid AccountHolderDTO accountHoldertDTO) {
         return ResponseEntity.ok(accountHolderService.update(id, accountHoldertDTO));
     }
 
     @DeleteMapping("/{id}")
-    @RolesAllowed("backend-admin")
+    @RolesAllowed({"backend-super-admin", "backend-admin"})
     public ResponseEntity<Void> delete(@PathVariable @Valid String id) {
         accountHolderService.delete(id);
         return ResponseEntity.noContent().build();

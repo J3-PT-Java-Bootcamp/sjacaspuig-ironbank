@@ -42,12 +42,12 @@ public class TransactionDTO {
 
         // Check if sourceAccount is null
         if (transaction.getSourceAccount() != null) {
-            transactionDTO.setSourceAccount(transaction.getSourceAccount().getIban().toString());
+            transactionDTO.setSourceAccount(transaction.getSourceAccount().getIban());
         }
 
         // Check if targetAccount is null
         if (transaction.getTargetAccount() != null) {
-            transactionDTO.setTargetAccount(transaction.getTargetAccount().getIban().toString());
+            transactionDTO.setTargetAccount(transaction.getTargetAccount().getIban());
         }
 
         var type = transaction.getType() == null ? TransactionType.TRANSFER : transaction.getType();
@@ -57,7 +57,7 @@ public class TransactionDTO {
         transactionDTO.setAmount(amountDTO);
         transactionDTO.setTransactionDate(transaction.getTransactionDate());
         transactionDTO.setStatus(transaction.getStatus());
-        if (transaction.getFee() != null) {
+        if (transaction.getFee() != null && transaction.getFee().getAmount() != null) {
             var feeDTO = MoneyDTO.fromEntity(transaction.getFee());
             transactionDTO.setFee(feeDTO);
         }
@@ -65,6 +65,7 @@ public class TransactionDTO {
         transactionDTO.setSecretKey(transaction.getSecretKey());
         transactionDTO.setConcept(transaction.getConcept());
         transactionDTO.setFailureReason(transaction.getFailureReason());
+
         return transactionDTO;
     }
 

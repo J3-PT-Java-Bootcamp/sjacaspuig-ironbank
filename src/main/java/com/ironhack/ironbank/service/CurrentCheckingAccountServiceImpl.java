@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.service;
 
+import com.ironhack.ironbank.dto.AccountStatusDTO;
 import com.ironhack.ironbank.dto.CurrentCheckingAccountDTO;
 import com.ironhack.ironbank.enums.TransactionStatus;
 import com.ironhack.ironbank.enums.TransactionType;
@@ -16,6 +17,7 @@ import com.ironhack.ironbank.utils.IbanGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -110,6 +112,14 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
     @Override
     public void delete(String iban) {
         currentCheckingAccountRepository.deleteById(iban);
+    }
+
+    @Override
+    public CurrentCheckingAccountDTO changeStatus(@Valid String iban, @Valid AccountStatusDTO accountStatusDTO) {
+        var currentCheckingAccount = currentCheckingAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Checking account not found"));
+        currentCheckingAccount.setStatus(accountStatusDTO.getStatus());
+        currentCheckingAccount = currentCheckingAccountRepository.save(currentCheckingAccount);
+        return CurrentCheckingAccountDTO.fromEntity(currentCheckingAccount);
     }
 
     private CurrentCheckingAccount checkBalance(CurrentCheckingAccount currentCheckingAccount) {

@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.controller;
 
 import com.ironhack.ironbank.dto.AccountDTO;
+import com.ironhack.ironbank.dto.AccountStatusDTO;
 import com.ironhack.ironbank.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +37,12 @@ public class AccountController {
     public ResponseEntity<Void> delete(@PathVariable @Valid String iban) {
         accountService.delete(iban);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/change-status/{iban}")
+    @RolesAllowed("backend-admin")
+    public ResponseEntity<AccountDTO> changeStatus(@PathVariable @Valid String iban, @RequestBody @Valid AccountStatusDTO accountStatusDTO) {
+        accountService.changeStatus(iban, accountStatusDTO);
+        return ResponseEntity.ok(accountService.findByIban(iban));
     }
 }

@@ -12,6 +12,7 @@ import com.ironhack.ironbank.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -173,10 +174,14 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private TransactionDTO saveFailedTransaction(Transaction transaction, String message) {
-        transaction.setFailureReason(message);
-        transaction.setStatus(TransactionStatus.FAILED);
-        transaction = transactionRepository.save(transaction);
-        return TransactionDTO.fromEntity(transaction);
+        if (transaction != null) {
+            transaction.setFailureReason(message);
+            transaction.setStatus(TransactionStatus.FAILED);
+            transaction = transactionRepository.save(transaction);
+            return TransactionDTO.fromEntity(transaction);
+        } else {
+            throw new RuntimeException("Transaction could not be saved");
+        }
     }
 
     @Override
@@ -201,6 +206,18 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setStatus(TransactionStatus.COMPLETED);
         transaction.setType(TransactionType.PENALTY_MIN_BALANCE);
         transactionRepository.save(transaction);
+    }
+
+    @Override
+    public List<TransactionDTO> findByIban(String iban) {
+        var transactions = transactionRepository.findBySourceAccountIbanOrTargetAccountIban(iban, iban);
+        return TransactionDTO.fromEntities(transactions);
+    }
+
+    @Override
+    public List<TransactionDTO> findByAccountHolderId(String id) {
+        var transactions = transactionRepository.findBySourceAccountPrimaryOwnerIdOrSourceAccountSecondaryOwnerIdOrTargetAccountPrimaryOwnerIdOrTargetAccountSecondaryOwnerId(id, id, id, id);
+        return TransactionDTO.fromEntities(transactions);
     }
     
     private AccountDTO updateAccount(String iban, AccountDTO accountDTO) {
