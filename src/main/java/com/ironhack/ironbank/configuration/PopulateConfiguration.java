@@ -1,7 +1,6 @@
 package com.ironhack.ironbank.configuration;
 
 import com.ironhack.ironbank.dto.*;
-import com.ironhack.ironbank.model.MyDecimal;
 import com.ironhack.ironbank.model.account.CurrentAccount;
 import com.ironhack.ironbank.repository.*;
 import com.ironhack.ironbank.service.*;
@@ -181,7 +180,7 @@ public class PopulateConfiguration {
                         while (interestRate == 0) {
                             interestRate = faker.number().randomDouble(4, 0, 1);
                         }
-                        savingsAccountDTO.setInterestRate(new MyDecimal(new BigDecimal(interestRate)));
+                        savingsAccountDTO.setInterestRate(new BigDecimal(interestRate));
                     }
 
                     var balance = new MoneyDTO();

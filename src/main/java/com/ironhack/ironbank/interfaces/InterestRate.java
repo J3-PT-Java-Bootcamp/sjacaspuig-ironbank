@@ -1,7 +1,5 @@
 package com.ironhack.ironbank.interfaces;
 
-import com.ironhack.ironbank.model.MyDecimal;
-
 import java.math.BigDecimal;
 
 public interface InterestRate {
@@ -10,7 +8,7 @@ public interface InterestRate {
         return isInterestRateValid;
     }
 
-    default boolean isInterestRateUnderMax(MyDecimal interestRate, MyDecimal maximumInterestRate) {
+    default boolean isInterestRateUnderMax(BigDecimal interestRate, BigDecimal maximumInterestRate) {
         var isInterestRateValid = interestRate.compareTo(maximumInterestRate) <= 0;
         return isInterestRateValid;
     }

@@ -5,7 +5,6 @@ import com.ironhack.ironbank.dto.CurrentSavingsAccountDTO;
 import com.ironhack.ironbank.enums.AccountStatus;
 import com.ironhack.ironbank.enums.AccountType;
 import com.ironhack.ironbank.interfaces.InterestRate;
-import com.ironhack.ironbank.model.MyDecimal;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.user.AccountHolder;
 import com.ironhack.ironbank.utils.DateService;
@@ -16,6 +15,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -24,8 +24,8 @@ import java.time.Instant;
 @Table(name = "current_savings_accounts")
 public class CurrentSavingsAccount extends CurrentAccount implements InterestRate {
 
-    private static final MyDecimal DEFAULT_INTEREST_RATE = AccountConstants.SAVINGS_ACCOUNT_DEFAULT_INTEREST_RATE;
-    private static final MyDecimal MAX_INTEREST_RATE = AccountConstants.SAVINGS_ACCOUNT_MAX_INTEREST_RATE;
+    private static final BigDecimal DEFAULT_INTEREST_RATE = AccountConstants.SAVINGS_ACCOUNT_DEFAULT_INTEREST_RATE;
+    private static final BigDecimal MAX_INTEREST_RATE = AccountConstants.SAVINGS_ACCOUNT_MAX_INTEREST_RATE;
     public static final Money DEFAULT_MINIMUM_BALANCE = AccountConstants.SAVINGS_ACCOUNT_DEFAULT_MINIMUM_BALANCE;
     private static final Money MIN_MINIMUM_BALANCE = AccountConstants.SAVINGS_ACCOUNT_MIN_MINIMUM_BALANCE;
 
@@ -41,9 +41,10 @@ public class CurrentSavingsAccount extends CurrentAccount implements InterestRat
     private Money minimumBalance;
 
     @NotNull
-    @Column(name = "interest_rate", precision=10, scale=5)
-    @Embedded
-    private MyDecimal interestRate;
+    @Column(name = "interest_rate")
+    @Max(value = 1, message = "Interest rate cannot be greater than 1")
+    @Min(value = 0, message = "Interest rate cannot be less than 0")
+    private BigDecimal interestRate;
 
     @Column(name = "interest_rate_date")
     private Instant interestRateDate;
@@ -63,7 +64,7 @@ public class CurrentSavingsAccount extends CurrentAccount implements InterestRat
         }
     }
 
-    public void setInterestRate(MyDecimal interestRate) {
+    public void setInterestRate(BigDecimal interestRate) {
         // Check if interest rate is null and if it is, set it to the default value
         if (interestRate == null) {
             this.interestRate = DEFAULT_INTEREST_RATE;

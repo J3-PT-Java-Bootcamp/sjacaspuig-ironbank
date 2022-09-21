@@ -1,6 +1,5 @@
 package com.ironhack.ironbank.dto;
 
-import com.ironhack.ironbank.model.MyDecimal;
 import com.ironhack.ironbank.model.account.CurrentSavingsAccount;
 import com.ironhack.ironbank.utils.DateService;
 import lombok.AllArgsConstructor;
@@ -8,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public class CurrentSavingsAccountDTO extends CurrentAccountDTO {
 
     private MoneyDTO minimumBalance;
-    private MyDecimal interestRate;
+    private BigDecimal interestRate;
     private Date interestRateDate;
 
     public static CurrentSavingsAccountDTO fromEntity(CurrentSavingsAccount currentSavingsAccount) {

@@ -5,7 +5,6 @@ import com.ironhack.ironbank.dto.CurrentSavingsAccountDTO;
 import com.ironhack.ironbank.dto.response.InterestRateResponse;
 import com.ironhack.ironbank.enums.TransactionStatus;
 import com.ironhack.ironbank.enums.TransactionType;
-import com.ironhack.ironbank.model.MyDecimal;
 import com.ironhack.ironbank.model.Money;
 import com.ironhack.ironbank.model.Transaction;
 import com.ironhack.ironbank.model.account.Account;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -159,9 +159,7 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
 
         if (diffYears >= 1) {
             var interestRate = savingsAccount.getInterestRate();
-            var decimal = interestRate.multiply(new MyDecimal(diffYears));
-//            interestRateApplied = interestRate.multiply(new BigDecimal(diffYears));
-            interestRateApplied = decimal.getValue();
+            interestRateApplied = interestRate.multiply(new BigDecimal(diffYears));
             interestEarnings = new Money(savingsAccount.getBalance().getAmount().multiply(interestRateApplied));
         }
 
