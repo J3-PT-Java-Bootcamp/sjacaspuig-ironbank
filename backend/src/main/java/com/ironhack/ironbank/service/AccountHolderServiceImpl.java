@@ -19,7 +19,6 @@ public class AccountHolderServiceImpl implements AccountHolderService {
     private final AccountHolderRepository accountHolderRepository;
     private final SecurityService securityService;
 
-
     @Override
     public AccountHolderCreateResponse create(AccountHolderDTO accountHolderDTO) {
         var response = new AccountHolderCreateResponse();

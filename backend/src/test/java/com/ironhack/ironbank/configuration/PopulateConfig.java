@@ -6,24 +6,34 @@ import com.ironhack.ironbank.repository.*;
 import com.ironhack.ironbank.service.*;
 import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
 
 
-@Configuration
+@TestConfiguration
 @RequiredArgsConstructor
 public class PopulateConfig {
 
     private final CurrentCheckingAccountService checkingAccountService;
+    private final CurrentStudentCheckingAccountService studentAccountService;
     private final CurrentSavingsAccountService savingsAccountService;
     private final CreditAccountService creditAccountService;
     private final AdminService adminService;
     private final AccountHolderService accountHolderService;
     private final ThirdPartyService thirdPartyService;
+    private final CurrentCheckingAccountRepository checkingAccountRepository;
+    private final CurrentSavingsAccountRepository savingsAccountRepository;
+    private final CurrentStudentCheckingAccountRepository studentAccountRepository;
+    private final CreditAccountRepository creditAccountRepository;
     private final TransactionService transactionService;
     private final AccountService accountService;
+    private final TransactionRepository transactionRepository;
+    private final AdminRepository adminRepository;
+    private final AccountHolderRepository accountHolderRepository;
+    private final ThirdPartyRepository thirdPartyRepository;
     private final Faker faker = new Faker();
 
     @Bean

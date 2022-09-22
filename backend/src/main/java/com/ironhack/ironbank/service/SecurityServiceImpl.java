@@ -39,7 +39,6 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Value("${custom.keycloak.client-id}")
     private String clientId;
-
     @Override
     public UserSecurityCreateResponse createUser(UserSecurityDTO user, RealmGroup group) {
         UserSecurityCreateResponse response = new UserSecurityCreateResponse();
@@ -97,18 +96,6 @@ public class SecurityServiceImpl implements SecurityService {
     public void deleteUser(String id){
         UsersResource usersResource = getUsersResource();
         usersResource.get(id).remove();
-    }
-
-    @Override
-    public void sendVerificationLink(String userId) {
-        UsersResource usersResource = getUsersResource();
-        usersResource.get(userId).sendVerifyEmail();
-    }
-
-    @Override
-    public void sendResetPassword(String id) {
-        UsersResource usersResource = getUsersResource();
-        usersResource.get(id).executeActionsEmail(Arrays.asList("UPDATE_PASSWORD"));
     }
 
     private static CredentialRepresentation createPasswordCredentials(String password) {

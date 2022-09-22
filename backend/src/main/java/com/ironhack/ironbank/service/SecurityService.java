@@ -11,6 +11,4 @@ public interface SecurityService {
     UserSecurityCreateResponse createUser(@Valid UserSecurityDTO user, RealmGroup group);
     void updateUser(@Valid String id, @Valid UserSecurityDTO user);
     void deleteUser(@Valid String id);
-    void sendVerificationLink(@Valid String id);
-    void sendResetPassword(@Valid String id);
 }

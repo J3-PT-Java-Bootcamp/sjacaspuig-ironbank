@@ -16,7 +16,7 @@ import java.util.Collections;
 @EnableSwagger2
 public class SwaggerConfig {
 
-//    http://localhost:8080/swagger-ui.html
+    // Swagger url to UI: http://localhost:8080/swagger-ui.html
 
     @Bean
     public Docket apiDocket() {
