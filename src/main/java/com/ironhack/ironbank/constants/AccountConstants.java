@@ -19,4 +19,5 @@ public final class AccountConstants {
     public static final Money SAVINGS_ACCOUNT_DEFAULT_MINIMUM_BALANCE = new Money(new BigDecimal("1000"));
     public static final Money SAVINGS_ACCOUNT_MIN_MINIMUM_BALANCE = new Money(new BigDecimal("100"));
     public static final Money GLOBAL_MINIMUM_BALANCE = new Money(new BigDecimal("0"));
+    public static final String PRIMARY_OWNER_YOUNGER_THAN_24 = "Primary owner is younger than";
 }

@@ -83,7 +83,7 @@ public class CurrentSavingsAccount extends CurrentAccount implements InterestRat
         if (getStatus() == AccountStatus.ACTIVE) {
             super.setBalance(balance);
         } else {
-            throw new IllegalArgumentException("Account status must be active to set the balance");
+            throw new IllegalArgumentException("The status of the account with id " + getIban() + " should be ACTIVE to set the balance");
         }
     }
 

@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -38,15 +37,15 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
     @Override
     public CurrentSavingsAccountDTO create(CurrentSavingsAccountDTO currentSavingsAccountDTO) {
         if(currentSavingsAccountDTO.getIban() != null && currentSavingsAccountRepository.findById(currentSavingsAccountDTO.getIban()).isPresent()) {
-            throw new IllegalArgumentException("Savings account already exists");
+            throw new IllegalArgumentException("Savings account with IBAN " + currentSavingsAccountDTO.getIban() + " already exists");
         }
         if(currentSavingsAccountDTO.getBalance().getAmount().compareTo(new BigDecimal("0")) < 0) {
-            throw new IllegalArgumentException("Balance cannot be negative");
+            throw new IllegalArgumentException("Balance of a the savings account with IBAN " + currentSavingsAccountDTO.getIban() + " cannot be negative");
         }
 
         BigDecimal minimumBalance = currentSavingsAccountDTO.getMinimumBalance() != null ? currentSavingsAccountDTO.getMinimumBalance().getAmount() : CurrentSavingsAccount.DEFAULT_MINIMUM_BALANCE.getAmount();
         if(currentSavingsAccountDTO.getBalance().getAmount().compareTo(minimumBalance) < 0) {
-            throw new IllegalArgumentException("Balance cannot be less than the minimum balance");
+            throw new IllegalArgumentException("Balance of a the savings account with IBAN " + currentSavingsAccountDTO.getIban() + " cannot be lower than the minimum balance of " + minimumBalance);
         }
 
         // Generate iban, check if it exists on accounts, if it does, generate another one, if not, save it
@@ -68,7 +67,7 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
 
     @Override
     public CurrentSavingsAccountDTO findByIban(String iban) {
-        var currentSavingsAccount = findEntity(iban).orElseThrow(() -> new IllegalArgumentException("Savings account not found"));
+        var currentSavingsAccount = findEntity(iban).orElseThrow(() -> new IllegalArgumentException("Savings account with IBAN " + iban + " does not exist"));
         return CurrentSavingsAccountDTO.fromEntity(currentSavingsAccount);
     }
 
@@ -99,7 +98,7 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
 
     @Override
     public CurrentSavingsAccountDTO update(String iban, CurrentSavingsAccountDTO currentSavingsAccountDTO) {
-        var currentSavingsAccount = currentSavingsAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Savings account not found"));
+        var currentSavingsAccount = currentSavingsAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Savings account with IBAN " + iban + " does not exist"));
         var currentSavingsAccountUpdated = CurrentSavingsAccount.fromDTO(currentSavingsAccountDTO, currentSavingsAccount.getPrimaryOwner(), currentSavingsAccount.getSecondaryOwner());
         currentSavingsAccountUpdated.setIban(currentSavingsAccount.getIban());
 
@@ -117,7 +116,7 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
 
     @Override
     public CurrentSavingsAccountDTO changeStatus(@Valid String iban, @Valid AccountStatusDTO accountStatusDTO) {
-        var currentSavingsAccount = currentSavingsAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Savings account not found"));
+        var currentSavingsAccount = currentSavingsAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Savings account with IBAN " + iban + " does not exist"));
         currentSavingsAccount.setStatus(accountStatusDTO.getStatus());
         currentSavingsAccount = currentSavingsAccountRepository.save(currentSavingsAccount);
         return CurrentSavingsAccountDTO.fromEntity(currentSavingsAccount);
@@ -192,7 +191,7 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
         transaction.setSourceAccount(account);
         transaction.setAmount(Account.PENALTY_FEE);
         transaction.setName(account.getPrimaryOwner().getFirstName() + " " + account.getPrimaryOwner().getLastName());
-        transaction.setConcept("Penalty fee for not having the minimum balance");
+        transaction.setConcept("Penalty fee of " + Account.PENALTY_FEE + " for not having the minimum balance.");
         transaction.setStatus(TransactionStatus.COMPLETED);
         transaction.setType(TransactionType.PENALTY_MIN_BALANCE);
         transactionRepository.save(transaction);

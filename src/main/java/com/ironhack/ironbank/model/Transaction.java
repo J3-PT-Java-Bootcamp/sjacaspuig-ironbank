@@ -28,7 +28,6 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "admin_id")
-    @CreatedBy
     private Admin admin;
 
     @ManyToOne()
@@ -79,7 +78,7 @@ public class Transaction {
         setStatus(TransactionStatus.PENDING);
     }
 
-    public static Transaction fromDTO(TransactionDTO transactionDTO, Account sourceAccount, Account targetAccount) {
+    public static Transaction fromDTO(TransactionDTO transactionDTO, Account sourceAccount, Account targetAccount, Admin admin) {
         var transaction = new Transaction();
         transaction.setId(transactionDTO.getId());
         transaction.setName(transactionDTO.getName());
@@ -109,6 +108,7 @@ public class Transaction {
         transaction.setTargetAccount(targetAccount);
         transaction.setConcept(transactionDTO.getConcept());
         transaction.setFailureReason(transactionDTO.getFailureReason());
+        transaction.setAdmin(admin);
         return transaction;
     }
 }

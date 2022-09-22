@@ -29,7 +29,7 @@ public class CurrentStudentCheckingAccountServiceImpl implements CurrentStudentC
             throw new IllegalArgumentException("Student checking account already exists");
         }
         if(currentStudentCheckingAccountDTO.getBalance().getAmount().compareTo(new BigDecimal("0")) < 0) {
-            throw new IllegalArgumentException("Balance cannot be negative");
+            throw new IllegalArgumentException("Balance of the student checking account with IBAN " + currentStudentCheckingAccountDTO.getIban() + " cannot be negative");
         }
 
         // Generate iban, check if it exists on accounts, if it does, generate another one, if not, save it

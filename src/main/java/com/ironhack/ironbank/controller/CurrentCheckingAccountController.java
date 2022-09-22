@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.controller;
 
+import com.ironhack.ironbank.dto.AccountDTO;
 import com.ironhack.ironbank.dto.CurrentCheckingAccountDTO;
 import com.ironhack.ironbank.service.CurrentCheckingAccountService;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class CurrentCheckingAccountController {
 
     @PostMapping
     @RolesAllowed("backend-admin")
-    public ResponseEntity<CurrentCheckingAccountDTO> create(@RequestBody @Valid CurrentCheckingAccountDTO currentCheckingAccountDTO) {
+    public ResponseEntity<AccountDTO> create(@RequestBody @Valid CurrentCheckingAccountDTO currentCheckingAccountDTO) {
         return ResponseEntity.ok(currentCheckingAccountService.create(currentCheckingAccountDTO));
     }
 

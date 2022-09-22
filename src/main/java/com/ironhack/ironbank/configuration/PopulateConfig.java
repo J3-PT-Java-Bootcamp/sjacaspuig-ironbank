@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 
 @Configuration
 @RequiredArgsConstructor
-public class PopulateConfiguration {
+public class PopulateConfig {
 
     private final CurrentCheckingAccountService checkingAccountService;
     private final CurrentStudentCheckingAccountService studentAccountService;
@@ -134,14 +134,9 @@ public class PopulateConfiguration {
 
                     var accountHolder = accountHolderService.findAll().get(faker.number().numberBetween(0, accountHolderService.findAll().size() - 1));
 
-                    try {
-                        checkingAccountDTO.setPrimaryOwner(accountHolder.getId());
-                        checkingAccountService.create(checkingAccountDTO);
-                    } catch (Exception e) {
-                        var studentAccountDTO = CurrentStudentCheckingAccountDTO.fromCurrentAccountDTO(checkingAccountDTO);
-                        studentAccountDTO.setPrimaryOwner(accountHolder.getId());
-                        studentAccountService.create(studentAccountDTO);
-                    }
+                    checkingAccountDTO.setPrimaryOwner(accountHolder.getId());
+                    checkingAccountService.create(checkingAccountDTO);
+
                     count++;
                 } catch (Exception e) {
                     // Balance greater than the maximum allowed or negative
@@ -269,6 +264,10 @@ public class PopulateConfiguration {
                         transactionDTO.setConcept(faker.lorem().sentence());
                     }
 
+                    // Add random admin
+                    var admin = adminService.findAll().get(faker.number().numberBetween(0, adminService.findAll().size() - 1));
+                    transactionDTO.setAdminId(admin.getId());
+
                     transactionService.create(transactionDTO);
                     countD++;
                 } catch (Exception e) {
@@ -313,6 +312,10 @@ public class PopulateConfiguration {
                         fee.setAmount(new BigDecimal(faker.number().numberBetween(1, 10)));
                         transactionDTO.setFee(fee);
                     }
+
+                    // Add random admin
+                    var admin = adminService.findAll().get(faker.number().numberBetween(0, adminService.findAll().size() - 1));
+                    transactionDTO.setAdminId(admin.getId());
 
                     transactionService.create(transactionDTO);
                     countE++;
@@ -363,6 +366,10 @@ public class PopulateConfiguration {
                         fee.setAmount(new BigDecimal(faker.number().numberBetween(1, 10)));
                         transactionDTO.setFee(fee);
                     }
+
+                    // Add random admin
+                    var admin = adminService.findAll().get(faker.number().numberBetween(0, adminService.findAll().size() - 1));
+                    transactionDTO.setAdminId(admin.getId());
 
                     transactionService.create(transactionDTO);
                     countF++;

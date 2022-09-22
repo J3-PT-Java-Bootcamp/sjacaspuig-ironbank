@@ -1,7 +1,10 @@
 package com.ironhack.ironbank.service;
 
+import com.ironhack.ironbank.constants.AccountConstants;
+import com.ironhack.ironbank.dto.AccountDTO;
 import com.ironhack.ironbank.dto.AccountStatusDTO;
 import com.ironhack.ironbank.dto.CurrentCheckingAccountDTO;
+import com.ironhack.ironbank.dto.CurrentStudentCheckingAccountDTO;
 import com.ironhack.ironbank.enums.TransactionStatus;
 import com.ironhack.ironbank.enums.TransactionType;
 import com.ironhack.ironbank.model.Money;
@@ -21,7 +24,6 @@ import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -33,17 +35,18 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
     private final AccountRepository accountRepository;
     private final IbanGenerator ibanGenerator;
     private final TransactionRepository transactionRepository;
+    private final CurrentStudentCheckingAccountService currentStudentCheckingAccountService;
 
     @Override
-    public CurrentCheckingAccountDTO create(CurrentCheckingAccountDTO currentCheckingAccountDTO) {
+    public AccountDTO create(CurrentCheckingAccountDTO currentCheckingAccountDTO) {
         if (currentCheckingAccountDTO.getIban() != null && currentCheckingAccountRepository.findById(currentCheckingAccountDTO.getIban()).isPresent()) {
-            throw new IllegalArgumentException("Checking account already exists");
+            throw new IllegalArgumentException("Checking account with IBAN " + currentCheckingAccountDTO.getIban() + " already exists");
         }
         if (currentCheckingAccountDTO.getBalance().getAmount().compareTo(new BigDecimal("0")) < 0) {
-            throw new IllegalArgumentException("Balance cannot be negative");
+            throw new IllegalArgumentException("Balance cannot of the checking account with IBAN " + currentCheckingAccountDTO.getIban() + " be negative");
         }
         if (currentCheckingAccountDTO.getBalance().getAmount().compareTo(CurrentCheckingAccount.MINIMUM_BALANCE.getAmount()) < 0) {
-            throw new IllegalArgumentException("Balance cannot be less than the minimum balance");
+            throw new IllegalArgumentException("Balance cannot of the checking account with IBAN " + currentCheckingAccountDTO.getIban() + " be less than " + CurrentCheckingAccount.MINIMUM_BALANCE.getAmount());
         }
 
         // Generate iban, check if it exists on accounts, if it does, generate another one, if not, save it
@@ -58,6 +61,26 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
         if (currentCheckingAccountDTO.getSecondaryOwner() != null) {
             secondaryOwner = accountHolderService.findOwnerById(currentCheckingAccountDTO.getSecondaryOwner());
         }
+
+        try {
+
+            // Try to create a new checking account
+            var currentCheckingAccount = CurrentCheckingAccount.fromDTO(currentCheckingAccountDTO, primaryOwner, secondaryOwner);
+            currentCheckingAccount = currentCheckingAccountRepository.save(currentCheckingAccount);
+            return CurrentCheckingAccountDTO.fromEntity(currentCheckingAccount);
+        } catch (Exception e) {
+
+            // Case: The account holder is younger than 24 years old, we will create a student checking account
+            if (e.getMessage().contains(AccountConstants.PRIMARY_OWNER_YOUNGER_THAN_24)) {
+                var studentAccountDTO = CurrentStudentCheckingAccountDTO.fromCurrentAccountDTO(currentCheckingAccountDTO);
+                studentAccountDTO.setPrimaryOwner(primaryOwner.getId());
+                if (secondaryOwner != null) {
+                    studentAccountDTO.setSecondaryOwner(secondaryOwner.getId());
+                }
+                var studentAccount = currentStudentCheckingAccountService.create(studentAccountDTO);
+                return studentAccount;
+            }
+        }
         var currentCheckingAccount = CurrentCheckingAccount.fromDTO(currentCheckingAccountDTO, primaryOwner, secondaryOwner);
         currentCheckingAccount = currentCheckingAccountRepository.save(currentCheckingAccount);
         return CurrentCheckingAccountDTO.fromEntity(currentCheckingAccount);
@@ -65,7 +88,7 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
 
     @Override
     public CurrentCheckingAccountDTO findByIban(String iban) {
-        var currentCheckingAccount = findEntity(iban).orElseThrow(() -> new IllegalArgumentException("Checking account not found"));
+        var currentCheckingAccount = findEntity(iban).orElseThrow(() -> new IllegalArgumentException("Checking account with IBAN " + iban + " does not exist"));
         return CurrentCheckingAccountDTO.fromEntity(currentCheckingAccount);
     }
 
@@ -98,7 +121,7 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
 
     @Override
     public CurrentCheckingAccountDTO update(String iban, CurrentCheckingAccountDTO currentCheckingAccountDTO) {
-        var currentCheckingAccount = currentCheckingAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Checking account not found"));
+        var currentCheckingAccount = currentCheckingAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Checking account with IBAN " + iban + " does not exist"));
         var currentCheckingAccountUpdated = CurrentCheckingAccount.fromDTO(currentCheckingAccountDTO, currentCheckingAccount.getPrimaryOwner(), currentCheckingAccount.getSecondaryOwner());
         currentCheckingAccountUpdated.setIban(currentCheckingAccount.getIban());
 
@@ -116,7 +139,7 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
 
     @Override
     public CurrentCheckingAccountDTO changeStatus(@Valid String iban, @Valid AccountStatusDTO accountStatusDTO) {
-        var currentCheckingAccount = currentCheckingAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Checking account not found"));
+        var currentCheckingAccount = currentCheckingAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Checking account with IBAN " + iban + " does not exist"));
         currentCheckingAccount.setStatus(accountStatusDTO.getStatus());
         currentCheckingAccount = currentCheckingAccountRepository.save(currentCheckingAccount);
         return CurrentCheckingAccountDTO.fromEntity(currentCheckingAccount);
@@ -164,7 +187,7 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
         transaction.setSourceAccount(account);
         transaction.setAmount(Account.PENALTY_FEE);
         transaction.setName(account.getPrimaryOwner().getFirstName() + " " + account.getPrimaryOwner().getLastName());
-        transaction.setConcept("Penalty fee for not having the minimum balance");
+        transaction.setConcept("Penalty fee of " + Account.PENALTY_FEE.getAmount() + " for having a balance below " + CurrentCheckingAccount.MINIMUM_BALANCE.getAmount());
         transaction.setStatus(TransactionStatus.COMPLETED);
         transaction.setType(TransactionType.PENALTY_MIN_BALANCE);
         transactionRepository.save(transaction);

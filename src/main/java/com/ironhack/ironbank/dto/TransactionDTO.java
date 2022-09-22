@@ -35,6 +35,7 @@ public class TransactionDTO {
     private String concept;
     private String failureReason;
     private TransactionType type;
+    private String adminId;
 
     public static TransactionDTO fromEntity(Transaction transaction) {
         var transactionDTO = new TransactionDTO();
@@ -65,6 +66,9 @@ public class TransactionDTO {
         transactionDTO.setSecretKey(transaction.getSecretKey());
         transactionDTO.setConcept(transaction.getConcept());
         transactionDTO.setFailureReason(transaction.getFailureReason());
+        if(transaction.getAdmin() != null) {
+            transactionDTO.setAdminId(transaction.getAdmin().getId());
+        }
 
         return transactionDTO;
     }

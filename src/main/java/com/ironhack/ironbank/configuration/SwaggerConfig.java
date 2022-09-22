@@ -14,7 +14,7 @@ import java.util.Collections;
 
 @Configuration
 @EnableSwagger2
-public class SwaggerConfiguration {
+public class SwaggerConfig {
 
 //    http://localhost:8080/swagger-ui.html
 

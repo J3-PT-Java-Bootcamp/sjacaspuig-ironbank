@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.controller;
 
 import com.ironhack.ironbank.dto.TransactionDTO;
+import com.ironhack.ironbank.enums.TransactionStatus;
 import com.ironhack.ironbank.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -32,13 +34,14 @@ public class TransactionController {
 
     @PostMapping
     @RolesAllowed("backend-admin")
-    public ResponseEntity<TransactionDTO> create(@RequestBody @Valid TransactionDTO transactionDTO) {
+    public ResponseEntity<TransactionDTO> create(@RequestBody @Valid TransactionDTO transactionDTO, Principal principal) {
+
         var transactionResponse = transactionService.create(transactionDTO);
 
-        if (transactionResponse.getStatus().equals("COMPLETED")) {
-            return ResponseEntity.ok(transactionDTO);
+        if (transactionResponse.getStatus().equals(TransactionStatus.COMPLETED)) {
+            return ResponseEntity.ok(transactionResponse);
         } else {
-            return ResponseEntity.badRequest().body(transactionDTO);
+            return ResponseEntity.badRequest().body(transactionResponse);
         }
     }
 

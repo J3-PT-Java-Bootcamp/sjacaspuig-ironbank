@@ -5,7 +5,6 @@ import com.ironhack.ironbank.dto.ThirdPartyDTO;
 import com.ironhack.ironbank.model.user.ThirdParty;
 import com.ironhack.ironbank.repository.ThirdPartyRepository;
 import lombok.RequiredArgsConstructor;
-import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

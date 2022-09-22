@@ -2,7 +2,7 @@ package com.ironhack.ironbank.service;
 
 import com.ironhack.ironbank.dto.*;
 import com.ironhack.ironbank.model.account.*;
-import com.ironhack.ironbank.repository.*;
+import com.ironhack.ironbank.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDTO findByIban(String iban) {
-        var account = accountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        var account = accountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Account with IBAN " + iban + " not found"));
         if(account instanceof CurrentCheckingAccount) {
             return checkingAccountService.findByIban(iban);
         } else if(account instanceof CurrentSavingsAccount) {
@@ -33,7 +33,7 @@ public class AccountServiceImpl implements AccountService {
         } else if(account instanceof CreditAccount) {
             return creditAccountService.findByIban(iban);
         } else {
-            throw new IllegalArgumentException("Account not found");
+            throw new IllegalArgumentException("Account with IBAN " + iban + " not found");
         }
     }
 
@@ -50,10 +50,10 @@ public class AccountServiceImpl implements AccountService {
             } else if(account.get() instanceof CreditAccount) {
                 return creditAccountService.findEntity(iban);
             } else {
-                throw new IllegalArgumentException("Account not found");
+                throw new IllegalArgumentException("Account with IBAN " + iban + " not found");
             }
         } else {
-            throw new IllegalArgumentException("Account not found");
+            throw new IllegalArgumentException("Account with IBAN " + iban + " not found");
         }
     }
 
@@ -84,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDTO changeStatus(@Valid String iban, @Valid AccountStatusDTO accountStatusDTO) {
-        var account = accountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        var account = accountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Account with IBAN " + iban + " not found"));
         if(account instanceof CurrentCheckingAccount) {
             return checkingAccountService.changeStatus(iban, accountStatusDTO);
         } else if(account instanceof CurrentSavingsAccount) {

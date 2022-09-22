@@ -1,5 +1,6 @@
 package com.ironhack.ironbank.service;
 
+import com.ironhack.ironbank.dto.AccountDTO;
 import com.ironhack.ironbank.dto.AccountStatusDTO;
 import com.ironhack.ironbank.dto.CurrentCheckingAccountDTO;
 import com.ironhack.ironbank.model.account.CurrentCheckingAccount;
@@ -10,7 +11,7 @@ import java.util.Optional;
 
 public interface CurrentCheckingAccountService {
 
-    CurrentCheckingAccountDTO create(@Valid CurrentCheckingAccountDTO currentCheckingAccountDTO);
+    AccountDTO create(@Valid CurrentCheckingAccountDTO currentCheckingAccountDTO);
     CurrentCheckingAccountDTO findByIban(@Valid String iban);
     Optional<CurrentCheckingAccount> findEntity(@Valid String iban);
     List<CurrentCheckingAccountDTO> findAll();

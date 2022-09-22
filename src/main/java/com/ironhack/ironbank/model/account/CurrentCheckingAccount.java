@@ -62,7 +62,7 @@ public class CurrentCheckingAccount extends CurrentAccount implements MonthlyFee
         if (isOwnerAllowedToCreate(primaryOwner)) {
             super.setPrimaryOwner(primaryOwner);
         } else {
-            throw new IllegalArgumentException("Primary owner is younger than " + MIN_AGE + " years old and cannot create a checking account");
+            throw new IllegalArgumentException(AccountConstants.PRIMARY_OWNER_YOUNGER_THAN_24 + " " + MIN_AGE + " years old and cannot create a checking account");
         }
     }
 
@@ -72,7 +72,7 @@ public class CurrentCheckingAccount extends CurrentAccount implements MonthlyFee
         if (getStatus() == AccountStatus.ACTIVE) {
             super.setBalance(balance);
         } else {
-            throw new IllegalArgumentException("Cannot set balance on a frozen account");
+            throw new IllegalArgumentException("Cannot set a new balance on a frozen account with iban " + getIban());
         }
     }
 

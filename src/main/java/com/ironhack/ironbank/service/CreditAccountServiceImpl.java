@@ -37,10 +37,10 @@ public class CreditAccountServiceImpl implements CreditAccountService {
     @Override
     public CreditAccountDTO create(CreditAccountDTO creditAccountDTO) {
         if (creditAccountDTO.getIban() != null && creditAccountRepository.findById(creditAccountDTO.getIban()).isPresent()) {
-            throw new IllegalArgumentException("Credit account already exists");
+            throw new IllegalArgumentException("Credit account with IBAN " + creditAccountDTO.getIban() + " already exists");
         }
         if (creditAccountDTO.getBalance().getAmount().compareTo(new BigDecimal("0")) < 0) {
-            throw new IllegalArgumentException("Balance cannot be negative");
+            throw new IllegalArgumentException("Balance of a the credit account with IBAN " + creditAccountDTO.getIban() + " cannot be negative");
         }
 
         // Generate iban, check if it exists on accounts, if it does, generate another one, if not, save it
@@ -63,7 +63,7 @@ public class CreditAccountServiceImpl implements CreditAccountService {
 
     @Override
     public CreditAccountDTO findByIban(String iban) {
-        var creditAccount = findEntity(iban).orElseThrow(() -> new IllegalArgumentException("Credit account not found"));
+        var creditAccount = findEntity(iban).orElseThrow(() -> new IllegalArgumentException("Credit account with IBAN " + iban + " does not exist"));
         return CreditAccountDTO.fromEntity(creditAccount);
     }
 
@@ -98,7 +98,7 @@ public class CreditAccountServiceImpl implements CreditAccountService {
 
     @Override
     public CreditAccountDTO update(String iban, CreditAccountDTO creditAccountDTO) {
-        var creditAccount = creditAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Credit account not found"));
+        var creditAccount = creditAccountRepository.findById(iban).orElseThrow(() -> new IllegalArgumentException("Credit account with IBAN " + iban + " does not exist"));
         var creditAccountUpdated = CreditAccount.fromDTO(creditAccountDTO, creditAccount.getPrimaryOwner(), creditAccount.getSecondaryOwner());
         creditAccountUpdated.setIban(creditAccount.getIban());
 
@@ -170,7 +170,7 @@ public class CreditAccountServiceImpl implements CreditAccountService {
         transaction.setSourceAccount(account);
         transaction.setAmount(Account.PENALTY_FEE);
         transaction.setName(account.getPrimaryOwner().getFirstName() + " " + account.getPrimaryOwner().getLastName());
-        transaction.setConcept("Penalty fee for not having the minimum balance");
+        transaction.setConcept("Penalty fee of " + Account.PENALTY_FEE.getAmount() + " for not having the minimum balance of " + AccountConstants.GLOBAL_MINIMUM_BALANCE.getAmount());
         transaction.setStatus(TransactionStatus.COMPLETED);
         transaction.setType(TransactionType.PENALTY_MIN_BALANCE);
         transactionRepository.save(transaction);

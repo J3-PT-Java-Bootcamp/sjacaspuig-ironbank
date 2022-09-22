@@ -30,14 +30,12 @@ public class CurrentStudentCheckingAccount extends CurrentAccount {
 
     @Override
     public void setPrimaryOwner(@NotNull AccountHolder primaryOwner) {
-        if (isOwnerAllowedToCreate(primaryOwner)) super.setPrimaryOwner(primaryOwner);
-        else throw new IllegalArgumentException("Primary owner is older than " + MAX_AGE + " years old and cannot create a checking account");
+        super.setPrimaryOwner(primaryOwner);
     }
 
     @Override
     public AccountHolder getPrimaryOwner() {
-        if (isOwnerAllowedToCreate(super.getPrimaryOwner())) return super.getPrimaryOwner();
-        else throw new IllegalArgumentException("Primary owner is older than " + MAX_AGE + " years old and should renew to a checking account");
+        return super.getPrimaryOwner();
     }
 
     @Override
@@ -45,7 +43,7 @@ public class CurrentStudentCheckingAccount extends CurrentAccount {
         if (getStatus() == AccountStatus.ACTIVE) {
             super.setBalance(balance);
         } else {
-            throw new IllegalArgumentException("Account status must be active to set the balance");
+            throw new IllegalArgumentException("The status of the account with id " + getIban() + " is " + getStatus() + " and its balance cannot be modified");
         }
     }
 
