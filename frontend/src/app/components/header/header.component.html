@@ -1,0 +1,33 @@
+<div class="header-container">
+  <div class="logo-container">
+    <a *ngIf="(authService.role$ | async ) !== 'public' && (authService.role$ | async ) !== 'user'"
+      (click)="toggleSidebar()" href="#" class="sidebar-toggle">
+      <nb-icon icon="menu-2-outline"></nb-icon>
+    </a>
+    <a class="logo" href="#" (click)="navigateHome()">
+      <img src="./../../../assets/logo.png" alt="">
+      IronBank
+    </a>
+  </div>
+
+</div>
+
+<div class="header-container" *ngIf="authService.user$ | async as user">
+  <nb-actions size="small">
+
+    <!-- <nb-action class="control-item">
+        <nb-search type="curtain" placeholder="User by id" tag="user"></nb-search>
+      </nb-action>
+      <nb-action class="control-item">
+        <nb-search type="curtain" placeholder="TX by id" tag="transaction"></nb-search>
+      </nb-action>
+      <nb-action class="control-item">
+        <nb-search type="curtain" placeholder="Acct by iban" tag="account"></nb-search>
+      </nb-action> -->
+
+    <nb-action *ngIf="user.role !== 'public'">
+      <nb-user [nbContextMenu]="userMenu" [name]="user?.username ? user.username : ''">
+      </nb-user>
+    </nb-action>
+  </nb-actions>
+</div>

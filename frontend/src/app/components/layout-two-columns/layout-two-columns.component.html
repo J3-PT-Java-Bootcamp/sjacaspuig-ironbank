@@ -1,0 +1,9 @@
+
+<!-- Left side with width variable with type number -->
+<div class="left" [style.width.%]="leftWidth">
+    <ng-content select="[left]"></ng-content>
+</div>
+<div class="separator"></div>
+<div class="right">
+    <ng-content select="[right]"></ng-content>
+</div>

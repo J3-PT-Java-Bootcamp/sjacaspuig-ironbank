@@ -1,0 +1,36 @@
+<nb-card right>
+    <nb-card-header>Accounts</nb-card-header>
+    <nb-list>
+        <nb-list-item *ngFor="let account of (accounts$ | async)">
+            <app-layout-two-columns>
+                <div left>
+                    <div class="item" *ngIf="account?.iban"><b>IBAN: </b>{{ account.iban }}</div>
+                    <div class="item" *ngIf="account?.balance"><b>Balance: </b><div>{{ account.balance.amount | currency:account.balance.currency }}</div></div>
+                    <div class="item" *ngIf="account?.accountType"><b>Account type: </b>{{ account.accountType }}</div>
+                    <div class="item" *ngIf="account?.status"><b>Status: </b>{{ account.status }}</div>
+                    <div class="item" *ngIf="account?.creditLimit"><b>Credit limit: </b><div>{{ account.creditLimit?.amount | currency:account.creditLimit?.currency }}</div></div>
+                    <div class="item" *ngIf="account?.interestRate?.value"><b>Interest rate: </b>{{ account.interestRate?.value }}</div>
+                    <div class="item" *ngIf="account?.minimumBalance"><b>Minimum balance: </b><div>{{ account.minimumBalance?.amount | currency:account.minimumBalance?.currency }}</div></div>
+                </div>
+                <div right>                    
+                    <div class="item" *ngIf="account?.primaryOwner"><b>Primary owner: </b>{{ account.primaryOwner }}</div>
+                    <div class="item" *ngIf="account?.secondaryOwner"><b>Secondary owner: </b>{{ account.primaryOwner }}</div>
+                    <div class="item" *ngIf="account?.lastMonthlyFeeDate"><b>Last monthly fee date: </b>{{ account.lastMonthlyFeeDate | date:'medium' }}</div>
+                    <div class="item" *ngIf="account?.interestRateDate"><b>Interest rate date: </b>{{ account.interestRateDate | date:'medium' }}</div>
+                    <div class="item" *ngIf="account?.creationDate"><b>Creation date: </b>{{ account.creationDate | date:'medium' }}</div>
+                </div>
+            </app-layout-two-columns>
+
+            <div class="button-container">
+                <button *ngIf="account.status === 'FROZEN'" size="small" nbButton status="primary" outline
+                    (click)="changeStatus(account)">
+                    <nb-icon icon="play-circle-outline"></nb-icon>
+                </button>
+                <button *ngIf="account.status === 'ACTIVE'" size="small" nbButton status="danger" outline
+                    (click)="changeStatus(account)">
+                    <nb-icon icon="pause-circle-outline"></nb-icon>
+                </button>
+            </div>
+        </nb-list-item>
+    </nb-list>
+</nb-card>

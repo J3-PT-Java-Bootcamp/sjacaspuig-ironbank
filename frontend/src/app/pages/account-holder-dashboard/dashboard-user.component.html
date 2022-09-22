@@ -1,0 +1,133 @@
+<app-layout-two-columns [leftWidth]="50" [nbSpinner]="spinnerUser || spinnerTransaction || spinnerAccount">
+
+    <!-- User details -->
+    <div left>
+        <nb-card class="total-balance-container">
+            <div class="icon-container" [ngClass]="{'negative-amount': +totalBalance.amount < 0 }">{{ totalBalance.currency }}</div>
+            <div class="total-balance">
+                <div class="title">TOTAL BALANCE: </div>
+                <div class="number">{{ totalBalance.amount | currency:totalBalance.currency }}</div>
+            </div>
+        </nb-card>
+        <nb-card>
+            <nb-card-header>User Details</nb-card-header>
+            <nb-card-body *ngIf="accountHolder$ | async as user">
+                <nb-list>
+                    <nb-list-item><b>ID:</b> {{ user.id }}</nb-list-item>
+                    <nb-list-item><b>Name:</b> {{ user.firstName }} {{ user.lastName }}</nb-list-item>
+                    <nb-list-item><b>Username:</b> {{ user.username }}</nb-list-item>
+                    <nb-list-item><b>Email:</b> {{ user.email }}</nb-list-item>
+                    <nb-list-item><b>Date of birth:</b> {{ user.birthDate | date:'medium'}}</nb-list-item>
+                </nb-list>
+    
+                <nb-accordion>
+                    <nb-accordion-item>
+                        <nb-accordion-item-header>
+                            Primary Address
+                        </nb-accordion-item-header>
+                        <nb-accordion-item-body>
+                            <nb-list>
+                                <nb-list-item><b>Street:</b> {{ user.primaryAddress.street }}</nb-list-item>
+                                <nb-list-item><b>Number:</b> {{ user.primaryAddress.number }} {{ user.lastName }}
+                                </nb-list-item>
+                                <nb-list-item><b>Postal code:</b> {{ user.primaryAddress.postalCode }}</nb-list-item>
+                                <nb-list-item><b>Country:</b> {{ user.primaryAddress.country}}</nb-list-item>
+                                <nb-list-item *ngIf="user?.primaryAddress?.province"><b>Province:</b> {{
+                                    user.primaryAddress.province }}</nb-list-item>
+                                <nb-list-item><b>City:</b> {{ user.primaryAddress.city }}</nb-list-item>
+                                <nb-list-item *ngIf="user?.primaryAddress?.extraInformation"><b>Extra information:</b> {{
+                                    user.primaryAddress.extraInformation }}</nb-list-item>
+                            </nb-list>
+                        </nb-accordion-item-body>
+                    </nb-accordion-item>
+    
+                    <nb-accordion-item *ngIf="user?.secondaryAddress">
+                        <nb-accordion-item-header>
+                            Primary Address
+                        </nb-accordion-item-header>
+                        <nb-accordion-item-body>
+                            <nb-list>
+                                <nb-list-item><b>Street:</b> {{ user.secondaryAddress?.street }}</nb-list-item>
+                                <nb-list-item><b>Number:</b> {{ user.secondaryAddress?.number }} {{ user.lastName }}
+                                </nb-list-item>
+                                <nb-list-item><b>Postal code:</b> {{ user.secondaryAddress?.postalCode }}</nb-list-item>
+                                <nb-list-item><b>Country:</b> {{ user.secondaryAddress?.country}}</nb-list-item>
+                                <nb-list-item *ngIf="user?.secondaryAddress?.province"><b>Province:</b> {{
+                                    user.secondaryAddress?.province }}</nb-list-item>
+                                <nb-list-item><b>City:</b> {{ user.secondaryAddress?.city }}</nb-list-item>
+                                <nb-list-item *ngIf="user?.secondaryAddress?.extraInformation"><b>Extra information:</b> {{
+                                    user.secondaryAddress?.extraInformation }}</nb-list-item>
+                            </nb-list>
+                        </nb-accordion-item-body>
+                    </nb-accordion-item>
+                </nb-accordion>
+            </nb-card-body>
+    
+        </nb-card>
+    </div>
+
+    <div right>
+
+        <!-- Carousel the user's accounts -->
+        <div class="carousel-accounts">
+            <nb-card class="account-button" (click)="getTransactionsByUserId(); activeAccount = -1" [ngClass]="{ 'active-account': activeAccount === -1 }">
+                <nb-card-body class="all">All transactions</nb-card-body>
+            </nb-card>
+
+            <nb-card class="account-button" *ngFor="let account of (accounts$ | async); let i = index" (click)="showTransactionsByAccount(account); activeAccount = i" [ngClass]="{ 'active-account': activeAccount === i }">
+                <nb-card-header>
+                    <div>{{ account.accountType | titlecase }}</div>
+                    <div>{{ account?.iban }}</div>
+                </nb-card-header>
+                <nb-card-body>
+                    <div class="item"><b>Balance: </b>{{ account.balance.amount | currency:account.balance.currency }}</div>
+                    <div class="item" *ngIf="account.creditLimit"><b>Credit limit: </b>{{ account.creditLimit.amount | currency:account.creditLimit.currency }}</div>
+                    <div class="item" *ngIf="account.interestRate"><b>Interest rate: </b>{{ account.interestRate }}</div>
+                    <div class="item" *ngIf="account.minimumBalance"><b>Min. balance: </b>{{ account.minimumBalance.amount | currency:account.minimumBalance.currency }}</div>
+                    <div class="item" *ngIf="account.status"><b>Status: </b>{{ account.status | titlecase }}</div>
+                </nb-card-body>
+            </nb-card>
+        </div>
+
+        <!-- Transactions list -->
+
+        <nb-accordion>
+            <nb-accordion-item>
+                <nb-accordion-item-header>
+                    Transactions
+                </nb-accordion-item-header>
+                <nb-accordion-item-body>
+                    <nb-list>
+                        <nb-list-item *ngFor="let transaction of (transactions$ | async)" [ngClass]="{
+                            'failed': transaction.status === 'FAILED',
+                            'pending': transaction.status === 'PENDING'
+                        }">
+                            <app-layout-two-columns>
+                                <div left>
+                                    <div class="item" *ngIf="transaction?.id"><b>ID: </b>{{ transaction.id }}</div>
+                                    <div class="item" *ngIf="transaction?.amount"><b>Amount: </b>{{ transaction.amount.amount | currency:transaction.amount.currency }}</div>
+                                    <div class="item" *ngIf="transaction?.fee"><b>Fees: </b>{{ transaction.fee?.amount | currency:transaction.fee?.currency }}</div>
+                                    <div class="item" *ngIf="transaction?.type"><b>Transaction type: </b>{{ transaction.type }}</div>
+                                    <div class="item" *ngIf="transaction?.status"><b>Transaction status: </b>
+                                        <div>
+                                            {{ transaction.status }}<span *ngIf="transaction.status === 'FAILED' && transaction?.failureReason"> - <i>{{ transaction.failureReason }}</i></span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="transaction?.concept"><b>Concept: </b>{{ transaction.concept }}</div>
+                                </div>
+                                <div right>                    
+                                    <div class="item" *ngIf="transaction?.sourceAccount"><b>Source account: </b>{{ transaction.sourceAccount }}</div>
+                                    <div class="item" *ngIf="transaction?.targetAccount"><b>Target account: </b>{{ transaction.targetAccount }}</div>
+                                    <div class="item" *ngIf="transaction?.name"><b>Name: </b>{{ transaction.name }}</div>
+                                    <div class="item" *ngIf="transaction?.transactionDate"><b>Date: </b>{{ transaction.transactionDate | date:'medium' }}</div>
+                                    <div class="item" *ngIf="transaction?.hashedKey"><b>Hashed key: </b>{{ transaction.hashedKey }}</div>
+                                </div>
+                            </app-layout-two-columns>
+                        </nb-list-item>
+                    </nb-list>
+                </nb-accordion-item-body>
+            </nb-accordion-item>
+        </nb-accordion>
+    
+    </div>
+</app-layout-two-columns>

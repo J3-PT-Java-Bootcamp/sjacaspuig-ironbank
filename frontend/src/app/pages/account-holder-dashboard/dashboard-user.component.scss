@@ -1,0 +1,127 @@
+:host {
+    height: 100%;
+    display: block;
+}
+
+nb-accordion {
+    --accordion-padding: 0px;
+}
+
+nb-accordion-item-header {
+    padding: 1.25rem;
+}
+
+nb-card-body {
+    padding: 0;
+}
+
+nb-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.failed {
+    border: 1px solid var(--color-danger-600);
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+
+.pending {
+    border: 1px solid var(--color-warning-600);
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+.carousel-accounts {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+
+    nb-card {
+        width: 265px;
+        min-height: 180px;
+    }
+}
+
+.item {
+    line-height: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.total-balance-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 24px;
+}
+
+.icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    background-color: var(--color-primary-500);
+    border-radius: var(--card-border-radius);
+    margin-right: 24px;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--color-basic-100);
+
+    &.negative-amount {
+        background-color: var(--color-danger-700);
+    }
+}
+
+.total-balance {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.title {
+    font-size: 20px;
+}
+
+.number {
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 30px;
+}
+
+.account-button {
+    cursor: pointer;
+    margin: 12px;
+
+    &.active-account {
+        border: 1px solid var(--color-primary-400);
+
+        &:hover {
+            border: 1px solid var(--color-primary-600);
+        }
+    }
+
+    &:hover {
+        border: 1px solid var(--color-primary-400);
+    }
+
+    nb-card-body,
+    nb-card-header {
+        padding: 8px;
+    }
+
+    .all {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        font-weight: bold;
+    }
+}

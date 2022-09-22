@@ -1,0 +1,14 @@
+<app-layout-two-columns>
+    <app-checking-account-create left></app-checking-account-create>
+    <nb-card right>
+        <nb-card-header>Account Holders</nb-card-header>
+        <nb-list>
+            <nb-list-item *ngFor="let accountHolder of (accountHolders$ | async)">
+                <nb-user
+                    [name]="accountHolder.firstName + ' ' + accountHolder.lastName"
+                    [title]="accountHolder.id ? accountHolder.id + ' - ' + (accountHolder.birthDate | date:'medium') : ''">
+                </nb-user>
+            </nb-list-item>
+        </nb-list>
+    </nb-card>
+</app-layout-two-columns>

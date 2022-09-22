@@ -1,0 +1,20 @@
+:host {
+    height: 100%;
+    display: block;
+}
+
+nb-card-body {
+    padding: 0;
+}
+
+nb-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+nb-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

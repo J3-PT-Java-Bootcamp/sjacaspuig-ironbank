@@ -1,0 +1,40 @@
+:host {
+    height: 100%;
+    display: block;
+    padding: 24px;
+}
+
+nb-card-body {
+    padding: 0;
+}
+
+nb-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.failed {
+    border: 1px solid var(--color-danger-600);
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+
+.pending {
+    border: 1px solid var(--color-warning-600);
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+.item {
+    line-height: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.byHimself {
+    color: var(--color-primary-600);
+    font-weight: bold;
+}

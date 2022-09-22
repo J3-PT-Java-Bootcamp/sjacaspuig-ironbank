@@ -1,0 +1,26 @@
+:host {
+    height: 100%;
+    display: block;
+    padding: 24px;
+}
+
+nb-card-body {
+    padding: 0;
+}
+
+nb-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.button-container {
+    margin-left: 36px;
+}
+
+.item {
+    line-height: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}

@@ -1,0 +1,59 @@
+<nb-card>
+    <nb-card-body>
+        <div class="title">New Transaction</div>
+
+        <form [formGroup]="firstForm" (ngSubmit)="onFirstSubmit()" *ngIf="hiddenCompleted && !showError"
+            class="step-container">
+            <div class="input-group">
+                <label>Source Account</label>
+                <input type="text" nbInput placeholder="Enter the source account" class="form-control"
+                    formControlName="sourceAccount">
+
+                <label>Target Account</label>
+                <input type="text" nbInput placeholder="Enter the target account" class="form-control"
+                    formControlName="targetAccount">
+
+                <label>Target Name</label>
+                <input type="text" nbInput placeholder="Enter the target name" class="form-control"
+                    formControlName="name">
+
+                <label>Amount</label>
+                <input type="text" nbInput placeholder="Enter the amount" class="form-control" formControlName="amount">
+
+                <label>Fee</label>
+                <input type="text" nbInput placeholder="Enter the fee" class="form-control" formControlName="fee">
+
+                <label>Secret Key</label>
+                <input type="text" nbInput placeholder="Enter the secret key" class="form-control"
+                    formControlName="secretKey">
+
+                <label>Hashed Key</label>
+                <input type="text" nbInput placeholder="Enter the hashed key" class="form-control"
+                    formControlName="hashedKey">
+
+                <label>Concept</label>
+                <input type="text" nbInput placeholder="Enter the concept" class="form-control"
+                    formControlName="concept">
+
+                <label></label>
+                <nb-checkbox formControlName="type">Is the transfer being made by the bank itself?</nb-checkbox>
+
+            </div>
+            <button nbButton nbStepperNext status="primary" (click)="createThirdParty()"
+                [disabled]="firstForm.invalid">next</button>
+        </form>
+
+        <div class="step-container" *ngIf="!hiddenCompleted && !showError">
+            <h3>Transaction created</h3>
+            <button nbButton status="primary" (click)="tryAgain()">Create a new one</button>
+        </div>
+
+        <div class="step-container" *ngIf="showError">
+            <h3>Sorry, we can't create the transaction</h3>
+            <h5 *ngIf="messageError.length">{{ messageError }}</h5>
+            <h5>Please try again later.</h5>
+            <button nbButton status="primary" (click)="tryAgain()">Try again</button>
+        </div>
+
+    </nb-card-body>
+</nb-card>

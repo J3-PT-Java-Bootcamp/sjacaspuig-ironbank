@@ -1,0 +1,1 @@
+export type AccountType = 'CHECKING' | 'SAVINGS' | 'STUDENT_CHECKING' | 'CREDIT';

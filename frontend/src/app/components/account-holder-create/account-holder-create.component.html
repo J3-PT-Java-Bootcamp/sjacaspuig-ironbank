@@ -1,0 +1,126 @@
+<nb-card>
+  <nb-card-body>
+
+    <div class="title">New Account Holder</div>
+
+    <nb-stepper #stepper>
+      <nb-step [stepControl]="firstForm" label="Basic information">
+        <form [formGroup]="firstForm" (ngSubmit)="onFirstSubmit()" class="step-container">
+          <div class="input-group">
+            <label>First name</label>
+            <input type="text" nbInput placeholder="Enter your first name" class="form-control"
+              formControlName="firstName">
+            <label>Last name</label>
+            <input type="text" nbInput placeholder="Enter your last name" class="form-control"
+              formControlName="lastName">
+            <label>Birth's date</label>
+            <input type="text" nbInput placeholder="Enter your birth's date" class="form-control"
+              formControlName="birthDate" [nbDatepicker]="datepicker">
+            <nb-datepicker #datepicker></nb-datepicker>
+            <label>Username</label>
+            <input type="text" nbInput placeholder="Enter your username" class="form-control"
+              formControlName="username">
+            <label>Email</label>
+            <input type="text" nbInput placeholder="Enter your email" class="form-control"
+              formControlName="email">
+          </div>
+          <button nbButton nbStepperNext status="primary" [disabled]="firstForm.invalid">next</button>
+        </form>
+      </nb-step>
+      <nb-step [stepControl]="secondForm" label="Primary Address">
+        <form [formGroup]="secondForm" (ngSubmit)="onSecondSubmit()" class="step-container">
+
+          <div class="input-group">
+            <label>Street</label>
+            <input type="text" nbInput placeholder="Enter your street" class="form-control"
+              formControlName="street">
+            <label>Number</label>
+            <input type="text" nbInput placeholder="Enter your number" class="form-control"
+              formControlName="number">
+            <label>Postal code</label>
+            <input type="text" nbInput placeholder="Enter your postal code" class="form-control"
+              formControlName="postalCode">
+            <label>Country</label>
+            <input type="text" nbInput placeholder="Enter your country" class="form-control"
+              formControlName="country">
+            <label>Province</label>
+            <input type="text" nbInput placeholder="Enter your province" class="form-control"
+              formControlName="province">
+            <label>City</label>
+            <input type="text" nbInput placeholder="Enter your city" class="form-control"
+              formControlName="city">
+            <label>Extra information</label>
+            <input type="text" nbInput placeholder="Enter extra information" class="form-control"
+              formControlName="extraInformation">
+          </div>
+          <div class="button-group">
+            <button nbButton nbStepperPrevious outline status="primary">prev</button>
+            <button nbButton nbStepperNext status="primary" [disabled]="secondForm.invalid">next</button>
+          </div>
+        </form>
+      </nb-step>
+      <nb-step [stepControl]="thirdForm" label="Secondary Address">
+        <form [formGroup]="thirdForm" (ngSubmit)="onThirdSubmit()" class="step-container">
+          <div class="input-group">
+            <label>Street</label>
+            <input type="text" nbInput placeholder="Enter your street" class="form-control"
+              formControlName="street">
+            <label>Number</label>
+            <input type="text" nbInput placeholder="Enter your number" class="form-control"
+              formControlName="number">
+            <label>Postal code</label>
+            <input type="text" nbInput placeholder="Enter your postal code" class="form-control"
+              formControlName="postalCode">
+            <label>Country</label>
+            <input type="text" nbInput placeholder="Enter your country" class="form-control"
+              formControlName="country">
+            <label>Province</label>
+            <input type="text" nbInput placeholder="Enter your province" class="form-control"
+              formControlName="province">
+            <label>City</label>
+            <input type="text" nbInput placeholder="Enter your city" class="form-control"
+              formControlName="city">
+            <label>Extra information</label>
+            <input type="text" nbInput placeholder="Enter extra information" class="form-control"
+              formControlName="extraInformation">
+          </div>
+          <div class="button-group">
+            <button nbButton nbStepperPrevious outline status="primary">prev</button>
+            <button nbButton nbStepperNext status="primary">next</button>
+          </div>
+        </form>
+      </nb-step>
+      <nb-step [stepControl]="fourthForm" [hidden]="!hiddenCompleted || !hiddenError" label="Password">
+        <form [formGroup]="fourthForm" (ngSubmit)="onFourthSubmit()" class="step-container">
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" nbInput placeholder="Enter password" class="form-control"
+              formControlName="password">
+              <label>Confirm your password</label>
+            <input type="password" nbInput placeholder="Confirm your password" class="form-control"
+              formControlName="passwordConfirmation">
+          </div>
+          <div class="button-group">
+            <button nbButton nbStepperPrevious outline status="primary">prev</button>
+            <button nbButton nbStepperNext status="primary" (click)="createUser()" [disabled]="fourthForm.invalid || fourthForm.controls['password'].value !== fourthForm.controls['passwordConfirmation'].value">Create user</button>
+          </div>
+        </form>
+      </nb-step>
+      <nb-step [stepControl]="fourthForm" [hidden]="hiddenCompleted" label="Password" [completed]="true">
+        <div class="step-container">
+          <h3>Welcome {{ userCreated?.firstName }} {{ userCreated?.lastName }}</h3>
+          <h5>Thank you for registering with us.</h5>
+          <h6>Now you can login with your credentials</h6>
+          <button nbButton status="primary" (click)="stepper.reset(); tryAgain()">Create a new one</button>
+        </div>
+      </nb-step>
+      <nb-step [stepControl]="fourthForm" [hidden]="hiddenError" label="Password" [completed]="true">
+        <div class="step-container">
+          <h3>Sorry, we can't create the account holder</h3>
+          <h5>Please try again later.</h5>
+          <button nbButton status="primary" (click)="stepper.reset(); tryAgain()">Try again</button>
+        </div>
+      </nb-step>
+    </nb-stepper>
+  </nb-card-body>
+</nb-card>

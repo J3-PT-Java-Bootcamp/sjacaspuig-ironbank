@@ -1,0 +1,32 @@
+<nb-card [nbSpinner]="spinner">
+    <nb-card-header>Transactions</nb-card-header>
+    <nb-list>
+        <nb-list-item *ngFor="let transaction of (transactions$ | async)" [ngClass]="{
+            'failed': transaction.status === 'FAILED',
+            'pending': transaction.status === 'PENDING'
+        }">
+            <app-layout-two-columns>
+                <div left>
+                    <div class="item" *ngIf="transaction?.id"><b>ID: </b>{{ transaction.id }}</div>
+                    <div class="item" *ngIf="transaction?.amount"><b>Amount: </b>{{ transaction.amount.amount | currency: transaction.amount.currency }}</div>
+                    <div class="item" *ngIf="transaction?.fee"><b>Fees: </b>{{ transaction.fee?.amount | currency: transaction.fee?.currency }}</div>
+                    <div class="item" *ngIf="transaction?.type"><b>Transaction type: </b>{{ transaction.type }}</div>
+                    <div class="item" *ngIf="transaction?.status"><b>Transaction status: </b>
+                        <div>
+                            {{ transaction.status }}<span *ngIf="transaction.status === 'FAILED' && transaction?.failureReason"> - <i>{{ transaction.failureReason }}</i></span>
+                        </div>
+                    </div>
+                    <div class="item" *ngIf="transaction?.concept"><b>Concept: </b>{{ transaction.concept }}</div>
+                </div>
+                <div right>                    
+                    <div class="item" *ngIf="transaction?.sourceAccount"><b>Source account: </b>{{ transaction.sourceAccount }}</div>
+                    <div class="item" *ngIf="transaction?.targetAccount"><b>Target account: </b>{{ transaction.targetAccount }}</div>
+                    <div class="item" *ngIf="transaction?.name"><b>Name: </b>{{ transaction.name }}</div>
+                    <div class="item" *ngIf="transaction?.transactionDate"><b>Date: </b>{{ transaction.transactionDate | date:'medium' }}</div>
+                    <div class="item" *ngIf="transaction?.hashedKey"><b>Hashed key: </b>{{ transaction.hashedKey }}</div>
+                    <div class="item"><b>Admin: </b><span [ngClass]="{'byHimself': currentUserId === transaction.adminId }">{{ transaction.adminId }}</span></div>
+                </div>
+            </app-layout-two-columns>
+        </nb-list-item>
+    </nb-list>
+</nb-card>

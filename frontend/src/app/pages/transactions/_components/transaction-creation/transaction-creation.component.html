@@ -1,0 +1,44 @@
+<app-layout-two-columns>
+    <app-transaction-create left (refresh)="getThirdParties(); getAccounts()"></app-transaction-create>
+    <nb-accordion right>
+        <nb-accordion-item>
+            <nb-accordion-item-header>
+                Accounts
+            </nb-accordion-item-header>
+            <nb-accordion-item-body>
+                <nb-list>
+                    <nb-list-item *ngFor="let account of (accounts$ | async)" [ngClass]="{
+                        'frozen': account?.status === 'FROZEN'
+                    }">
+                        <app-layout-two-columns>
+                            <div left>
+                                <div class="item" *ngIf="account?.iban"><b>IBAN: </b>{{ account.iban }}</div>
+                                <div class="item" *ngIf="account?.balance"><b>Balance: </b>{{ account.balance.amount | currency:account.balance.currency }}</div>
+                                <div class="item" *ngIf="account?.accountType"><b>Account type: </b>{{ account.accountType }}</div>
+                            </div>
+                            <div right>
+                                <div class="item" *ngIf="account?.status"><b>Status: </b>{{ account.status }}</div>
+                                <div class="item" *ngIf="account?.creditLimit"><b>Credit limit: </b>{{ account.creditLimit?.amount | currency:account.creditLimit?.currency }}</div>
+                                <div class="item" *ngIf="account?.minimumBalance"><b>Minimum balance: </b>{{ account.minimumBalance?.amount | currency: account.minimumBalance?.currency }}</div>
+                            </div>
+                        </app-layout-two-columns>
+                    </nb-list-item>
+                </nb-list>
+            </nb-accordion-item-body>
+        </nb-accordion-item>
+    
+        <nb-accordion-item>
+            <nb-accordion-item-header>
+                Third Parties
+            </nb-accordion-item-header>
+            <nb-accordion-item-body>
+                <nb-list>
+                    <nb-list-item *ngFor="let thirdParty of (thirdParties$ | async)">
+                        <nb-user [name]="thirdParty.firstName + ' ' + thirdParty.lastName" [title]="thirdParty.hashedKey">
+                        </nb-user>
+                    </nb-list-item>
+                </nb-list>
+            </nb-accordion-item-body>
+        </nb-accordion-item>
+    </nb-accordion>
+</app-layout-two-columns>

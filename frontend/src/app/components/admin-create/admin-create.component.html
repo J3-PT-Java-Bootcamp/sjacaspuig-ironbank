@@ -1,0 +1,44 @@
+<nb-card>
+    <nb-card-body>
+        <div class="title">New Administrator</div>
+
+        <form [formGroup]="firstForm" (ngSubmit)="onFirstSubmit()" *ngIf="hiddenCompleted && !showError"
+            class="step-container">
+            <div class="input-group">
+                <label>First name</label>
+                <input type="text" nbInput placeholder="Enter your first name" class="form-control"
+                    formControlName="firstName">
+                <label>Last name</label>
+                <input type="text" nbInput placeholder="Enter your last name" class="form-control"
+                    formControlName="lastName">
+                <label>Username</label>
+                <input type="text" nbInput placeholder="Enter your username" class="form-control"
+                    formControlName="username">
+                <label>Email</label>
+                <input type="text" nbInput placeholder="Enter your email" class="form-control" formControlName="email">
+                <label>Password</label>
+                <input type="password" nbInput placeholder="Enter password" class="form-control"
+                    formControlName="password">
+                <label>Confirm your password</label>
+                <input type="password" nbInput placeholder="Confirm your password" class="form-control"
+                    formControlName="passwordConfirmation">
+            </div>
+            <button nbButton nbStepperNext status="primary" (click)="createAdmin()"
+                [disabled]="firstForm.invalid || (firstForm.controls['password'].value !== firstForm.controls['passwordConfirmation'].value)">next</button>
+        </form>
+
+        <div class="step-container" *ngIf="!hiddenCompleted && !showError">
+            <h3>Welcome {{ adminCreated?.firstName }} {{ adminCreated?.lastName }}</h3>
+            <h5>Thank you for registering with us.</h5>
+            <h6>Now you can login with your credentials</h6>
+            <button nbButton status="primary" (click)="tryAgain()">Create a new one</button>
+        </div>
+
+        <div class="step-container" *ngIf="showError">
+            <h3>Sorry, we can't create the administrator</h3>
+            <h5>Please try again later.</h5>
+            <button nbButton status="primary" (click)="tryAgain()">Try again</button>
+        </div>
+
+    </nb-card-body>
+</nb-card>

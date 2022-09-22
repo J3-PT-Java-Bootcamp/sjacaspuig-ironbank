@@ -1,0 +1,64 @@
+:host {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        width: calc(#{var(--sidebar-width)} - #{var(--header-padding)});
+    }
+
+    nb-action {
+        height: auto;
+        display: flex;
+        align-content: center;
+    }
+
+    nb-user {
+        cursor: pointer;
+    }
+
+    ::ng-deep nb-search button {
+        padding: 0 !important;
+    }
+
+    .header-container {
+        display: flex;
+        align-items: center;
+        width: auto;
+
+        .sidebar-toggle {
+            padding-right: 1.25rem;
+            text-decoration: none;
+            color: var(--text-hint-color);
+
+            nb-icon {
+                font-size: 1.75rem;
+            }
+        }
+
+        .logo {
+            padding: 0 1.25rem;
+            font-size: 1.75rem;
+            border-left: 1px solid var(--divider-color);
+            white-space: nowrap;
+            text-decoration: none;
+        }
+    }
+
+    a {
+        display: flex;
+        align-items: center;
+
+        img {
+            width: 40px;
+            margin-right: 8px;
+        }
+    }
+
+    iframe {
+        margin: 0;
+        width: 105px;
+    }
+}

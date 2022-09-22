@@ -1,0 +1,28 @@
+:host {
+    height: 100%;
+    display: block;
+    padding: 24px;
+}
+
+nb-card-body {
+    padding: 0;
+}
+
+nb-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.item {
+    line-height: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.frozen {
+    border: 1px solid var(--color-danger-600);
+    border-radius: 4px;
+    margin-bottom: 4px;
+}

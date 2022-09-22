@@ -1,0 +1,1 @@
+export type TransactionType = 'TRANSFER' | 'INTEREST' | 'PENALTY_MIN_BALANCE' | 'MAINTENANCE_FEE' | 'ADMIN_MOVEMENT';

@@ -1,0 +1,17 @@
+<app-layout-two-columns>
+    <app-admin-create (refresh)="getAdmins()" left></app-admin-create>
+    <nb-card right>
+        <nb-card-header>Administrators</nb-card-header>
+        <nb-list>
+            <nb-list-item *ngFor="let admin of (admins$ | async)">
+                <nb-user
+                    [name]="admin.firstName + ' ' + admin.lastName"
+                    [title]="admin.email">
+                </nb-user>
+                <button nbButton (click)="deleteAdmin(admin.id)" size="small" outline status="danger">
+                    <nb-icon icon="trash-outline"></nb-icon>
+                </button>
+            </nb-list-item>
+        </nb-list>
+    </nb-card>
+</app-layout-two-columns>

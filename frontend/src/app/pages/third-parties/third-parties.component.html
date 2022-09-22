@@ -1,0 +1,17 @@
+<app-layout-two-columns>
+    <app-third-party-create (refresh)="getThirdParties()" left></app-third-party-create>
+    <nb-card right>
+        <nb-card-header>Third Parties</nb-card-header>
+        <nb-list>
+            <nb-list-item *ngFor="let thirdParty of (thirdParties$ | async)">
+                <nb-user
+                    [name]="thirdParty.firstName + ' ' + thirdParty.lastName"
+                    [title]="thirdParty.hashedKey">
+                </nb-user>
+                <button nbButton (click)="deleteThirdParty(thirdParty.id)" size="small" outline status="danger">
+                    <nb-icon icon="trash-outline"></nb-icon>
+                </button>
+            </nb-list-item>
+        </nb-list>
+    </nb-card>
+</app-layout-two-columns>
