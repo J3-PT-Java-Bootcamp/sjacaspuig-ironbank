@@ -5,6 +5,7 @@ import com.ironhack.ironbank.dto.*;
 import com.ironhack.ironbank.enums.AccountStatus;
 import com.ironhack.ironbank.repository.AccountRepository;
 import com.ironhack.ironbank.service.AccountHolderService;
+import com.ironhack.ironbank.service.AccountService;
 import com.ironhack.ironbank.service.CurrentCheckingAccountService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-
-import javax.servlet.Filter;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -33,16 +31,15 @@ class AccountControllerTest {
     @Autowired
     AccountRepository accountRepository;
     @Autowired
+    AccountService accountService;
+    @Autowired
     CurrentCheckingAccountService CheckingAccountService;
     @Autowired
     AccountHolderService accountHolderService;
 
-    @Autowired
-    private Filter springSecurityFilterChain;
-
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).addFilters(springSecurityFilterChain).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
     @AfterEach
@@ -51,7 +48,7 @@ class AccountControllerTest {
 
     @Test
     void findAll() throws Exception {
-        var repositorySize = accountRepository.findAll().size();
+        var repositorySize = accountService.findAll().size();
         var result = mockMvc.perform(get("/accounts")).andExpect(status().isOk()).andReturn();
         var accounts = objectMapper.readValue(result.getResponse().getContentAsString(), Object[].class);
         assertEquals(repositorySize, accounts.length);
@@ -59,7 +56,7 @@ class AccountControllerTest {
 
     @Test
     void findById() throws Exception {
-        var repositoryAccount = accountRepository.findAll().get(0);
+        var repositoryAccount = accountService.findAll().get(0);
         var result = mockMvc.perform(get("/accounts/" + repositoryAccount.getIban())).andExpect(status().isOk()).andReturn();
         var account =  objectMapper.readValue(result.getResponse().getContentAsString(), Object.class);
 
@@ -82,7 +79,7 @@ class AccountControllerTest {
     @Test
     void delete() throws Exception {
         var repositoryAccount = accountRepository.findAll().get(0);
-        mockMvc.perform(MockMvcRequestBuilders.delete("/accounts/" + repositoryAccount.getIban())).andExpect(status().isNoContent()).andReturn();
+        mockMvc.perform(MockMvcRequestBuilders.delete("/accounts/" + repositoryAccount.getIban())).andExpect(status().isNoContent());
         assertFalse(accountRepository.findById(repositoryAccount.getIban()).isPresent());
         accountRepository.save(repositoryAccount);
     }

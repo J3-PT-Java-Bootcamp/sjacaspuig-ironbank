@@ -45,7 +45,6 @@ public class PopulateConfig {
             System.out.println("*******************************");
             for (int i = 0; i < numOfAdmins; i++) {
                 var adminDTO = new AdminDTO();
-                adminDTO.setId(faker.internet().uuid());
                 adminDTO.setFirstName(faker.name().firstName());
                 adminDTO.setLastName(faker.name().lastName());
                 adminDTO.setUsername(faker.internet().domainName());
@@ -63,7 +62,6 @@ public class PopulateConfig {
             System.out.println("*******************************");
             for (int i = 0; i < numOfAccountHolders; i++) {
                 var accountHolderDTO = new AccountHolderDTO();
-                accountHolderDTO.setId(faker.internet().uuid());
                 accountHolderDTO.setFirstName(faker.name().firstName());
                 accountHolderDTO.setLastName(faker.name().lastName());
                 accountHolderDTO.setUsername(faker.internet().domainName());
@@ -103,7 +101,6 @@ public class PopulateConfig {
             System.out.println("*******************************");
             for (int i = 0; i < numOfThirdParties; i++) {
                 var thirdPartyDTO = new ThirdPartyDTO();
-                thirdPartyDTO.setId(faker.internet().uuid());
                 thirdPartyDTO.setFirstName(faker.name().firstName());
                 thirdPartyDTO.setLastName(faker.name().lastName());
                 thirdPartyDTO.setHashedKey(faker.hashing().sha256());
