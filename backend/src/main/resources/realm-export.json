@@ -29,12 +29,12 @@
   "sslRequired": "external",
   "registrationAllowed": false,
   "registrationEmailAsUsername": false,
-  "rememberMe": false,
+  "rememberMe": true,
   "verifyEmail": false,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
-  "resetPasswordAllowed": false,
-  "editUsernameAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": true,
   "bruteForceProtected": false,
   "permanentLockout": false,
   "maxFailureWaitSeconds": 900,
@@ -59,6 +59,22 @@
             "account": [
               "manage-account",
               "view-profile"
+            ]
+          }
+        },
+        "clientRole": false,
+        "containerId": "6ade982d-79bc-46b6-b0d2-357fa3788b45",
+        "attributes": {}
+      },
+      {
+        "id": "20a991f1-909a-4bab-8bfb-6e731a8869ac",
+        "name": "realm-super-admin",
+        "description": "",
+        "composite": true,
+        "composites": {
+          "client": {
+            "tutorial-backend": [
+              "backend-super-admin"
             ]
           }
         },
@@ -342,6 +358,14 @@
           "attributes": {}
         },
         {
+          "id": "4b7f0178-8493-4a3f-9af0-58eae162a642",
+          "name": "backend-super-admin",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "512c1cd0-4d20-48a1-844e-f6b988049d39",
+          "attributes": {}
+        },
+        {
           "id": "b11549d2-daa3-4c86-95fd-ecb4d12c6249",
           "name": "backend-admin",
           "composite": false,
@@ -444,7 +468,39 @@
       ]
     }
   },
-  "groups": [],
+  "groups": [
+    {
+      "id": "3be9591d-3b56-43f2-b415-d36e00d4d381",
+      "name": "admins",
+      "path": "/admins",
+      "attributes": {},
+      "realmRoles": [
+        "realm-admin"
+      ],
+      "clientRoles": {},
+      "subGroups": []
+    },
+    {
+      "id": "553e7c4f-f913-491e-8810-08f4a31a503b",
+      "name": "super-admins",
+      "path": "/super-admins",
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {},
+      "subGroups": []
+    },
+    {
+      "id": "c635ff0e-c042-425d-9803-3d38c8086e5f",
+      "name": "users",
+      "path": "/users",
+      "attributes": {},
+      "realmRoles": [
+        "realm-user"
+      ],
+      "clientRoles": {},
+      "subGroups": []
+    }
+  ],
   "defaultRole": {
     "id": "873315e2-f311-4bdc-9e16-a0609343707a",
     "name": "default-roles-tutorial",
@@ -1416,6 +1472,10 @@
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
   "smtpServer": {},
+  "loginTheme": "keycloak",
+  "accountTheme": "",
+  "adminTheme": "",
+  "emailTheme": "",
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"
@@ -2280,7 +2340,11 @@
     "cibaAuthRequestedUserHint": "login_hint",
     "oauth2DeviceCodeLifespan": "600",
     "oauth2DevicePollingInterval": "5",
+    "clientOfflineSessionMaxLifespan": "0",
+    "clientSessionIdleTimeout": "0",
     "parRequestUriLifespan": "60",
+    "clientSessionMaxLifespan": "0",
+    "clientOfflineSessionIdleTimeout": "0",
     "cibaInterval": "5"
   },
   "keycloakVersion": "19.0.1",
