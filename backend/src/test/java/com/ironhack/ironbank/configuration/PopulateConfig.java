@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
 
@@ -18,23 +17,23 @@ import java.math.BigDecimal;
 public class PopulateConfig {
 
     private final CurrentCheckingAccountService checkingAccountService;
-    private final CurrentStudentCheckingAccountService studentAccountService;
     private final CurrentSavingsAccountService savingsAccountService;
     private final CreditAccountService creditAccountService;
     private final AdminService adminService;
     private final AccountHolderService accountHolderService;
     private final ThirdPartyService thirdPartyService;
-    private final CurrentCheckingAccountRepository checkingAccountRepository;
-    private final CurrentSavingsAccountRepository savingsAccountRepository;
-    private final CurrentStudentCheckingAccountRepository studentAccountRepository;
-    private final CreditAccountRepository creditAccountRepository;
     private final TransactionService transactionService;
     private final AccountService accountService;
-    private final TransactionRepository transactionRepository;
-    private final AdminRepository adminRepository;
-    private final AccountHolderRepository accountHolderRepository;
-    private final ThirdPartyRepository thirdPartyRepository;
     private final Faker faker = new Faker();
+    private final int numOfAdmins = 3;
+    private final int numOfAccountHolders = 5;
+    private final int numOfThirdParties = 5;
+    private final int numOfTransactionsBetweenAccountHolders = 10;
+    private  final int numOfCheckingAccounts = 5;
+    private  final int numOfSavingsAccounts = 5;
+    private  final int numOfCreditAccounts = 5;
+    private final int numOfTransactionsBetweenAccountHolderAndThirdParty = 10;
+    private final int numOfTransactionsBetweenThirdPartyAndAccountHolder = 10;
 
     @Bean
     public void populate() {
@@ -44,7 +43,7 @@ public class PopulateConfig {
             System.out.println("*******************************");
             System.out.println("Populating admins...");
             System.out.println("*******************************");
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < numOfAdmins; i++) {
                 var adminDTO = new AdminDTO();
                 adminDTO.setId(faker.internet().uuid());
                 adminDTO.setFirstName(faker.name().firstName());
@@ -62,7 +61,7 @@ public class PopulateConfig {
             System.out.println("*******************************");
             System.out.println("Populating account holders...");
             System.out.println("*******************************");
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < numOfAccountHolders; i++) {
                 var accountHolderDTO = new AccountHolderDTO();
                 accountHolderDTO.setId(faker.internet().uuid());
                 accountHolderDTO.setFirstName(faker.name().firstName());
@@ -102,7 +101,7 @@ public class PopulateConfig {
             System.out.println("*******************************");
             System.out.println("Populating third parties...");
             System.out.println("*******************************");
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < numOfThirdParties; i++) {
                 var thirdPartyDTO = new ThirdPartyDTO();
                 thirdPartyDTO.setId(faker.internet().uuid());
                 thirdPartyDTO.setFirstName(faker.name().firstName());
@@ -119,7 +118,7 @@ public class PopulateConfig {
             System.out.println("Populating checking accounts...");
             System.out.println("*******************************");
             var count = 0;
-            while (count < 5) {
+            while (count < numOfCheckingAccounts) {
                 try {
                     var checkingAccountDTO = new CurrentCheckingAccountDTO();
 
@@ -152,7 +151,7 @@ public class PopulateConfig {
             System.out.println("Populating savings accounts...");
             System.out.println("*******************************");
             var countB = 0;
-            while (countB < 5) {
+            while (countB < numOfSavingsAccounts) {
                 try {
                     var savingsAccountDTO = new CurrentSavingsAccountDTO();
 
@@ -199,7 +198,7 @@ public class PopulateConfig {
             System.out.println("Populating credit accounts...");
             System.out.println("*******************************");
             var countC = 0;
-            while (countC < 5) {
+            while (countC < numOfCreditAccounts) {
                 try {
 
                     var creditAccountDTO = new CreditAccountDTO();
@@ -247,7 +246,7 @@ public class PopulateConfig {
             System.out.println("Populating transactions between account holder 1 and 2...");
             System.out.println("*******************************");
             var countD = 0;
-            while (countD < 15) {
+            while (countD < numOfTransactionsBetweenAccountHolders) {
                 try {
                     var transactionDTO = new TransactionDTO();
                     var account1 = accountService.findAll().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));
@@ -282,7 +281,7 @@ public class PopulateConfig {
             System.out.println("Populating transactions between account holder 1 and third party...");
             System.out.println("*******************************");
             var countE = 0;
-            while (countE < 15) {
+            while (countE < numOfTransactionsBetweenAccountHolderAndThirdParty) {
                 try {
                     var transactionDTO = new TransactionDTO();
                     var account = accountService.findAllAccounts().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));
@@ -331,7 +330,7 @@ public class PopulateConfig {
             System.out.println("Populating transactions between third party and account holder 1...");
             System.out.println("*******************************");
             var countF = 0;
-            while (countF < 15) {
+            while (countF < numOfTransactionsBetweenThirdPartyAndAccountHolder) {
                 try {
                     var transactionDTO = new TransactionDTO();
                     var account = accountService.findAllAccounts().get(faker.number().numberBetween(0, accountService.findAll().size() - 1));

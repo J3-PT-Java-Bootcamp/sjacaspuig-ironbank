@@ -1,13 +1,13 @@
 package com.ironhack.ironbank.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@AllArgsConstructor
+@RequiredArgsConstructor
 class SecurityServiceImplTest {
 
     @Test

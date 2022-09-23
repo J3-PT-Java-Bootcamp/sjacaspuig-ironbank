@@ -21,33 +21,27 @@ public class AccountController {
     private final AccountService accountService;
 
     @GetMapping
-    @RolesAllowed("backend-admin")
     public ResponseEntity<List<AccountDTO>> findAll() {
         return ResponseEntity.ok(accountService.findAll());
     }
 
     @GetMapping("/{iban}")
-    @RolesAllowed("backend-admin")
     public ResponseEntity<AccountDTO> findById(@PathVariable @Valid String iban) {
         return ResponseEntity.ok(accountService.findByIban(iban));
     }
 
     @DeleteMapping("/{iban}")
-    @RolesAllowed("backend-admin")
     public ResponseEntity<Void> delete(@PathVariable @Valid String iban) {
         accountService.delete(iban);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/change-status/{iban}")
-    @RolesAllowed("backend-admin")
     public ResponseEntity<AccountDTO> changeStatus(@PathVariable @Valid String iban, @RequestBody @Valid AccountStatusDTO accountStatusDTO) {
-        accountService.changeStatus(iban, accountStatusDTO);
-        return ResponseEntity.ok(accountService.findByIban(iban));
+        return ResponseEntity.ok(accountService.changeStatus(iban, accountStatusDTO));
     }
 
     @GetMapping("/user/{id}")
-    @RolesAllowed("backend-user")
     public ResponseEntity<List<AccountDTO>> findByAccountHolderId(@PathVariable @Valid String id) {
         return ResponseEntity.ok(accountService.findByAccountHolderId(id));
     }

@@ -1,7 +1,7 @@
 package com.ironhack.ironbank.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@AllArgsConstructor
+@RequiredArgsConstructor
 class CurrentCheckingAccountControllerTest {
 
     private MockMvc mockMvc;
@@ -28,22 +28,22 @@ class CurrentCheckingAccountControllerTest {
     }
 
     @Test
-    void findAll() {
+    void findAll() throws Exception {
     }
 
     @Test
-    void findById() {
+    void findById() throws Exception {
     }
 
     @Test
-    void create() {
+    void create() throws Exception {
     }
 
     @Test
-    void update() {
+    void update() throws Exception {
     }
 
     @Test
-    void delete() {
+    void delete() throws Exception {
     }
 }
