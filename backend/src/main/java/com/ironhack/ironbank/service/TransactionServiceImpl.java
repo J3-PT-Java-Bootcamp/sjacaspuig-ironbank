@@ -36,207 +36,57 @@ public class TransactionServiceImpl implements TransactionService {
             // Initialize transaction setting the status to PENDING
             transaction = initializeTransaction(transactionDTO);
 
-            if (transactionDTO.getType().equals(TransactionType.ADMIN_MOVEMENT)) { // It's a modification of balance by and admin
+            if (transactionDTO.getHashedKey() == null && transactionDTO.getType().equals(TransactionType.ADMIN_MOVEMENT)) { // It's a modification of balance by and admin
 
                 if (transactionDTO.getSourceAccount() != null && transactionDTO.getTargetAccount() == null) { // When the admin decreases the balance of an account
 
-                    // Secret key is not needed in this case
-                    var account = accountService.findById(transactionDTO.getSourceAccount()).orElseThrow(() -> new IllegalArgumentException("Sender account with IBAN " + transactionDTO.getSourceAccount() + " does not exist"));
-                    transaction.setSourceAccount(account);
+                    var sourceAccount = accountService.findById(transactionDTO.getSourceAccount()).orElseThrow(() -> new IllegalArgumentException("Sender account with IBAN " + transactionDTO.getSourceAccount() + " does not exist"));
+                    transaction.setSourceAccount(sourceAccount);
 
-                    // Check if the account has sufficient funds
-                    if (account.getBalance().getAmount().compareTo(transactionDTO.getAmount().getAmount()) < 0) {
-                        throw new RuntimeException("Insufficient funds in the sender's account");
-                    } else {
-                        var amount = Money.fromDTO(transactionDTO.getAmount());
-                        var fee = new Money(new BigDecimal(0));
-                        if (transactionDTO.getFee() != null) {
-                            fee = Money.fromDTO(transactionDTO.getFee());
-                        }
-                        var amountToBeSubtracted = account.getBalance().decreaseAmount(amount.increaseAmount(fee));
-                        account.setBalance(new Money(amountToBeSubtracted));
-                        var accountDTOUpdated = AccountDTO.fromEntity(account);
-                        updateAccount(accountDTOUpdated.getIban(), accountDTOUpdated);
-                    }
-
-                    var sourceAccountDTO = accountService.findByIban(transactionDTO.getSourceAccount());
-                    var primaryOwnerDTO = accountHolderService.findById(sourceAccountDTO.getPrimaryOwner());
-                    var primaryOwner = AccountHolder.fromDTO(primaryOwnerDTO);
-                    AccountHolder secondaryOwner = null;
-                    if(sourceAccountDTO.getSecondaryOwner() != null) {
-                        var secondaryOwnerDTO = accountHolderService.findById(sourceAccountDTO.getSecondaryOwner());
-                        secondaryOwner = AccountHolder.fromDTO(secondaryOwnerDTO);
-                    }
-                    var sourceAccount = Account.fromDTO(sourceAccountDTO, primaryOwner, secondaryOwner);
-
-                    var adminDTO = adminService.findById(transactionDTO.getAdminId());
-                    var admin = Admin.fromDTO(adminDTO);
-                    var transactionUpdated = Transaction.fromDTO(transactionDTO, sourceAccount, null, admin);
-                    transactionUpdated.setId(transaction.getId());
-                    transactionUpdated.setStatus(TransactionStatus.COMPLETED);
-                    transactionUpdated = transactionRepository.save(transactionUpdated);
-
-                    return TransactionDTO.fromEntity(transactionUpdated);
+                    return createTransactionDecreasingSourceBalanceWithoutTargetAccount(transactionDTO, transaction, sourceAccount);
                 } else if (transactionDTO.getSourceAccount() == null && transactionDTO.getTargetAccount() != null) { // When the admin increases the balance of an account
 
-                    // Secret key is not needed in this case
-                    var account = accountService.findById(transactionDTO.getTargetAccount()).orElseThrow(() -> new IllegalArgumentException("Target account with IBAN " + transactionDTO.getTargetAccount() + " does not exist"));
-                    transaction.setTargetAccount(account);
+                    var targetAccount = accountService.findById(transactionDTO.getTargetAccount()).orElseThrow(() -> new IllegalArgumentException("Target account with IBAN " + transactionDTO.getTargetAccount() + " does not exist"));
+                    transaction.setTargetAccount(targetAccount);
 
-                    // If it matches, create the transaction
-                    var amount = Money.fromDTO(transactionDTO.getAmount());
-                    var amountToBeAdded = account.getBalance().increaseAmount(amount);
-                    account.setBalance(new Money(amountToBeAdded));
-                    var accountDTO = AccountDTO.fromEntity(account);
-                    updateAccount(accountDTO.getIban(), accountDTO);
-
-                    var targetAccountDTO = accountService.findByIban(transactionDTO.getTargetAccount());
-                    var primaryOwnerDTO = accountHolderService.findById(targetAccountDTO.getPrimaryOwner());
-                    var primaryOwner = AccountHolder.fromDTO(primaryOwnerDTO);
-                    AccountHolder secondaryOwner = null;
-                    if(targetAccountDTO.getSecondaryOwner() != null) {
-                        var secondaryOwnerDTO = accountHolderService.findById(targetAccountDTO.getSecondaryOwner());
-                        secondaryOwner = AccountHolder.fromDTO(secondaryOwnerDTO);
-                    }
-                    var targetAccount = Account.fromDTO(targetAccountDTO, primaryOwner, secondaryOwner);
-
-                    var adminDTO = adminService.findById(transactionDTO.getAdminId());
-                    var admin = Admin.fromDTO(adminDTO);
-                    var transactionUpdated = Transaction.fromDTO(transactionDTO, null, targetAccount, admin);
-                    transactionUpdated.setId(transaction.getId());
-                    transactionUpdated.setStatus(TransactionStatus.COMPLETED);
-                    transactionUpdated = transactionRepository.save(transactionUpdated);
-
-                    return TransactionDTO.fromEntity(transactionUpdated);
+                    return createTransactionIncreasingTargetBalanceWithoutSourceAccount(transactionDTO, transaction, targetAccount);
                 } else {
                     return saveFailedTransaction(transaction, "An admin movement not allow to have source and target account. Transaction not created");
                 }
 
-            } else if (transactionDTO.getHashedKey() != null) { // It's between a third party and an owner account
+            } else if (transactionDTO.getHashedKey() != null && !transactionDTO.getType().equals(TransactionType.ADMIN_MOVEMENT)) { // It's between a third party and an owner account
 
                 if (transactionDTO.getSourceAccount() == null && transactionDTO.getTargetAccount() != null) { // Third party to owner account
 
                     // Check if the secret key from the third party matches the one in the database
-                    var account = accountService.findById(transactionDTO.getTargetAccount()).orElseThrow(() -> new IllegalArgumentException("Target account with IBAN " + transactionDTO.getTargetAccount() + " does not exist"));
-                    if (transactionDTO.getSecretKey() != null && !transactionDTO.getSecretKey().equals(account.getSecretKey())) {
+                    var targetAccount = accountService.findById(transactionDTO.getTargetAccount()).orElseThrow(() -> new IllegalArgumentException("Target account with IBAN " + transactionDTO.getTargetAccount() + " does not exist"));
+                    if (transactionDTO.getSecretKey() != null && !transactionDTO.getSecretKey().equals(targetAccount.getSecretKey())) {
                         throw new IllegalArgumentException("Secret key does not match");
                     }
-                    transaction.setTargetAccount(account);
+                    transaction.setTargetAccount(targetAccount);
 
-                    // If it matches, create the transaction
-                    var amount = Money.fromDTO(transactionDTO.getAmount());
-                    var amountToBeAdded = account.getBalance().increaseAmount(amount);
-                    account.setBalance(new Money(amountToBeAdded));
-                    var accountDTO = AccountDTO.fromEntity(account);
-                    updateAccount(accountDTO.getIban(), accountDTO);
-
-                    var targetAccountDTO = accountService.findByIban(transactionDTO.getTargetAccount());
-                    var primaryOwnerDTO = accountHolderService.findById(targetAccountDTO.getPrimaryOwner());
-                    var primaryOwner = AccountHolder.fromDTO(primaryOwnerDTO);
-                    AccountHolder secondaryOwner = null;
-                    if(targetAccountDTO.getSecondaryOwner() != null) {
-                        var secondaryOwnerDTO = accountHolderService.findById(targetAccountDTO.getSecondaryOwner());
-                        secondaryOwner = AccountHolder.fromDTO(secondaryOwnerDTO);
-                    }
-                    var targetAccount = Account.fromDTO(targetAccountDTO, primaryOwner, secondaryOwner);
-
-                    var adminDTO = adminService.findById(transactionDTO.getAdminId());
-                    var admin = Admin.fromDTO(adminDTO);
-                    var transactionUpdated = Transaction.fromDTO(transactionDTO, null, targetAccount, admin);
-                    transactionUpdated.setId(transaction.getId());
-                    transactionUpdated.setStatus(TransactionStatus.COMPLETED);
-                    transactionUpdated = transactionRepository.save(transactionUpdated);
-
-                    return TransactionDTO.fromEntity(transactionUpdated);
+                    return createTransactionIncreasingTargetBalanceWithoutSourceAccount(transactionDTO, transaction, targetAccount);
 
                 } else if (transactionDTO.getSourceAccount() != null && transactionDTO.getTargetAccount() == null) { // Owner account to third party
 
-                    // Secret key is not needed in this case
-                    var account = accountService.findById(transactionDTO.getSourceAccount()).orElseThrow(() -> new IllegalArgumentException("Sender account with IBAN " + transactionDTO.getSourceAccount() + " does not exist"));
-                    transaction.setSourceAccount(account);
+                    var sourceAccount = accountService.findById(transactionDTO.getSourceAccount()).orElseThrow(() -> new IllegalArgumentException("Sender account with IBAN " + transactionDTO.getSourceAccount() + " does not exist"));
+                    transaction.setSourceAccount(sourceAccount);
 
-                    // Check if the account has sufficient funds
-                    if (account.getBalance().getAmount().compareTo(transactionDTO.getAmount().getAmount()) < 0) {
-                        throw new RuntimeException("Insufficient funds in the sender's account");
-                    } else {
-                        var amount = Money.fromDTO(transactionDTO.getAmount());
-                        var fee = new Money(new BigDecimal(0));
-                        if (transactionDTO.getFee() != null) {
-                            fee = Money.fromDTO(transactionDTO.getFee());
-                        }
-                        var amountToBeSubtracted = account.getBalance().decreaseAmount(amount.increaseAmount(fee));
-                        account.setBalance(new Money(amountToBeSubtracted));
-                        var accountDTOUpdated = AccountDTO.fromEntity(account);
-                        updateAccount(accountDTOUpdated.getIban(), accountDTOUpdated);
-                    }
-
-                    var sourceAccountDTO = accountService.findByIban(transactionDTO.getSourceAccount());
-                    var primaryOwnerDTO = accountHolderService.findById(sourceAccountDTO.getPrimaryOwner());
-                    var primaryOwner = AccountHolder.fromDTO(primaryOwnerDTO);
-                    AccountHolder secondaryOwner = null;
-                    if(sourceAccountDTO.getSecondaryOwner() != null) {
-                        var secondaryOwnerDTO = accountHolderService.findById(sourceAccountDTO.getSecondaryOwner());
-                        secondaryOwner = AccountHolder.fromDTO(secondaryOwnerDTO);
-                    }
-                    var sourceAccount = Account.fromDTO(sourceAccountDTO, primaryOwner, secondaryOwner);
-
-                    var adminDTO = adminService.findById(transactionDTO.getAdminId());
-                    var admin = Admin.fromDTO(adminDTO);
-                    var transactionUpdated = Transaction.fromDTO(transactionDTO, sourceAccount, null, admin);
-                    transactionUpdated.setId(transaction.getId());
-                    transactionUpdated.setStatus(TransactionStatus.COMPLETED);
-                    transactionUpdated = transactionRepository.save(transactionUpdated);
-
-                    return TransactionDTO.fromEntity(transactionUpdated);
+                    return createTransactionDecreasingSourceBalanceWithoutTargetAccount(transactionDTO, transaction, sourceAccount);
                 } else {
                     return saveFailedTransaction(transaction, "A third party transaction not allow to have source and target account. Transaction not created");
                 }
 
-
-            } else if (transactionDTO.getHashedKey() == null && transactionDTO.getSourceAccount() != null && transactionDTO.getTargetAccount() != null) { // it's sent by an account holder to another account holder
+            } else if (transactionDTO.getHashedKey() == null && !transactionDTO.getType().equals(TransactionType.ADMIN_MOVEMENT) && transactionDTO.getSourceAccount() != null && transactionDTO.getTargetAccount() != null) { // it's sent by an account holder to another account holder
 
                 // Secret key is not needed in this case
-                var senderAccount = accountService.findById(transactionDTO.getSourceAccount()).orElseThrow(() -> new IllegalArgumentException("Sender account not found"));
-                transaction.setSourceAccount(senderAccount);
-                var receiverAccount = accountService.findById(transactionDTO.getTargetAccount()).orElseThrow(() -> new IllegalArgumentException("Target account not found"));
-                transaction.setTargetAccount(receiverAccount);
+                var sourceAccount = accountService.findById(transactionDTO.getSourceAccount()).orElseThrow(() -> new IllegalArgumentException("Sender account not found"));
+                transaction.setSourceAccount(sourceAccount);
+                var targetAccount = accountService.findById(transactionDTO.getTargetAccount()).orElseThrow(() -> new IllegalArgumentException("Target account not found"));
+                transaction.setTargetAccount(targetAccount);
 
-                // Check if the accounts are the same
-                if (transactionDTO.getSourceAccount().equals(transactionDTO.getTargetAccount())) {
-                    throw new RuntimeException("You can't send money to the same account");
-                }
+                return createTransactionBetweenOurAccountHolders(transactionDTO, transaction, sourceAccount, targetAccount);
 
-                // Check if the sender account has sufficient funds
-                if (senderAccount.getBalance().getAmount().compareTo(transactionDTO.getAmount().getAmount()) < 0) {
-                    throw new RuntimeException("Insufficient funds in the sender's account");
-                } else {
-                    var amount = Money.fromDTO(transactionDTO.getAmount());
-                    var fee = new Money(new BigDecimal(0));
-                    if (transactionDTO.getFee() != null) {
-                        fee = Money.fromDTO(transactionDTO.getFee());
-                    }
-                    var amountToBeSubtracted = senderAccount.getBalance().decreaseAmount(amount.increaseAmount(fee));
-                    senderAccount.setBalance(new Money(amountToBeSubtracted));
-                    var senderAccountDTOUpdated = AccountDTO.fromEntity(senderAccount);
-                    updateAccount(senderAccountDTOUpdated.getIban(), senderAccountDTOUpdated);
-                }
-
-                // Add the amount to the receiver account
-                var amount = Money.fromDTO(transactionDTO.getAmount());
-                var amountToBeAdded = receiverAccount.getBalance().increaseAmount(amount);
-                receiverAccount.setBalance(new Money(amountToBeAdded));
-                var receiverAccountDTOUpdated = AccountDTO.fromEntity(receiverAccount);
-                updateAccount(receiverAccountDTOUpdated.getIban(), receiverAccountDTOUpdated);
-
-                // Create the transaction
-                var adminDTO = adminService.findById(transactionDTO.getAdminId());
-                var admin = Admin.fromDTO(adminDTO);
-                var transactionUpdated = Transaction.fromDTO(transactionDTO, senderAccount, receiverAccount, admin);
-                transactionUpdated.setId(transaction.getId());
-                transactionUpdated.setStatus(TransactionStatus.COMPLETED);
-                transactionUpdated = transactionRepository.save(transactionUpdated);
-
-                return TransactionDTO.fromEntity(transactionUpdated);
             } else {
                 return saveFailedTransaction(transaction, "The transaction is not valid. Transaction not created");
             }
@@ -342,5 +192,110 @@ public class TransactionServiceImpl implements TransactionService {
             var dto = CurrentStudentCheckingAccountDTO.fromEntity(currentStudentCheckingAccountUpdated);
             currentStudentCheckingAccountService.update(account.getIban(), dto);
         }
+    }
+
+    private TransactionDTO createTransactionDecreasingSourceBalanceWithoutTargetAccount(TransactionDTO transactionDTO, Transaction currentTransaction, Account sourceAccount){
+        // Check if the account has sufficient funds
+        if (sourceAccount.getBalance().getAmount().compareTo(transactionDTO.getAmount().getAmount()) < 0) {
+            throw new RuntimeException("Insufficient funds in the sender's account");
+        } else {
+            var amount = Money.fromDTO(transactionDTO.getAmount());
+            var fee = new Money(new BigDecimal(0));
+            if (transactionDTO.getFee() != null) {
+                fee = Money.fromDTO(transactionDTO.getFee());
+            }
+            var amountToBeSubtracted = sourceAccount.getBalance().decreaseAmount(amount.increaseAmount(fee));
+            sourceAccount.setBalance(new Money(amountToBeSubtracted));
+            var accountDTOUpdated = AccountDTO.fromEntity(sourceAccount);
+            updateAccount(accountDTOUpdated.getIban(), accountDTOUpdated);
+        }
+
+        var sourceAccountDTO = accountService.findByIban(transactionDTO.getSourceAccount());
+        var primaryOwnerDTO = accountHolderService.findById(sourceAccountDTO.getPrimaryOwner());
+        var primaryOwner = AccountHolder.fromDTO(primaryOwnerDTO);
+        AccountHolder secondaryOwner = null;
+        if(sourceAccountDTO.getSecondaryOwner() != null) {
+            var secondaryOwnerDTO = accountHolderService.findById(sourceAccountDTO.getSecondaryOwner());
+            secondaryOwner = AccountHolder.fromDTO(secondaryOwnerDTO);
+        }
+        var sourceAccountUpdated = Account.fromDTO(sourceAccountDTO, primaryOwner, secondaryOwner);
+
+        var adminDTO = adminService.findById(transactionDTO.getAdminId());
+        var admin = Admin.fromDTO(adminDTO);
+        var transactionUpdated = Transaction.fromDTO(transactionDTO, sourceAccountUpdated, null, admin);
+        transactionUpdated.setId(currentTransaction.getId());
+        transactionUpdated.setStatus(TransactionStatus.COMPLETED);
+        transactionUpdated = transactionRepository.save(transactionUpdated);
+
+        return TransactionDTO.fromEntity(transactionUpdated);
+    }
+
+    private TransactionDTO createTransactionIncreasingTargetBalanceWithoutSourceAccount(TransactionDTO transactionDTO, Transaction currentTransaction, Account targetAccount){
+
+        // If it matches, create the transaction
+        var amount = Money.fromDTO(transactionDTO.getAmount());
+        var amountToBeAdded = targetAccount.getBalance().increaseAmount(amount);
+        targetAccount.setBalance(new Money(amountToBeAdded));
+        var accountDTO = AccountDTO.fromEntity(targetAccount);
+        updateAccount(accountDTO.getIban(), accountDTO);
+
+        var targetAccountDTO = accountService.findByIban(transactionDTO.getTargetAccount());
+        var primaryOwnerDTO = accountHolderService.findById(targetAccountDTO.getPrimaryOwner());
+        var primaryOwner = AccountHolder.fromDTO(primaryOwnerDTO);
+        AccountHolder secondaryOwner = null;
+        if(targetAccountDTO.getSecondaryOwner() != null) {
+            var secondaryOwnerDTO = accountHolderService.findById(targetAccountDTO.getSecondaryOwner());
+            secondaryOwner = AccountHolder.fromDTO(secondaryOwnerDTO);
+        }
+        var targetAccountUpdated = Account.fromDTO(targetAccountDTO, primaryOwner, secondaryOwner);
+
+        var adminDTO = adminService.findById(transactionDTO.getAdminId());
+        var admin = Admin.fromDTO(adminDTO);
+        var transactionUpdated = Transaction.fromDTO(transactionDTO, null, targetAccountUpdated, admin);
+        transactionUpdated.setId(currentTransaction.getId());
+        transactionUpdated.setStatus(TransactionStatus.COMPLETED);
+        transactionUpdated = transactionRepository.save(transactionUpdated);
+
+        return TransactionDTO.fromEntity(transactionUpdated);
+    }
+
+    private TransactionDTO createTransactionBetweenOurAccountHolders(TransactionDTO transactionDTO, Transaction currentTransaction, Account sourceAccount, Account targetAccount){
+
+        // Check if the accounts are the same
+        if (transactionDTO.getSourceAccount().equals(transactionDTO.getTargetAccount())) {
+            throw new RuntimeException("You can't send money to the same account");
+        }
+
+        // Check if the sender account has sufficient funds
+        if (sourceAccount.getBalance().getAmount().compareTo(transactionDTO.getAmount().getAmount()) < 0) {
+            throw new RuntimeException("Insufficient funds in the sender's account");
+        } else {
+            var amount = Money.fromDTO(transactionDTO.getAmount());
+            var fee = new Money(new BigDecimal(0));
+            if (transactionDTO.getFee() != null) {
+                fee = Money.fromDTO(transactionDTO.getFee());
+            }
+            var amountToBeSubtracted = sourceAccount.getBalance().decreaseAmount(amount.increaseAmount(fee));
+            sourceAccount.setBalance(new Money(amountToBeSubtracted));
+            var sourceAccountDTOUpdated = AccountDTO.fromEntity(sourceAccount);
+            updateAccount(sourceAccountDTOUpdated.getIban(), sourceAccountDTOUpdated);
+        }
+
+        // Add the amount to the receiver account
+        var amount = Money.fromDTO(transactionDTO.getAmount());
+        var amountToBeAdded = targetAccount.getBalance().increaseAmount(amount);
+        targetAccount.setBalance(new Money(amountToBeAdded));
+        var targetAccountDTOUpdated = AccountDTO.fromEntity(targetAccount);
+        updateAccount(targetAccountDTOUpdated.getIban(), targetAccountDTOUpdated);
+
+        // Create the transaction
+        var adminDTO = adminService.findById(transactionDTO.getAdminId());
+        var admin = Admin.fromDTO(adminDTO);
+        var transactionUpdated = Transaction.fromDTO(transactionDTO, sourceAccount, targetAccount, admin);
+        transactionUpdated.setId(currentTransaction.getId());
+        transactionUpdated.setStatus(TransactionStatus.COMPLETED);
+        transactionUpdated = transactionRepository.save(transactionUpdated);
+
+        return TransactionDTO.fromEntity(transactionUpdated);
     }
 }
