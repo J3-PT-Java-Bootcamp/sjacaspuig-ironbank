@@ -20,13 +20,14 @@ export class HomeGuard implements CanActivate {
     console.log('isLogged: ', isLogged);
 
     if (isLogged) {
-      const realRol: Role = this.authService.getRole();
+      const role: Role = this.authService.getRole();
       
-      if (realRol === 'user') {
+      console.log(role);
+      if (role === 'user') {
         this.router.navigate(['/dashboard-user']);
-      } else if (realRol === 'admin') {
+      } else if (role === 'admin') {
         this.router.navigate(['/users']);
-      } else if (realRol === 'super-admin') {
+      } else if (role === 'super-admin') {
         this.router.navigate(['/admins']);
       } else {
         this.authService.logout();

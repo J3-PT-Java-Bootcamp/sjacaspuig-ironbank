@@ -21,9 +21,9 @@ export class ThirdPartyService {
   }
 
   public getAll(): Observable<ThirdParty[]> {
-    return this.httpClient.get<ThirdParty[]>(this.userURL);
+    return this.httpClient.get<ThirdParty[]>(this.userURL, this.httpOptions);
   }
    public deleteThirdParty(id: string): Observable<ThirdParty> {
-    return this.httpClient.delete<ThirdParty>(this.userURL + '/' + id);
+    return this.httpClient.delete<ThirdParty>(this.userURL + '/' + id, this.httpOptions);
   }
 }

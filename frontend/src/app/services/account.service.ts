@@ -18,11 +18,11 @@ export class AccountService {
   ) { }
 
   public getByIban(iban: string): Observable<Account> {
-    return this.httpClient.get<any>(this.userURL + '/' + iban).pipe(map((account: Account) => this.formatDateToUTC(account)));
+    return this.httpClient.get<any>(this.userURL + '/' + iban, this.httpOptions).pipe(map((account: Account) => this.formatDateToUTC(account)));
   }
 
   public getAll(): Observable<Account[]> {
-    return this.httpClient.get<Account[]>(this.userURL).pipe(map((accounts: Account[]) => this.formatDatesToUTC(accounts)));
+    return this.httpClient.get<Account[]>(this.userURL, this.httpOptions).pipe(map((accounts: Account[]) => this.formatDatesToUTC(accounts)));
   }
 
   public deleteAccount(iban: string): Observable<Account> {
@@ -34,7 +34,7 @@ export class AccountService {
   }
 
   public getByUserId(accountHolderId: string): Observable<Account[]> {
-    return this.httpClient.get<Account[]>(this.userURL + '/user/' + accountHolderId).pipe(map((accounts: Account[]) => this.formatDatesToUTC(accounts)));
+    return this.httpClient.get<Account[]>(this.userURL + '/user/' + accountHolderId, this.httpOptions).pipe(map((accounts: Account[]) => this.formatDatesToUTC(accounts)));
   }
 
   private formatDatesToUTC(accounts: Account[]): Account[] {

@@ -10,7 +10,9 @@ import { Admin } from '../models/admin';
 export class AdminService {
 
   userURL = environment.apiUrl + '/admins';
-  httpOptions = { headers: new HttpHeaders({'Content-Type' : 'application/json'})};
+  httpOptions = { headers: new HttpHeaders({
+    'Content-Type' : 'application/json'
+  })};
 
   constructor(
     private httpClient: HttpClient
@@ -21,10 +23,10 @@ export class AdminService {
   }
 
   public getAll(): Observable<Admin[]> {
-    return this.httpClient.get<Admin[]>(this.userURL);
+    return this.httpClient.get<Admin[]>(this.userURL, this.httpOptions);
   }
 
   public deleteAdmin(id: string): Observable<void> {
-    return this.httpClient.delete<void>(this.userURL + '/' + id);
+    return this.httpClient.delete<void>(this.userURL + '/' + id, this.httpOptions);
   }
 }

@@ -22,7 +22,7 @@ export class TransactionService {
   }
 
   public getAll(): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(this.userURL).pipe(
+    return this.httpClient.get<Transaction[]>(this.userURL, this.httpOptions).pipe(
       map((accounts: Transaction[]) => {
         return accounts.sort((a: Transaction, b: Transaction) => {
           return a.id && b.id ? b.id - a.id : 0;
@@ -33,7 +33,7 @@ export class TransactionService {
   }
 
   public findByIban(iban: string): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(this.userURL + '/iban/' + iban).pipe(
+    return this.httpClient.get<Transaction[]>(this.userURL + '/iban/' + iban, this.httpOptions).pipe(
       map((accounts: Transaction[]) => {
         return accounts.sort((a: Transaction, b: Transaction) => {
           return a.id && b.id ? b.id - a.id : 0;
@@ -44,7 +44,7 @@ export class TransactionService {
   }
 
   public findByAccountHolderId(id: string): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(this.userURL + '/account-holder/' + id).pipe(
+    return this.httpClient.get<Transaction[]>(this.userURL + '/account-holder/' + id, this.httpOptions).pipe(
       map((accounts: Transaction[]) => {
         return accounts.sort((a: Transaction, b: Transaction) => {
           return a.id && b.id ? b.id - a.id : 0;

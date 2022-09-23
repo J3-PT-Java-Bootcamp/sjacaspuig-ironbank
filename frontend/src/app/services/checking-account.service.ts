@@ -21,6 +21,6 @@ export class CheckingAccountService {
   }
 
   public getAll(): Observable<CheckingAccount[]> {
-    return this.httpClient.get<CheckingAccount[]>(this.userURL);
+    return this.httpClient.get<CheckingAccount[]>(this.userURL, this.httpOptions);
   }
 }
