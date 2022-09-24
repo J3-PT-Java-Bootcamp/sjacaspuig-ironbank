@@ -30,7 +30,7 @@ public class CurrentCheckingAccountController {
 
     @PostMapping
     public ResponseEntity<AccountDTO> create(@RequestBody @Valid CurrentCheckingAccountDTO currentCheckingAccountDTO) {
-        return ResponseEntity.ok(currentCheckingAccountService.create(currentCheckingAccountDTO));
+        return ResponseEntity.created(null).body(currentCheckingAccountService.create(currentCheckingAccountDTO));
     }
 
     @PutMapping("/{iban}")

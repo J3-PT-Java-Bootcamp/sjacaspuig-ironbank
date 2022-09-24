@@ -43,10 +43,10 @@ public class CurrentCheckingAccountServiceImpl implements CurrentCheckingAccount
             throw new IllegalArgumentException("Checking account with IBAN " + currentCheckingAccountDTO.getIban() + " already exists");
         }
         if (currentCheckingAccountDTO.getBalance().getAmount().compareTo(new BigDecimal("0")) < 0) {
-            throw new IllegalArgumentException("Balance cannot of the checking account with IBAN " + currentCheckingAccountDTO.getIban() + " be negative");
+            throw new IllegalArgumentException("The balance of the checking account with IBAN " + currentCheckingAccountDTO.getIban() + " be negative");
         }
         if (currentCheckingAccountDTO.getBalance().getAmount().compareTo(CurrentCheckingAccount.MINIMUM_BALANCE.getAmount()) < 0) {
-            throw new IllegalArgumentException("Balance cannot of the checking account with IBAN " + currentCheckingAccountDTO.getIban() + " be less than " + CurrentCheckingAccount.MINIMUM_BALANCE.getAmount());
+            throw new IllegalArgumentException("The balance of the checking account with IBAN " + currentCheckingAccountDTO.getIban() + " cannot be less than " + CurrentCheckingAccount.MINIMUM_BALANCE.getAmount());
         }
 
         // Generate iban, check if it exists on accounts, if it does, generate another one, if not, save it

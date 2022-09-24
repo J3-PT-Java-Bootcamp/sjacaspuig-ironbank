@@ -29,7 +29,7 @@ public class CreditAccountController {
 
     @PostMapping
     public ResponseEntity<CreditAccountDTO> create(@RequestBody @Valid CreditAccountDTO creditAccountDTO) {
-        return ResponseEntity.ok(creditAccountService.create(creditAccountDTO));
+        return ResponseEntity.created(null).body(creditAccountService.create(creditAccountDTO));
     }
 
     @PutMapping("/{iban}")

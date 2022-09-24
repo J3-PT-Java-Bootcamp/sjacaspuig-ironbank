@@ -29,7 +29,7 @@ public class CurrentStudentCheckingAccountController {
 
     @PostMapping
     public ResponseEntity<CurrentStudentCheckingAccountDTO> create(@RequestBody @Valid CurrentStudentCheckingAccountDTO currentStudentCheckingAccountDTO) {
-        return ResponseEntity.ok(currentStudentCheckingAccountService.create(currentStudentCheckingAccountDTO));
+        return ResponseEntity.created(null).body(currentStudentCheckingAccountService.create(currentStudentCheckingAccountDTO));
     }
 
     @PutMapping("/{iban}")

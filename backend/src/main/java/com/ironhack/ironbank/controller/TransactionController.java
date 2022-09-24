@@ -35,7 +35,7 @@ public class TransactionController {
         var transactionResponse = transactionService.create(transactionDTO);
 
         if (transactionResponse.getStatus().equals(TransactionStatus.COMPLETED)) {
-            return ResponseEntity.ok(transactionResponse);
+            return ResponseEntity.created(null).body(transactionResponse);
         } else {
             return ResponseEntity.badRequest().body(transactionResponse);
         }

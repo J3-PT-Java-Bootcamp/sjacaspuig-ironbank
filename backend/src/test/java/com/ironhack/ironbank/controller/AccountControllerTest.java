@@ -109,24 +109,35 @@ class AccountControllerTest {
 
     @Test
     void findByAccountHolderId() throws Exception {
-        var repositoryAccountHolder = accountHolderService.findAll().get(0);
-        var result = mockMvc.perform(get("/accounts/user/" + repositoryAccountHolder.getId())).andExpect(status().isOk()).andReturn();
-        var accounts = objectMapper.readValue(result.getResponse().getContentAsString(), Object[].class);
+        Object account = null;
+        AccountHolderDTO repositoryAccountHolder = null;
+        var accountHolders = accountHolderService.findAll();
+
+        for (int i = 0; i < accountHolders.size(); i++) {
+            repositoryAccountHolder = accountHolders.get(i);
+            var result = mockMvc.perform(get("/accounts/user/" + repositoryAccountHolder.getId())).andExpect(status().isOk()).andReturn();
+            var accounts = objectMapper.readValue(result.getResponse().getContentAsString(), Object[].class);
+            if (accounts.length > 0) {
+                account = accounts[0];
+                break;
+            }
+        }
 
         // Cast to a checking, saving, current o credit account
-        if (accounts[0] instanceof CurrentCheckingAccountDTO) {
-            var firstAccount = (CurrentCheckingAccountDTO) accounts[0];
+        if (account instanceof CurrentCheckingAccountDTO) {
+            var firstAccount = (CurrentCheckingAccountDTO) account;
             assertTrue(repositoryAccountHolder.getId() == firstAccount.getPrimaryOwner() || repositoryAccountHolder.getId() == firstAccount.getSecondaryOwner());
-        } else if (accounts[0] instanceof CurrentSavingsAccountDTO) {
-            var firstAccount = (CurrentSavingsAccountDTO) accounts[0];
+        } else if (account instanceof CurrentSavingsAccountDTO) {
+            var firstAccount = (CurrentSavingsAccountDTO) account;
             assertTrue(repositoryAccountHolder.getId() == firstAccount.getPrimaryOwner() || repositoryAccountHolder.getId() == firstAccount.getSecondaryOwner());
-        } else if (accounts[0] instanceof CurrentCheckingAccountDTO) {
-            var firstAccount = (CurrentCheckingAccountDTO) accounts[0];
+        } else if (account instanceof CurrentStudentCheckingAccountDTO) {
+            var firstAccount = (CurrentStudentCheckingAccountDTO) account;
             assertTrue(repositoryAccountHolder.getId() == firstAccount.getPrimaryOwner() || repositoryAccountHolder.getId() == firstAccount.getSecondaryOwner());
-        } else if (accounts[0] instanceof CurrentCheckingAccountDTO) {
-            var firstAccount = (CurrentCheckingAccountDTO) accounts[0];
+        } else if (account instanceof CreditAccountDTO) {
+            var firstAccount = (CreditAccountDTO) account;
             assertTrue(repositoryAccountHolder.getId() == firstAccount.getPrimaryOwner() || repositoryAccountHolder.getId() == firstAccount.getSecondaryOwner());
         }
 
     }
+
 }
