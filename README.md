@@ -62,6 +62,7 @@ El proyecto cuenta con test unitarios y de integración, los cuales se pueden ej
 
 Los tests usan una basa de datos distinta a la de la aplicación, por lo que no hay que preocuparse de que se modifiquen los datos de la base de datos de la aplicación.
 Su nombre es "ironbank_test". Y también comentar que la primera vez que se lanzan los tests hay una clase de configuración que automáticamente rellena la base de datos con datos de prueba.
+Eso si, el realm de Keycloak es compartido asi que se crearan nuevos usuarios que se podrán identificar porque al final del nombre de usuario llevan el sufijo ".test". Después de ejecutar los tests se deberían eliminar estos usuarios.
 
 Por último, conseguimos una cobertura general de alrededor del 60% en los test unitarios y de integración y para la carpeta de los "service" llegamos al 66.5%.
 
