@@ -35,7 +35,7 @@ Por último tenemos las Credit accounts, también aplican una penalización por 
 
 En cuanto a tecnologías hemos usado:
 - Java, Maven y Spring Boot para el backend
-- Angular para el frontend
+- Angular como framework y Nebular como librería de componentes para el frontend
 - MySQL para la base de datos
 - Keycloak para la autenticación y autorización
 
