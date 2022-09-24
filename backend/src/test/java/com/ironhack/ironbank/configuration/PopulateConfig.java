@@ -47,7 +47,7 @@ public class PopulateConfig {
                 var adminDTO = new AdminDTO();
                 adminDTO.setFirstName(faker.name().firstName());
                 adminDTO.setLastName(faker.name().lastName());
-                adminDTO.setUsername(faker.internet().domainName());
+                adminDTO.setUsername(faker.internet().domainName() + ".test");
                 adminDTO.setEmail(faker.internet().emailAddress());
                 adminDTO.setPassword("password");
                 var user = adminService.create(adminDTO);
@@ -64,7 +64,7 @@ public class PopulateConfig {
                 var accountHolderDTO = new AccountHolderDTO();
                 accountHolderDTO.setFirstName(faker.name().firstName());
                 accountHolderDTO.setLastName(faker.name().lastName());
-                accountHolderDTO.setUsername(faker.internet().domainName());
+                accountHolderDTO.setUsername(faker.internet().domainName() + ".test");
                 accountHolderDTO.setEmail(faker.internet().emailAddress());
                 accountHolderDTO.setBirthDate(faker.date().birthday(23, 26));
 
