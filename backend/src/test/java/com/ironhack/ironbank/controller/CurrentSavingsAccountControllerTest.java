@@ -1,6 +1,7 @@
 package com.ironhack.ironbank.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ironhack.ironbank.constants.AccountConstants;
 import com.ironhack.ironbank.dto.CurrentSavingsAccountDTO;
 import com.ironhack.ironbank.dto.MoneyDTO;
 import com.ironhack.ironbank.repository.CurrentSavingsAccountRepository;
@@ -70,7 +71,7 @@ class CurrentSavingsAccountControllerTest {
         var savingsAccountDTO = new CurrentSavingsAccountDTO();
 
         var balance = new MoneyDTO();
-        balance.setAmount(new BigDecimal(faker.number().randomNumber()));
+        balance.setAmount(AccountConstants.SAVINGS_ACCOUNT_DEFAULT_MINIMUM_BALANCE.getAmount());
         savingsAccountDTO.setBalance(balance);
         savingsAccountDTO.setSecretKey(faker.internet().password());
         var accountHolder = accountHolderService.findAll().get(faker.number().numberBetween(0, accountHolderService.findAll().size() - 1));

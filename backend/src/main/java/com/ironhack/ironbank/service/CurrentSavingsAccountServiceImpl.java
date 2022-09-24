@@ -40,12 +40,12 @@ public class CurrentSavingsAccountServiceImpl implements CurrentSavingsAccountSe
             throw new IllegalArgumentException("Savings account with IBAN " + currentSavingsAccountDTO.getIban() + " already exists");
         }
         if(currentSavingsAccountDTO.getBalance().getAmount().compareTo(new BigDecimal("0")) < 0) {
-            throw new IllegalArgumentException("Balance of a the savings account with IBAN " + currentSavingsAccountDTO.getIban() + " cannot be negative");
+            throw new IllegalArgumentException("The balance of the savings account with IBAN " + currentSavingsAccountDTO.getIban() + " cannot be negative");
         }
 
         BigDecimal minimumBalance = currentSavingsAccountDTO.getMinimumBalance() != null ? currentSavingsAccountDTO.getMinimumBalance().getAmount() : CurrentSavingsAccount.DEFAULT_MINIMUM_BALANCE.getAmount();
         if(currentSavingsAccountDTO.getBalance().getAmount().compareTo(minimumBalance) < 0) {
-            throw new IllegalArgumentException("Balance of a the savings account with IBAN " + currentSavingsAccountDTO.getIban() + " cannot be lower than the minimum balance of " + minimumBalance);
+            throw new IllegalArgumentException("The balance of the savings account with IBAN " + currentSavingsAccountDTO.getIban() + " cannot be lower than the minimum balance of " + minimumBalance);
         }
 
         // Generate iban, check if it exists on accounts, if it does, generate another one, if not, save it
