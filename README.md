@@ -65,9 +65,9 @@ Su nombre es "ironbank_test". Y también comentar que la primera vez que se lanz
 
 Por último, conseguimos una cobertura general de alrededor del 60% en los test unitarios y de integración y para la carpeta de los "service" llegamos al 66.5%.
 
-![General](Screenshot 2022-09-24 034459.png)
-![Carpetas-1](Screenshot 2022-09-24 034733.png)
-![Carpetas-2](Screenshot 2022-09-24 034811.png)
+![General](general.png)
+![Carpetas-1](carpeta1.png)
+![Carpetas-2](carpeta2.png)
 ![Carpetas-3](66-5percent.png)
 
 ## Configuración del entorno de desarrollo
